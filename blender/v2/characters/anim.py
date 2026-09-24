@@ -114,7 +114,7 @@ class Moves:
             pass
     def stoop(self, k=1.0):
         a = self.st.get('stoop', 0) * k
-        if a: rot(self.rig, 'spine_02', X, -a * 0.5); rot(self.rig, 'spine_03', X, -a * 0.5); rot(self.rig, 'neck_01', X, a * 0.6)
+        if a: rot(self.rig, 'spine_02', X, a * 0.5); rot(self.rig, 'spine_03', X, a * 0.5); rot(self.rig, 'neck_01', X, -a * 0.4)
 
     def idle(self, rig, t):
         st = self.st; e = st.get('energy', 1.0)
@@ -137,7 +137,7 @@ class Moves:
             self.arms_down(out=0.13, elbow=40 if run else 14); self.stoop(0.8)
             ph = s(t)
             rot(rig, 'pelvis', Z, (7 if run else 5) * ph); rot(rig, 'spine_02', Z, -(9 if run else 7) * ph)
-            rot(rig, 'spine_01', X, -lean)
+            rot(rig, 'spine_01', X, lean)
             for side, sign in (('l', 1), ('r', -1)):
                 w = sign * ph
                 rot(rig, f'thigh_{side}', X, -amp * w - (8 if run else 0))
@@ -148,7 +148,7 @@ class Moves:
                 arm = (40 if run else 22) * w * (0.35 if (side == 'l' and st.get('staff')) else 1)
                 rot(rig, f'upperarm_{side}', X, arm)
                 rot(rig, f'lowerarm_{side}', X, -(8 if run else 6) * max(0, w))
-            rot(rig, 'head', X, lean * 0.5); rot(rig, 'head', Z, 2 * ph)
+            rot(rig, 'head', X, -lean * 0.4); rot(rig, 'head', Z, 2 * ph)
             bob = (0.5 - 0.5 * s(t, 2, 0.25)) * (0.05 if run else 0.022) * self.leg
             move(rig, 'pelvis', (0, 0, -bob))
             fingers(rig, 18 if run else 12, 55 if st.get('staff') else 0)
@@ -165,7 +165,7 @@ class Moves:
             g2 = max(0, s(t, 1, 0.55)) ** 1.5              # left hand: one open-palm gesture
             rot(rig, 'upperarm_l', X, -25 * g2 * e); rot(rig, 'upperarm_l', Y, 10 * g2)
             rot(rig, 'lowerarm_l', X, -55 * g2); rot(rig, 'lowerarm_l', Z, 20 * g2); rot(rig, 'hand_l', Y, -30 * g2)
-        rot(rig, 'spine_03', X, -3 * g); rot(rig, 'spine_02', Z, -4 * g)
+        rot(rig, 'spine_03', X, 3 * g); rot(rig, 'spine_02', Z, -4 * g)
         rot(rig, 'head', X, -6 * max(0, s(t, 4)) + 2); rot(rig, 'head', Z, 7 * s(t, 1, 0.3)); rot(rig, 'head', Y, -3 * s(t, 2, 0.2))
         fingers(rig, 10, 55 if st.get('staff') else 0)
         m = abs(s(t, 5)) * 0.6 + abs(s(t, 7, 0.3)) * 0.4
@@ -193,8 +193,8 @@ class Moves:
             rot(rig, f'calf_{side}', X, 84 - ang * 0.6); rot(rig, f'foot_{side}', X, -6)
         move(rig, 'pelvis', (0, 0.05, hip_target - hip0))
         br = s(t)
-        rot(rig, 'spine_01', X, -7); rot(rig, 'spine_02', X, -4 - 1.3 * br); rot(rig, 'spine_03', X, -3 - 0.9 * br)
-        rot(rig, 'neck_01', X, 5)
+        rot(rig, 'spine_01', X, 4); rot(rig, 'spine_02', X, 5 + 1.3 * br); rot(rig, 'spine_03', X, 3 + 0.9 * br)
+        rot(rig, 'neck_01', X, -4)
         for side, sx in (('l', 1), ('r', -1)):
             aim(rig, f'upperarm_{side}', (sx * 0.2, -0.5, -1))
             aim(rig, f'lowerarm_{side}', (sx * 0.08, -1, -0.3))
@@ -205,7 +205,7 @@ class Moves:
             g2 = max(0, s(t, 1, 0.6)) ** 1.6
             rot(rig, 'lowerarm_l', X, -30 * g2); rot(rig, 'hand_l', Y, -25 * g2)
             rot(rig, 'head', X, -5 * max(0, s(t, 4)) + 1.5); rot(rig, 'head', Z, 7 * s(t, 1, 0.3)); rot(rig, 'head', Y, 3 * s(t, 1, 0.1))
-            rot(rig, 'spine_03', X, -2 * g)
+            rot(rig, 'spine_03', X, 2 * g)
             m = abs(s(t, 5)) * 0.6 + abs(s(t, 7, 0.3)) * 0.4
             pause = 1 - max(0, 1 - abs(t - 0.5) / 0.06) - max(0, 1 - abs(t - 0.98) / 0.05) - max(0, 1 - t / 0.03)
             fingers(rig, 14); face(rig, blink_at(t, (0.3, 0.78)), max(0, min(1, m * pause * 1.1)))

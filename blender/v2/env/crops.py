@@ -53,13 +53,13 @@ def wheat(seed=43):
 def cotton(seed=44):
     """Low bushy crop with white bolls."""
     rnd = random.Random(seed); b = B(seed)
-    for i in range(3):
-        a = i * 2.1; r = 0.1 if i else 0
-        b.ball(rnd.uniform(0.2, 0.25), (math.cos(a) * r, math.sin(a) * r, 0.32 + rnd.uniform(-0.05, 0.08)), 'toon_leaf' if i else 'toon_leaf_light', scale=(1, 1, 0.8), sub=1, wobble=0.03, freq=6)
+    for i in range(2):
+        a = i * 2.6; r = 0.08
+        b.ball(rnd.uniform(0.22, 0.26), (math.cos(a) * r, math.sin(a) * r, 0.32 + rnd.uniform(-0.03, 0.06)), 'toon_leaf' if i else 'toon_leaf_light', scale=(1.1, 1.1, 0.8), sub=1, wobble=0.03, freq=6)
     b.cyl(0.02, 0.015, 0.3, (0, 0, 0.15), 'toon_bark', verts=4)
-    for i in range(6):
-        a = rnd.uniform(0, math.tau); r = rnd.uniform(0.12, 0.26)
-        b.ball(0.05, (math.cos(a) * r, math.sin(a) * r, 0.3 + rnd.uniform(0, 0.2)), 'toon_cotton', sub=0)
+    for i in range(4):
+        a = i * 1.57 + rnd.uniform(-0.3, 0.3); r = rnd.uniform(0.18, 0.24)
+        b.ball(0.055, (math.cos(a) * r, math.sin(a) * r, 0.36 + rnd.uniform(0, 0.12)), 'toon_cotton', sub=1, scale=(1, 1, 0.85))
     return b
 
 def cabbage(seed=45):

@@ -53,6 +53,8 @@ def main(keys=None, fresh=False, do_export=True, previews=True):
     bpy.ops.wm.save_as_mainfile(filepath=BLEND)
     if previews:
         for k in keys: preview.turnaround(k)
+        preview.lineup(); preview.faces(); preview.poses()
+        preview.layout()
     return out
 
 if __name__ == '__main__':

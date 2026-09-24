@@ -229,6 +229,30 @@ def join(objs, name):
     o = objs[0]; o.name = name; o.data.name = name
     return o
 
+def uv_box(o, size=0.2):
+    """Box-projected UVs in world units (check patterns tile at a fixed real-world scale)."""
+    me = o.data
+    if not me.uv_layers: me.uv_layers.new(name='UVMap')
+    me.uv_layers[0].name = 'UVMap'
+    bm = bmesh.new(); bm.from_mesh(me); uv = bm.loops.layers.uv.active; bm.normal_update()
+    for f in bm.faces:
+        n = f.normal; ax = max(range(3), key=lambda i: abs(n[i]))
+        for l in f.loops:
+            p = l.vert.co; u, v = ((p.y, p.z), (p.x, p.z), (p.x, p.y))[ax]
+            l[uv].uv = (u / size, v / size)
+    bm.to_mesh(me); bm.free()
+
+def check_image(name, base, ink, n=128, cell=16, band=None):
+    y, x = np.mgrid[0:n, 0:n]
+    u, v = (x % cell) / cell, (y % cell) / cell
+    a, b = hex_rgb(base), hex_rgb(ink)
+    lines = (np.abs(u - 0.5) < 0.12) | (np.abs(v - 0.5) < 0.12)
+    dots = ((x // cell + y // cell) % 2 == 0) & (np.abs(u - 0.5) + np.abs(v - 0.5) < 0.22)
+    dark = lines | dots
+    if band: dark |= (y % n) < 6
+    rgb = np.where(dark[..., None], np.array(b), np.array(a))
+    return save_image(name, rgb)
+
 def tri_count(o):
     return sum(len(p.vertices) - 2 for p in o.data.polygons)
 

@@ -55,3 +55,56 @@ def turnaround(key, clip=None, frame=10):
     p = T.PREV + f'_{key}_3.png'; T.render_to(p); paths.append(p)
     T.stitch(paths, T.PREV + f'{key}_turnaround.png')
     rig.location.x = x0; bench(False); show_all()
+
+def lineup():
+    T.all_mode('cel')
+    cam = T.render_setup((2400, 1000)); show_all()
+    R = rigs(); xs = {}
+    x = -2.4
+    for k in ORDER:
+        r = R.get(k)
+        if not r: continue
+        r.location.x = x; xs[k] = x
+        pose(r, 'sit' if k == 'grandma_zainab' else 'idle', 10)
+        x += 1.2 if k != 'grandma_zainab' else 1.2
+    bench(True, xs.get('grandma_zainab', 0))
+    T.frame_camera(cam, (0, 0, 0.95), 2.2, yaw=math.radians(10), elev=math.radians(4))
+    bpy.data.objects['_prev_sun'].rotation_euler = (math.radians(50), 0, math.radians(-25))
+    bpy.context.scene.render.resolution_x, bpy.context.scene.render.resolution_y = 2600, 1000
+    T.frame_camera(cam, (0, 0, 0.95), 6.2, yaw=math.radians(8), elev=math.radians(3))
+    T.render_to(T.PREV + 'cast_lineup.png')
+    bench(False)
+
+def faces():
+    T.all_mode('cel')
+    cam = T.render_setup((560, 640)); paths = []
+    for k in ORDER:
+        r = rigs().get(k)
+        if not r: continue
+        solo(k); x0 = r.location.x; r.location.x = 0
+        pose(r, 'sit' if k == 'grandma_zainab' else 'idle', 10)
+        hp = r.matrix_world @ r.pose.bones['head'].head
+        T.frame_camera(cam, (0, 0, hp.z + 0.11), 0.42, yaw=math.radians(14), elev=math.radians(3))
+        bpy.data.objects['_prev_sun'].rotation_euler = (math.radians(50), 0, math.radians(-20))
+        p = T.PREV + f'_face_{k}.png'; T.render_to(p); paths.append(p)
+        r.location.x = x0
+    show_all()
+    T.stitch(paths, T.PREV + 'cast_faces.png')
+
+def poses():
+    T.all_mode('cel')
+    cam = T.render_setup((480, 760)); paths = []
+    for k in ORDER:
+        r = rigs().get(k)
+        if not r: continue
+        solo(k); x0 = r.location.x; r.location.x = 0
+        top = max(v.co.z for v in bpy.data.objects[k].data.vertices)
+        for clip, fr, yaw in (('walk', 7, 60), ('talk', 17, 20), ('sit_talk', 17, 20), ('run', 5, 70)):
+            if not any(a.get('clip') == clip and a.name.startswith(k + '|') for a in bpy.data.actions): continue
+            pose(r, clip, fr); bench(clip.startswith('sit'))
+            T.frame_camera(cam, (0, 0, top * 0.5), top * 1.15, yaw=math.radians(yaw), elev=math.radians(4))
+            bpy.data.objects['_prev_sun'].rotation_euler = (math.radians(50), 0, math.radians(-35 + yaw))
+            p = T.PREV + f'_pose_{k}_{clip}.png'; T.render_to(p); paths.append(p)
+        bench(False); r.location.x = x0
+    show_all()
+    T.stitch(paths, T.PREV + '_poses_check.png', cols=5)

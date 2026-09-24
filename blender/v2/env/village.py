@@ -25,7 +25,7 @@ for n in NAMES:
         if o: o.location = (0, 0, 0); o.parent = None; c.objects.link(o)
     if n == 'stream':
         o = bpy.data.objects.get('stream_water'); o.location = (0, 0, 0); c.objects.link(o)
-look(sun_rot=(math.radians(66), 0, math.radians(135)), strength=3.2)
+look(sun_rot=(math.radians(56), 0, math.radians(135)), strength=3.2)
 sc = bpy.context.scene
 scene_col = sc.collection
 def coll(name):
@@ -84,7 +84,9 @@ grp = n_.new('ShaderNodeGroup'); grp.node_tree = toon_group(); grp.name = 'TOON'
 l_.new(at.outputs['Color'], grp.inputs['Color']); l_.new(at.outputs['Color'], pbr.inputs['Base Color']); l_.new(grp.outputs[0], out.inputs['Surface'])
 me.materials.append(tm)
 ter = bpy.data.objects.new('terrain', me); C_TER.objects.link(ter)
-far = B(0); far.box((900, 900, 1), (0, -20, 0.45), 'toon_ground_green', smooth=False)
+far = B(0)   # a flat plain framing the terrain patch (ring, so it never covers the canals)
+for (x0, x1, z0, z1) in ((-450, X0 + 0.3, -450, 450), (X1 - 0.3, 450, -450, 450), (X0, X1, -450, Z0 + 0.3), (X0, X1, Z1 - 0.3, 450)):
+    far.box((x1 - x0, z1 - z0, 1), ((x0 + x1) / 2, -(z0 + z1) / 2, 0.45), 'toon_ground_green', smooth=False)
 fo = far.obj('far_plain', C_TER)
 print('terrain', len(faces), flush=True)
 
@@ -243,11 +245,13 @@ for k, v in buckets.items():
 # ---------------------------------------------------------------------------------------
 # cameras + renders
 g0 = G.height(G.HOME['x'], G.HOME['z'])
-shot = camera('ShotCam', (-1.3, -20.6, g0 + 1.65), (-7.7, -25.2, g0 + 1.25), lens=30)
+shot = camera('ShotCam', (1.2, -18.6, g0 + 1.9), (-7.6, -25.0, g0 + 1.55), lens=30)
+canal_cam = camera('CanalCam', (-12.0, -41.0, G.height(-12, 41) + 2.6), (-15.3, -22.0, 0.2), lens=30)
 wide = camera('WideCam', (26, 6, 26), (-6, -32, 0), lens=28)
 sc.camera = shot
 render(PREV + 'village_home.png', shot, res=(1600, 900))
 render(PREV + 'village_wide.png', wide, res=(1600, 900))
+render(PREV + 'village_canal.png', canal_cam, res=(1600, 900))
 sc.camera = shot
 bpy.ops.wm.save_as_mainfile(filepath=V2 + 'village_v2.blend')
 print('VILLAGE_OK', flush=True)

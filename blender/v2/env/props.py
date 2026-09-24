@@ -16,12 +16,11 @@ def mastaba(seed=61):
     kx, kw = cx - 0.2, 1.3
     b.box((kw, D - 0.08, 0.014), (kx, cy + 0.02, H + 0.007), 'toon_fabric_red', smooth=False)
     b.box((kw, 0.014, 0.16), (kx, wy - D + 0.025, H - 0.07), 'toon_fabric_red', smooth=False)
-    for i, m in enumerate(('toon_fabric_ochre', 'toon_fabric_blue', 'toon_fabric_ochre')):
+    for i, m in enumerate(('toon_paint_ochre', 'toon_paint_blue', 'toon_paint_ochre')):   # woven stripes (painted decals)
         x = kx - kw / 2 + 0.2 + i * (kw - 0.4) / 2
-        b.box((0.05, D - 0.06, 0.004), (x, cy + 0.02, H + 0.016), m, smooth=False)
-        b.box((0.05, 0.004, 0.16), (x, wy - D + 0.016, H - 0.07), m, smooth=False)
-    for k in range(7):   # fringe
-        b.box((0.02, 0.01, 0.05), (kx - kw / 2 + 0.1 + k * (kw - 0.2) / 6, wy - D + 0.022, H - 0.17), 'toon_fabric_cream', smooth=False)
+        b.poly([(x - 0.03, cy + 0.02 - (D - 0.08) / 2, H + 0.0145), (x + 0.03, cy + 0.02 - (D - 0.08) / 2, H + 0.0145),
+                (x + 0.03, cy + 0.02 + (D - 0.08) / 2, H + 0.0145), (x - 0.03, cy + 0.02 + (D - 0.08) / 2, H + 0.0145)], m)
+        b.poly([(x - 0.03, wy - D + 0.017, H - 0.15), (x + 0.03, wy - D + 0.017, H - 0.15), (x + 0.03, wy - D + 0.017, H + 0.01), (x - 0.03, wy - D + 0.017, H + 0.01)], m)
     # folded cushion at her side, and a rolled one against the wall
     b.box((0.36, 0.3, 0.1), (kx + 0.65 + 0.2, wy - 0.17, H + 0.05), 'toon_fabric_cream', bevel=0.04, wobble=0.008, freq=4)
     b.box((0.37, 0.05, 0.02), (kx + 0.85, wy - 0.17, H + 0.101), 'toon_fabric_blue', smooth=False)

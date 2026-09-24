@@ -126,7 +126,7 @@ def stream(seed=84):
         y = -2.0
         while y < 2.0:
             L = rnd.uniform(0.35, 0.55)
-            b.ball(0.5, (s * 0.56, y + L / 2, 0.03), 'toon_stone' if rnd.random() < 0.6 else 'toon_stone_dark', scale=(0.42, L, 0.34), sub=1, wobble=0.02, freq=4)
+            b.ball(0.5, (s * 0.6, y + L / 2, 0.0), 'toon_stone' if rnd.random() < 0.6 else 'toon_stone_dark', scale=(0.28, L * 0.92, 0.22), sub=1, wobble=0.015, freq=4)
             y += L * 0.95
     return b
 

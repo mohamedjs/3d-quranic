@@ -274,7 +274,7 @@ def tris(o):
     return sum(len(p.vertices) - 2 for p in o.data.polygons)
 
 # ---------------------------------------------------------------------------------------
-def outline(o, t=0.02, name=None, skip=(), min_size=0.0):
+def outline(o, t=0.02, name=None, skip=(), min_size=0.0, decimate=None):
     """Inverted-hull outline: outward copy along even-thickness vertex normals, material `outline`.
     Winding is kept (outward) -> render back faces only (three.js BackSide)."""
     bm = bmesh.new(); bm.from_mesh(o.data)
@@ -319,6 +319,12 @@ def outline(o, t=0.02, name=None, skip=(), min_size=0.0):
     h = bpy.data.objects.new(nm, me)
     for c in o.users_collection: c.objects.link(h)
     h.matrix_world = o.matrix_world.copy()
+    if decimate:   # the hull needs far less detail than the mesh
+        m = h.modifiers.new('dec', 'DECIMATE'); m.ratio = decimate
+        bpy.context.view_layer.update()
+        ev = h.evaluated_get(bpy.context.evaluated_depsgraph_get()); me2 = bpy.data.meshes.new_from_object(ev)
+        h.modifiers.clear(); old = h.data; h.data = me2; me2.name = nm; bpy.data.meshes.remove(old)
+        if not me2.materials: me2.materials.append(M('outline'))
     return h
 
 def lod(o, ratio, name=None):

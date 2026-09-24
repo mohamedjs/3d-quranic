@@ -52,8 +52,8 @@ def robe_top(h, name, mat, loose=0.028, sleeve_end=0.78, sleeve_flare=0.035, dra
     return h.skin(o)
 
 # ---------------------------------------------------------------- skirts (lathe) + trousers
-def skirt(h, name, mat, top, hem, flare=0.2, margin=0.04, folds=0.035, segs=28, levels=7, front_short=0.0):
-    pts = [v.co for i, v in enumerate(h.ref.data.vertices) if LEGS(h.dom[i]) or h.dom[i].startswith(('spine', 'clavicle'))]
+def skirt(h, name, mat, top, hem, flare=0.2, margin=0.04, folds=0.035, segs=28, levels=7, front_short=0.0, taper=0.8):
+    pts = [v.co for i, v in enumerate(h.ref.data.vertices) if LEGS(h.dom[i]) or h.dom[i].startswith('spine')]
     cy = sum(p.y for p in pts if p.z < h.hip_z) / max(1, sum(1 for p in pts if p.z < h.hip_z))
     rings, prev = [], None
     for i in range(levels):
@@ -67,7 +67,9 @@ def skirt(h, name, mat, top, hem, flare=0.2, margin=0.04, folds=0.035, segs=28, 
         k = folds * t ** 1.4
         fn = (lambda th, k=k: 1 + k * (0.6 * math.sin(6 * th + 0.4) + 0.4 * math.sin(11 * th + 1.3)))
         zf = (lambda th, t=t: front_short * t * max(0, -math.sin(th)) ** 2)
+        if i == 0 and taper: rx, ry = rx * taper, ry * taper
         rings.append((z, rx * f, ry * f, fn, zf))
+        if i == 0 and taper: prev = (rx / taper * 0.97, ry / taper * 0.97)
     print('SKIRT', name, [(round(r[0], 3), round(r[1], 3), round(r[2], 3)) for r in rings], 'hip', round(h.hip_z, 3), flush=True)
     bm = bmesh.new()
     loops = []
@@ -215,12 +217,12 @@ def beard(hf, name, col, mat, top=0.02, side_up=-0.35, chin_len=0.14, thick=0.05
     F = hf.F; mz, mw = F['mouth_z'], F['mouth_w']
     def top_z(x): return mz + top + (side_up - mz - top) * ss(0.35, 0.72, abs(x))
     def keep(u):
-        if u.y > 0.42 or u.z > top_z(u.x): return False
-        if mouth_hole and abs(u.x) < mw * 1.35 and u.z > mz - 0.13 and u.y < -0.3: return False
+        if u.y > 0.42 or u.z > top_z(u.x) or abs(u.x) > 0.8: return False
+        if mouth_hole and abs(u.x) < mw * 1.15 and u.z > mz - 0.09 and u.y < -0.3: return False
         return True
     def snap(u):
         if mouth_hole and abs(u.x) < mw * 1.6 and u.z > mz - 0.2 and u.y < -0.3 and u.z < mz + 0.1:
-            return ellipse_snap(0, mz - 0.01, mw * 1.35, 0.12)(u)
+            return ellipse_snap(0, mz, mw * 1.15, 0.09)(u)
         return Vector((u.x, u.y, top_z(u.x)))
     o = head_shell(hf, name, col, keep, lambda u: thick + chin_len * ss(-0.95, -1.55, u.z) * max(0, -u.y), mat, snap=snap, subdiv=1)
     parts = [o]
@@ -229,7 +231,7 @@ def beard(hf, name, col, mat, top=0.02, side_up=-0.35, chin_len=0.14, thick=0.05
         for s in (1, -1):
             p, n = head_surface(F, Vector((s * 0.05, -1, mz + 0.09)).normalized())
             p = Vector((s * 0.03, p.y, mz + 0.075)); p.y = head_surface(F, Vector((s * 0.03, -1, mz + 0.08)).normalized())[0].y
-            clump(bm, hf.w(p + Vector((0, -0.05, 0))), Vector((s * 1, -0.25, -0.35)), mw * 1.35 * hf.R, 0.065 * hf.R,
+            clump(bm, hf.w(p + Vector((0, -0.05, 0))), Vector((s * 1, -0.25, -0.45)), mw * 1.6 * hf.R, 0.085 * hf.R,
                   curl_axis=Vector((0, 1, 0)), curl=0.6 * s, segs=6, rings=5, flat=0.7, fat=0.6)
         parts.append(bm_obj(bm, name + '_moustache', col, mat))
     return parts
@@ -267,8 +269,8 @@ def turban(hf, name, col, mat, band_front=0.42, band_back=-0.2, puff=0.2, wraps=
         z = (band_front + band_back) / 2 + 0.05 + 0.34 * t
         hx, hy, cy = head_width_at(F, z)
         k = 1 + puff * 1.05 - 0.07 * t * t
-        ring_tube(bm, hf.w((0, cy, 0)), (hx + puff * 0.75) * hf.R * (1 - 0.1 * t), (hy + puff * 0.75) * hf.R * (1 - 0.1 * t),
-                  hf.w((0, 0, z)).z, (0.12 - 0.02 * t) * hf.R, tilt=(0.16 if i % 2 else -0.13) * hf.R, phase=0.6 * i, bulge=0.12)
+        ring_tube(bm, hf.w((0, cy, 0)), (hx + puff * 0.45) * hf.R * (1 - 0.08 * t), (hy + puff * 0.45) * hf.R * (1 - 0.08 * t),
+                  hf.w((0, 0, z)).z, (0.14 - 0.02 * t) * hf.R, tilt=(0.16 if i % 2 else -0.13) * hf.R, phase=0.6 * i, bulge=0.12)
     wr = bm_obj(bm, name + '_wraps', col, mat)
     return [dome, wr]
 
@@ -295,9 +297,9 @@ def cape(h, hf, name, mat, drop_front=0.12, drop_back=0.2, open_front=0.0, segs=
     levels = [
         (C.z - 0.95 * R, 0.62 * R, 0.62 * R, C.y + 0.05 * R, 0),
         (h.neck.z + 0.01, nx + 0.035, ny + 0.035, ncy, 0),
-        (sh_z + 0.035, sx * 0.72 + spread, sy + 0.04, scy, 0.2),
-        (sh_z - 0.03, sx + 0.02 + spread, sy + 0.05, scy, 0.6),
-        (sh_z - 0.10, sx + 0.03 + spread, sy + 0.06, scy, 1.0),
+        (sh_z + 0.04, sx * 0.75 + spread, sy + 0.055, scy, 0.2),
+        (sh_z - 0.03, sx + 0.045 + spread, sy + 0.07, scy, 0.6),
+        (sh_z - 0.10, sx + 0.06 + spread, sy + 0.085, scy, 1.0),
     ]
     a0 = -math.pi / 2 + open_front; a1 = -math.pi / 2 + math.tau - open_front
     closed = open_front <= 0
@@ -323,7 +325,7 @@ def cape(h, hf, name, mat, drop_front=0.12, drop_back=0.2, open_front=0.0, segs=
     shade_smooth(o)
     return h.skin(o)
 
-def scarf_collar(h, name, mat, width=0.06, tails=0.22):
+def scarf_collar(h, name, mat, width=0.05, tails=0.2):
     """Checked scarf around the shoulders with two ends hanging down the front."""
     sh_z = h.rig.data.bones['upperarm_l'].head_local.z
     nx, ny, ncy = extent(h, h.neck.z - 0.01, 0.02, lambda d: d.startswith(('neck', 'spine_03', 'clavicle')))
@@ -342,7 +344,7 @@ def scarf_collar(h, name, mat, width=0.06, tails=0.22):
         x0 = s * nx * 0.9
         pts = [Vector((x0, front_y + 0.01, h.neck.z - 0.02)), Vector((x0 + s * 0.01, front_y - 0.005, sh_z - 0.06)),
                Vector((x0 + s * 0.015, front_y - 0.015, sh_z - 0.06 - tails * 0.5)), Vector((x0 + s * 0.02, front_y - 0.02, sh_z - 0.06 - tails))]
-        tube(bm, pts, width * 0.5, segs=6, flat=0.3, up=Vector((0, -1, 0)))
+        tube(bm, pts, lambda t: width * (0.5 + 0.15 * t), segs=8, flat=0.35, up=Vector((0, -1, 0)))
     o = bm_obj(bm, name, h.col, mat)
     bm2 = bmesh.new(); bm2.from_mesh(o.data); bmesh.ops.recalc_face_normals(bm2, faces=bm2.faces); bm2.to_mesh(o.data); bm2.free()
     shade_smooth(o)
@@ -395,3 +397,56 @@ def backpack(h, name, mat_bag, mat_strap, shirt):
     for x in (o, fl): out.append(rigid_to(x, h.rig, 'spine_03'))
     out.append(h.skin(st))
     return out
+
+# ---------------------------------------------------------------- seated lap skirt (Grandma Zainab)
+def seated_skirt(h, name, mat, act, voxel=0.03, dec=0.3, puff=0.022):
+    """A long dress on a seated woman: convex hull of the seated legs + hips (cloth falls from the
+    lap over the knees to the ankles), remeshed smooth, moved back to rest space through the pelvis
+    and bound rigidly to it (the seated clips keep the legs still)."""
+    import bmesh
+    rig = h.rig
+    tmp = h.copy_ref('_seat_ref'); bind(tmp, rig)
+    rig.animation_data.action = act; bpy.context.scene.frame_set(1); bpy.context.view_layer.update()
+    dg = bpy.context.evaluated_depsgraph_get()
+    me = bpy.data.meshes.new_from_object(tmp.evaluated_get(dg), depsgraph=dg)
+    pts = [tmp.matrix_world @ v.co for i, v in enumerate(me.vertices) if h.dom[i].startswith(('thigh', 'calf', 'pelvis'))]
+    bpy.data.objects.remove(tmp, do_unlink=True); bpy.data.meshes.remove(me)
+    ankle = min(p.z for p in pts)
+    bm = bmesh.new()
+    for p in pts: bm.verts.new(p)
+    for p in [p for p in pts if p.z < ankle + 0.07]: bm.verts.new((p.x * 1.18, p.y - 0.04, max(0.02, ankle - 0.02)))
+    bmesh.ops.convex_hull(bm, input=bm.verts)
+    o = bm_obj(bm, name, h.col, mat)
+    rm = o.modifiers.new('r', 'REMESH'); rm.mode = 'VOXEL'; rm.voxel_size = voxel
+    sm = o.modifiers.new('s', 'SMOOTH'); sm.factor = 1.0; sm.iterations = 6
+    apply_all(o)
+    inflate(o, lambda co, n: puff)
+    dm = o.modifiers.new('d', 'DECIMATE'); dm.ratio = dec; apply_all(o)
+    pb = rig.pose.bones['pelvis']
+    o.data.transform(pb.bone.matrix_local @ pb.matrix.inverted())
+    o.data.materials.clear(); o.data.materials.append(mat); shade_smooth(o)
+    return rigid_to(o, rig, 'pelvis')
+
+def staff(h, name, mat, act, length_up=0.42, r=0.016):
+    rig = h.rig
+    rig.animation_data.action = act; bpy.context.scene.frame_set(1); bpy.context.view_layer.update()
+    pb = rig.pose.bones['hand_l']
+    grip = (pb.head * 0.4 + rig.pose.bones['middle_01_l'].head * 0.6)
+    bm = bmesh.new()
+    pts = [Vector((grip.x + 0.004 * math.sin(i), grip.y, grip.z + length_up - (grip.z + length_up) * i / 8)) for i in range(9)]
+    tube(bm, pts, lambda t: r * (1.25 if t < 0.08 else 1.0 - 0.15 * t), segs=8)
+    o = bm_obj(bm, name, h.col, mat)
+    o.data.transform(pb.bone.matrix_local @ pb.matrix.inverted())
+    return rigid_to(o, rig, 'hand_l')
+
+def glasses(hf, name, col, mat):
+    F = hf.F; bm = bmesh.new()
+    for s in (1, -1):
+        p, n = head_surface(F, Vector((s * F['eye_x'], -1, F['eye_z'])).normalized())
+        c = hf.w((s * F['eye_x'], p.y - 0.1, F['eye_z'] - 0.02))
+        ring = [c + Vector((math.cos(a) * F['eye_w'] * 1.2, 0, math.sin(a) * F['eye_h'] * 1.25)) * hf.R for a in (k / 20 * math.tau for k in range(21))]
+        tube(bm, ring, 0.007 * hf.R, segs=5, closed=False)
+        # temple arm back to the ear
+        tube(bm, [c + Vector((s * F['eye_w'] * 1.2 * hf.R, 0, 0)), hf.w((s * 0.9, 0.0, F['eye_z']))], 0.007 * hf.R, segs=5)
+    tube(bm, [hf.w((0.1, -0.83, F['eye_z'] + 0.02)), hf.w((0, -0.86, F['eye_z'] + 0.05)), hf.w((-0.1, -0.83, F['eye_z'] + 0.02))], 0.007 * hf.R, segs=5)
+    return bm_obj(bm, name, col, mat)

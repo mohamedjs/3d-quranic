@@ -1,6 +1,6 @@
 // Subtle life in the air: sunlit dust/pollen around the player, gnat swarms over water and
-// crops, birds wheeling in the distance, and the sun disc the god-rays effect radiates from.
-import { useMemo, forwardRef } from 'react';
+// crops and birds wheeling in the distance.
+import { useMemo } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { OASIS, rng, height, WATER_Y } from '../terrain/heightfield.js';
@@ -61,7 +61,7 @@ function Swarms({ count }) {
 
 function Birds({ count }) {
   const flock = useMemo(() => {
-    const r = rng(99), g = new THREE.Group(), mat = new THREE.MeshStandardMaterial({ color: 0x2e2620, side: THREE.DoubleSide, roughness: 1 });
+    const r = rng(99), g = new THREE.Group(), mat = new THREE.MeshBasicMaterial({ color: 0x4a3526, side: THREE.DoubleSide });
     const wing = new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute([0, 0, -0.12, 0, 0, 0.14, 0.75, 0.02, -0.05], 3));
     wing.computeVertexNormals();
     const body = new THREE.ConeGeometry(0.09, 0.5, 5).rotateX(Math.PI / 2), centers = [[OASIS.x, OASIS.z], [0, 60], [-50, 90], [40, -20], [120, 60]];
@@ -88,16 +88,6 @@ function Birds({ count }) {
   });
   return <primitive object={flock} />;
 }
-
-// Bright disc placed far along the sun direction; GodRays radiates from it.
-export const SunDisc = forwardRef(function SunDisc({ dir, visible }, ref) {
-  return (
-    <mesh ref={ref} visible={visible} position={dir.clone().multiplyScalar(900)} frustumCulled={false}>
-      <sphereGeometry args={[18, 16, 12]} />
-      <meshBasicMaterial color={[6, 4.6, 3]} fog={false} toneMapped={false} />
-    </mesh>
-  );
-});
 
 export function Atmosphere() {
   const q = usePreset().particles;

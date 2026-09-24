@@ -1,12 +1,14 @@
-// Golden-hour lighting: a warm sun matched to the HDR sky's sun, shadow frustum that follows the player and is snapped to shadow-map
-// texels (no shimmering edges while walking).
+// Golden-hour toon lighting: a warm sun (the cel materials step it into lit / half-tone /
+// shade) and a light lavender-warm hemisphere that *is* the shadow colour, so shaded sides
+// and cast shadows read as one soft tint instead of going dark. The shadow frustum follows
+// the player and is snapped to shadow-map texels (no shimmering edges while walking).
 import { useRef, useMemo } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { usePreset } from '../systems/store.js';
 import { refs } from '../systems/refs.js';
 
-export const SUN_COLOR = new THREE.Color('#ffcf9e');
+export const SUN_COLOR = new THREE.Color('#ffe0b0');
 
 export function Lighting({ env }) {
   const preset = usePreset();
@@ -29,11 +31,11 @@ export function Lighting({ env }) {
   const r = preset.shadowRange;
   return (
     <>
-      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={3.4} castShadow
-        shadow-mapSize={[preset.shadowMap, preset.shadowMap]} shadow-bias={-0.00025} shadow-normalBias={0.035}
+      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={1.75} castShadow
+        shadow-mapSize={[preset.shadowMap, preset.shadowMap]} shadow-bias={-0.0004} shadow-normalBias={0.04} shadow-radius={2}
         shadow-camera-left={-r} shadow-camera-right={r} shadow-camera-top={r} shadow-camera-bottom={-r}
         shadow-camera-near={1} shadow-camera-far={320} />
-      <hemisphereLight args={['#ffe4c8', '#4a3a26', 0.22]} />
+      <hemisphereLight args={['#cbbcd4', '#bfa58c', Math.PI * 1.0]} />
     </>
   );
 }

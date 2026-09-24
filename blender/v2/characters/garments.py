@@ -129,7 +129,7 @@ class HeadFrame:
     def w(self, p): return self.C + Vector(p) * self.R
     def u(self, co): return (Vector(co) - self.C) / self.R
 
-def head_shell(hf, name, col, keep, thick, mat, snap=None, subdiv=0, dec=1.0):
+def head_shell(hf, name, col, keep, thick, mat, snap=None, subdiv=0, dec=1.0, radial=None):
     """Copy of the head keeping vertices with keep(unit co); boundary vertices snapped onto
     snap(unit co)->unit co (then back onto the head surface); inflated by thick(unit co)*R."""
     me = hf.obj.data.copy(); o = new_obj(name, me, col); o.matrix_world = hf.obj.matrix_world.copy()
@@ -143,7 +143,8 @@ def head_shell(hf, name, col, keep, thick, mat, snap=None, subdiv=0, dec=1.0):
                 if hit[0]: v.co = hit[0]
     bm.normal_update()
     for v in bm.verts:
-        v.co += v.normal * thick(hf.u(v.co)) * hf.R
+        d = v.normal if radial is None else (v.co - hf.w(radial)).normalized()
+        v.co += d * thick(hf.u(v.co)) * hf.R
     for f in bm.faces: f.material_index = 0
     bm.to_mesh(o.data); bm.free()
     if subdiv:
@@ -224,7 +225,7 @@ def beard(hf, name, col, mat, top=0.05, side_up=-0.35, chin_len=0.14, thick=0.05
         if mouth_hole and abs(u.x) < mw * 1.6 and u.z > mz - 0.2 and u.y < -0.3 and u.z < mz + 0.1:
             return ellipse_snap(0, mz, mw * 1.15, 0.09)(u)
         return Vector((u.x, u.y, top_z(u.x)))
-    o = head_shell(hf, name, col, keep, lambda u: thick + chin_len * ss(-0.95, -1.55, u.z) * max(0, -u.y), mat, snap=snap, subdiv=1)
+    o = head_shell(hf, name, col, keep, lambda u: thick + chin_len * ss(-0.95, -1.55, u.z) * max(0, -u.y), mat, snap=snap, subdiv=1, radial=(0, 0.1, -0.55))
     parts = [o]
     if moustache:
         bm = bmesh.new()
@@ -445,8 +446,8 @@ def glasses(hf, name, col, mat):
         p, n = head_surface(F, Vector((s * F['eye_x'], -1, F['eye_z'])).normalized())
         c = hf.w((s * F['eye_x'], p.y - 0.1, F['eye_z'] - 0.02))
         ring = [c + Vector((math.cos(a) * F['eye_w'] * 1.2, 0, math.sin(a) * F['eye_h'] * 1.25)) * hf.R for a in (k / 20 * math.tau for k in range(21))]
-        tube(bm, ring, 0.007 * hf.R, segs=5, closed=False)
+        tube(bm, ring, 0.011 * hf.R, segs=5, closed=False)
         # temple arm back to the ear
-        tube(bm, [c + Vector((s * F['eye_w'] * 1.2 * hf.R, 0, 0)), hf.w((s * 0.9, 0.0, F['eye_z']))], 0.007 * hf.R, segs=5)
-    tube(bm, [hf.w((0.1, -0.83, F['eye_z'] + 0.02)), hf.w((0, -0.86, F['eye_z'] + 0.05)), hf.w((-0.1, -0.83, F['eye_z'] + 0.02))], 0.007 * hf.R, segs=5)
+        tube(bm, [c + Vector((s * F['eye_w'] * 1.2 * hf.R, 0, 0)), hf.w((s * 0.9, 0.0, F['eye_z']))], 0.011 * hf.R, segs=5)
+    tube(bm, [hf.w((0.1, -0.83, F['eye_z'] + 0.02)), hf.w((0, -0.86, F['eye_z'] + 0.05)), hf.w((-0.1, -0.83, F['eye_z'] + 0.02))], 0.011 * hf.R, segs=5)
     return bm_obj(bm, name, col, mat)

@@ -1,15 +1,22 @@
-// Blender-made environment models (public/models/env/*.glb, built by blender/*.py).
-// Geometry comes from the GLB; materials are chosen here by material *name*, so the game's
-// PBR textures, triplanar projection and wind shaders apply — nothing is baked into files.
+// Blender-made environment models (public/models/env/*.glb, built by blender/v2/env/*.py).
+// Geometry comes from the GLB; materials are chosen here by material *name* from the toon
+// art contract (toon_* → cel material with palette colour, `outline` → ink hull), so the
+// whole world shares one small set of shaders.
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
-import { triplanarMaterial } from '../shaders/triplanar.js';
-import { windy } from '../shaders/wind.js';
-import { pbrSet, waterNormalTexture } from '../systems/textures.js';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { toonFor, toonMaterial, outlineMaterial, windFor, WIND } from '../shaders/toon.js';
+import { TOON } from '../shaders/toonPalette.js';
+import { toonStreamWaterMaterial } from '../shaders/waterMaterial.js';
 
-export const ENV_MODELS = ['house_a', 'house_b', 'house_c', 'palm_a', 'palm_b', 'palm_c', 'well', 'shaduf', 'sluice',
-  'jar', 'jar_b', 'basket', 'hoe', 'fence', 'footbridge', 'stall', 'hay', 'stream', 'garden_wall', 'pot_plant'];
+export const ENV_MODELS = ['house_a', 'house_b', 'house_c', 'mastaba', 'palm_a', 'palm_b', 'palm_c', 'sycamore', 'bougainvillea',
+  'well', 'shaduf', 'sluice', 'jar', 'jar_b', 'basket', 'hoe', 'fence', 'footbridge', 'stall', 'hay', 'stream', 'garden_wall',
+  'pot_plant', 'canal_bank', 'canal_stones', 'field_bund',
+  'crop_berseem', 'crop_maize', 'crop_wheat', 'crop_cotton', 'crop_cabbage', 'grass_a', 'grass_b', 'grass_c', 'reeds', 'wildflowers'];
+
+// ink hulls that must sway with the foliage they surround
+const OUTLINE_WIND = { palm: WIND.frond, sycamore: WIND.leaf };
 
 let promise;
 export function loadEnvModels() {
@@ -18,63 +25,78 @@ export function loadEnvModels() {
     const out = {};
     await Promise.all(ENV_MODELS.map(async name => {
       const gltf = await loader.loadAsync(`./models/env/${name}.glb`).catch(e => { throw new Error(`models/env/${name}.glb: ${e.message || e}`); });
-      out[name] = extract(gltf.scene);
+      out[name] = extract(gltf.scene, name);
     }));
     return out;
   })();
   return promise;
 }
 
-// Flatten a GLB into { lod0: [{geometry, material}], lod1: [...] } with node transforms baked.
-function extract(root) {
+const baseName = n => n.replace(/\.\d+$/, '');
+// Flatten a GLB into { lod0: [{geometry, material, outline}], lod1: [...] } with node transforms
+// baked. Toon parts are merged per (side, wind) with their palette colour as a vertex colour,
+// so a house with 16 toon_* materials costs ~2 draw calls (+1 for its ink hull), not 16.
+function extract(root, model) {
   root.updateMatrixWorld(true);
-  const lods = { lod0: [], lod1: [] };
+  const raw = { lod0: [], lod1: [] };
   const isLow = o => { for (let p = o; p; p = p.parent) if (/_LOD1/.test(p.name)) return true; return false; };
   root.traverse(o => {
     if (!o.isMesh) return;
     const geometry = o.geometry.clone().applyMatrix4(o.matrixWorld);
-    geometry.computeBoundingSphere();
-    (isLow(o) ? lods.lod1 : lods.lod0).push({ geometry, material: materialFor(o.material.name) });
+    (isLow(o) ? raw.lod1 : raw.lod0).push({ geometry, matName: baseName(o.material.name) });
   });
-  if (!lods.lod1.length) lods.lod1 = null;
+  const lods = {};
+  for (const [lod, parts] of Object.entries(raw)) {
+    if (!parts.length) { lods[lod] = null; continue; }
+    const groups = new Map(), out = [];
+    const add = (key, geo, material, outline = false) => { if (!groups.has(key)) groups.set(key, { list: [], material, outline }); groups.get(key).list.push(geo); };
+    for (const { geometry, matName } of parts) {
+      if (matName === 'outline') add('outline', strip(geometry), outlineMaterial('env', OUTLINE_WIND[model.split('_')[0]]), true);
+      else if (matName === 'toon_water' && geometry.attributes.uv) { geometry.computeBoundingSphere(); out.push({ geometry, material: materialFor(matName, geometry), outline: false }); }
+      else {
+        const [color, flags] = TOON[matName] ?? [0x888888, ''];
+        const side = flags.includes('d') ? THREE.DoubleSide : THREE.FrontSide, wind = windFor(matName), wk = wind ? windKey(wind) : '';
+        const key = `vc|${side === THREE.DoubleSide ? 'd' : 's'}|${wk}`;
+        add(key, strip(geometry, color), toonMaterial(key, { vertexColors: true, side, wind }));
+      }
+    }
+    for (const { list, material, outline } of groups.values()) {
+      const geometry = list.length > 1 ? mergeGeometries(list) : list[0];
+      geometry.computeBoundingSphere();
+      out.push({ geometry, material, outline });
+    }
+    lods[lod] = out;
+  }
   return lods;
 }
+const windKey = w => Object.entries(WIND).find(([, v]) => v === w)?.[0] ?? 'w';
 
-const cache = new Map();
-export function materialFor(name) {
-  const key = name.replace(/\.\d+$/, '');
-  if (!cache.has(key)) cache.set(key, make(key));
-  return cache.get(key);
+export function materialFor(name, geometry) {
+  name = baseName(name);
+  if (name === 'toon_water' && geometry?.attributes.uv) return toonStreamWaterMaterial();   // UV'd ribbon: u across, v metres along
+  return toonFor(name);
 }
-function make(name) {
-  const tri = (set, scale, color, extra = {}) => triplanarMaterial(pbrSet(set), { scale, key: name, color, vertexColors: false, ...extra });
-  const plain = (color, roughness = 0.85, extra = {}) => new THREE.MeshStandardMaterial({ color, roughness, ...extra });
-  switch (name) {
-    case 'plaster': return tri('clay_plaster', 2.2, 0xc9a07a);
-    case 'plaster_light': return tri('clay_plaster', 2.2, 0xdcbf98);
-    case 'lime': return tri('clay_plaster', 1.6, 0xf2ead8);
-    case 'wood': return tri('old_planks_02', 1.1, 0xc8a078, { normalScale: 1.2 });
-    case 'wood_dark': return tri('old_planks_02', 1.1, 0x7a5a42, { normalScale: 1.2 });
-    case 'clay': return tri('clay_plaster', 0.7, 0xc06a40, { roughness: 0.75 });
-    case 'stone': return tri('large_sandstone_blocks', 2.4, 0xd8c4a0);
-    case 'bark': return new THREE.MeshStandardMaterial({ ...pbrSet('palm_bark', 1), color: 0xc8b8a0 });
-    case 'frond': return windy(new THREE.MeshStandardMaterial({ color: 0x5f7a34, roughness: 0.7, side: THREE.DoubleSide }), 'glbFrond',
-      { strength: 0.2, flutter: 0.006, factor: 'length(position.xz) / 3.5', translucency: 0.55 });
-    case 'frond_dry': return windy(new THREE.MeshStandardMaterial({ color: 0x9a7a48, roughness: 0.9, side: THREE.DoubleSide }), 'glbFrondDry',
-      { strength: 0.08, factor: 'length(position.xz) / 3.5' });
-    case 'dates': return plain(0x9a3f10, 0.45);
-    case 'straw': return tri('cotton_jersey', 0.25, 0xd8b060, { roughness: 1 });
-    case 'rope': return plain(0xa89060, 1);
-    case 'iron': return plain(0x4a4a4e, 0.45, { metalness: 0.85 });
-    case 'produce': return plain(0xd87a20, 0.5);
-    case 'fabric_red': return tri('cotton_jersey', 0.35, 0xb04a30, { roughness: 1 });
-    case 'stream_water': {   // shallow running water in the street channel; ripples scrolled by <Props/>
-      const n = waterNormalTexture(); n.repeat.set(2, 6);
-      return new THREE.MeshPhysicalMaterial({ color: 0x1f3d38, roughness: 0.06, transparent: true, opacity: 0.86, normalMap: n, normalScale: new THREE.Vector2(0.35, 0.35), envMapIntensity: 1.3, depthWrite: false });
-    }
-    case 'mud': return tri('brown_mud_02', 0.8, 0x7a6048, { roughness: 0.6 });
-    case 'leaf': return windy(new THREE.MeshStandardMaterial({ color: 0x3f6a26, roughness: 0.7, side: THREE.DoubleSide }), 'glbLeaf', { strength: 0.04, factor: 'position.y', translucency: 0.5 });
-    case 'water_dark': return new THREE.MeshPhysicalMaterial({ color: 0x0c1a1a, roughness: 0.05, clearcoat: 1 });
-    default: return plain(0x888888);
+
+// Keep only what the toon shaders read (position, normal, + palette colour as vertex colour).
+const C = new THREE.Color();
+function strip(g, color) {
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', g.attributes.position); out.setAttribute('normal', g.attributes.normal);
+  if (g.index) out.setIndex(g.index);
+  if (color !== undefined) {
+    C.setHex(color); const n = g.attributes.position.count, a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) a.set([C.r, C.g, C.b], i * 3);
+    out.setAttribute('color', new THREE.BufferAttribute(a, 3));
   }
+  return out;
+}
+const merged = new Map();
+export function mergedPlant(assets, model) {
+  if (!merged.has(model)) {
+    const parts = assets[model].lod0, body = parts.filter(p => !p.outline && p.geometry.attributes.color), hull = parts.find(p => p.outline);
+    const geometry = body.length > 1 ? mergeGeometries(body.map(p => p.geometry)) : body[0].geometry;
+    geometry.computeBoundingSphere();
+    merged.set(model, { body: geometry, outline: hull?.geometry ?? null });
+  }
+  return merged.get(model);
 }

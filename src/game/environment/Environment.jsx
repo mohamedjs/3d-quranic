@@ -1,23 +1,24 @@
-// <Environment/>: HDR sky as background and image-based light, warm distance haze, and
-// the living atmosphere (dust, gnats, birds) plus the sun disc for light shafts.
-import { useEffect } from 'react';
+// <Environment/>: the painted toon sky, warm distance haze matched to its horizon, and the
+// living atmosphere (dust, gnats, birds).
+import { useEffect, useMemo } from 'react';
 import * as THREE from 'three';
-import { useThree } from '@react-three/fiber';
-import { Atmosphere, SunDisc } from './Atmosphere.jsx';
-import { usePreset } from '../systems/store.js';
+import { useThree, useFrame } from '@react-three/fiber';
+import { Atmosphere } from './Atmosphere.jsx';
+import { createSky } from './Sky.js';
+import { refs } from '../systems/refs.js';
 
-export function Environment({ env, onSun }) {
+export function Environment({ env }) {
   const scene = useThree(s => s.scene);
-  const godrays = usePreset().godrays;
+  const sky = useMemo(() => createSky(env.sunDir), [env]);
   useEffect(() => {
-    scene.environment = env.env; scene.background = env.equirect;
-    scene.environmentIntensity = 0.8; scene.backgroundIntensity = 1;
-    scene.fog = new THREE.Fog('#d8b48e', 110, 700);
+    scene.environment = null; scene.background = new THREE.Color('#f3d3a6');
+    scene.fog = new THREE.Fog('#efd2a8', 90, 620);
   }, [scene, env]);
+  useFrame(() => { sky.material.uniforms.uTime.value = refs.clock.wind; });
   return (
     <>
+      <primitive object={sky} />
       <Atmosphere />
-      <SunDisc ref={onSun} dir={env.sunDir} visible={godrays} />
     </>
   );
 }

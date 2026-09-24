@@ -1,89 +1,107 @@
-// Water: Schlick Fresnel between refracted body colour and reflection.
-// - refraction + depth from a scene pass without the water: depth-based absorption
-//   (red dies first), scattering tint, soft shoreline alpha and thin foam at contact
-// - reflection from a planar mirror pass (HIGH/ULTRA) or the HDR sky (LOW/MEDIUM)
-// - three scrolling normal-map layers at different scales and directions
-// - tight + broad sun specular for glints
+// Toon water (port of blender/v2/env/water.py, spec in toonPalette.js TOON_WATER):
+// three flat colour bands shallow → mid → deep by distance from the bank ("e": 0 at the bank,
+// 1 mid-stream), a wobbly white foam line hugging the banks plus a dashed inner foam line,
+// and pale elongated highlight streaks that scroll along the flow. No reflection or
+// refraction passes: it costs one cheap pass on every quality level.
+//  · the big water plane has no UVs: e, the flow direction and speed come from a small
+//    world-space "bank" texture baked from the heightfield (water/waterBank.js)
+//  · UV'd ribbons (the street stream GLB) use u across / v metres along, as in Blender
 import * as THREE from 'three';
+import { TOON_WATER as W } from './toonPalette.js';
 
-export function createWaterMaterial({ normalTex, envTex, sunDir }) {
-  const mat = new THREE.ShaderMaterial({
-    transparent: true, fog: true, depthWrite: false,
-    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, {
-      tReflect: { value: null }, tRefract: { value: null }, tDepth: { value: null },
-      tNormal: { value: null }, tEnv: { value: null }, uTexMat: { value: new THREE.Matrix4() },
-      uRes: { value: new THREE.Vector2(1, 1) }, uNear: { value: 0.1 }, uFar: { value: 1000 }, uTime: { value: 0 },
-      uSunDir: { value: sunDir.clone() }, uSunColor: { value: new THREE.Color(1, 0.8, 0.55).multiplyScalar(4) },
-      uDeep: { value: new THREE.Color(0x0b2a2c) }, uScatter: { value: new THREE.Color(0x2c5a4c) },
-      uEnvI: { value: 1 }, uHasReflect: { value: 0 }, uHasRefract: { value: 0 },
-    }]),
+export const waterTime = { value: 0 };
+const col = h => ({ value: new THREE.Color(h) });
+const colors = () => ({ uDeep: col(W.deep), uMid: col(W.mid), uShallow: col(W.shallow), uFoam: col(W.foam), uStreak: col(W.streak) });
+const f = x => x.toFixed(4);
+
+const COMMON = /* glsl */`
+  uniform float uTime; uniform vec3 uDeep, uMid, uShallow, uFoam, uStreak;
+  float wh(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
+  float wnoise(vec2 p) { vec2 i = floor(p), g = fract(p); g = g * g * (3. - 2. * g);
+    return mix(mix(wh(i), wh(i + vec2(1, 0)), g.x), mix(wh(i + vec2(0, 1)), wh(i + vec2(1, 1)), g.x), g.y); }
+  float wfbm(vec2 p) { return wnoise(p) * .6 + wnoise(p * 2.03 + 7.1) * .4; }
+  // e: 0 bank → 1 centre · along/across: metres in the flow frame · p: world xz · flow: speed factor
+  vec3 toonWater(float e, float along, float across, vec2 p, float flow) {
+    float t = uTime;
+    float en = e + (wfbm(p * ${f(W.noise_scale)} + vec2(t * .03, 0.)) - .5) * .36;
+    vec3 c = en < ${f(W.shallow_to_mid)} ? uShallow : (en < ${f(W.mid_to_deep)} ? uMid : uDeep);
+    float s = wfbm(vec2(across * 3.2, (along - t * ${f(W.streak_speed * 4)} * flow) * .22));
+    float streak = step(${f(W.streak_threshold)}, s) * step(.25, e);
+    c = mix(c, uStreak, streak * .85);
+    float n3 = wnoise(p * 2.5 + vec2(t * .15, -t * .1));
+    float edge = step(e + (n3 - .5) * ${f(W.foam_noise * 2)}, ${f(W.foam_edge)});
+    float band = step(${f(W.dash_band[0])}, e) * step(e, ${f(W.dash_band[1])});
+    float dash = step(${f(1 - 2 * W.dash_duty)}, sin((along - t * ${f(W.flow_speed * 2)} * flow) * ${f(2 * Math.PI / W.dash_period_m)} + n3 * 3.));
+    return mix(c, uFoam, max(edge, band * dash));
+  }`;
+
+// The world water plane. tBank: r = e, g = unused, b = flow angle / π + .5, a = flow speed.
+export function createWaterMaterial({ bankTex, size }) {
+  return new THREE.ShaderMaterial({
+    fog: true,
+    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, colors(), { tBank: { value: null }, uSize: { value: size } }]),
     vertexShader: /* glsl */`
-      uniform mat4 uTexMat;
-      varying vec4 vRefl; varying vec3 vW;
+      varying vec3 vW;
       #include <fog_pars_vertex>
       void main() {
         vec4 w = modelMatrix * vec4(position, 1.); vW = w.xyz;
-        vRefl = uTexMat * vec4(position, 1.);
         vec4 mvPosition = viewMatrix * w; gl_Position = projectionMatrix * mvPosition;
         #include <fog_vertex>
       }`,
     fragmentShader: /* glsl */`
-      uniform sampler2D tReflect, tRefract, tDepth, tNormal, tEnv;
-      uniform vec2 uRes; uniform float uNear, uFar, uTime, uEnvI, uHasReflect, uHasRefract;
-      uniform vec3 uSunDir, uSunColor, uDeep, uScatter;
-      varying vec4 vRefl; varying vec3 vW;
+      uniform sampler2D tBank; uniform float uSize;
+      varying vec3 vW;
+      ${COMMON}
       #include <common>
-      #include <packing>
       #include <fog_pars_fragment>
-      vec3 nrm(vec2 uv) { vec3 t = texture2D(tNormal, uv).xyz * 2. - 1.; return vec3(t.x, 0., t.y); }
-      vec2 eqUv(vec3 d) { return vec2(atan(d.z, d.x) * RECIPROCAL_PI2 + .5, asin(clamp(d.y, -1., 1.)) * RECIPROCAL_PI + .5); }
-      float wh(vec2 p) { return fract(sin(dot(p, vec2(12.9898, 78.233))) * 43758.5453); }
-      float wnoise(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
-        return mix(mix(wh(i), wh(i + vec2(1, 0)), f.x), mix(wh(i + vec2(0, 1)), wh(i + vec2(1, 1)), f.x), f.y); }
       void main() {
-        vec2 p = vW.xz; float t = uTime;
-        vec3 ripple = nrm(p * .13 + vec2(t * .024, t * .011)) + nrm(p * .052 + vec2(-t * .013, t * .019)) * .9 + nrm(p * .37 + vec2(t * .05, -t * .035)) * .35;
-        vec3 v = normalize(cameraPosition - vW);
-        float dist = length(cameraPosition - vW);
-        vec3 n = normalize(vec3(0., 1., 0.) * (2.2 + dist * .02) + ripple);   // calmer far away (less shimmer/aliasing)
-        float cosT = clamp(dot(n, v), 0., 1.);
-        float F = .02 + .98 * pow(1. - cosT, 5.);
-
-        vec2 suv = gl_FragCoord.xy / uRes;
-        float waterZ = perspectiveDepthToViewZ(gl_FragCoord.z, uNear, uFar);
-        float thick = 4.; vec3 refr = uDeep;
-        if (uHasRefract > .5) {
-          float sceneZ = perspectiveDepthToViewZ(texture2D(tDepth, suv).x, uNear, uFar);
-          thick = max(waterZ - sceneZ, 0.);
-          vec2 ruv = suv + n.xz * .04 * clamp(thick, 0., 1.);
-          float sceneZ2 = perspectiveDepthToViewZ(texture2D(tDepth, ruv).x, uNear, uFar);
-          if (sceneZ2 > waterZ) ruv = suv; else thick = max(waterZ - sceneZ2, 0.);   // don't refract things in front
-          refr = texture2D(tRefract, ruv).rgb;
-        }
-        float d = thick * (.3 + .7 * cosT);                                    // roughly the vertical column
-        vec3 body = refr * exp(-vec3(.52, .19, .14) * d * 1.5) + uScatter * .35 * (1. - exp(-d * .8));
-        if (uHasRefract < .5) body = mix(uScatter * .5, uDeep, .6);
-
-        vec3 rd = reflect(-v, n); rd.y = abs(rd.y);
-        vec3 refl = texture2D(tEnv, eqUv(rd)).rgb * uEnvI;
-        if (uHasReflect > .5) { vec4 c = vRefl; c.xy += n.xz * .06 * c.w; refl = texture2DProj(tReflect, c).rgb; }
-
-        vec3 col = mix(body, refl, F);
-        vec3 h = normalize(uSunDir + v); float nh = max(dot(n, h), 0.);
-        col += uSunColor * (pow(nh, 900.) * 18. + pow(nh, 90.) * .12) * smoothstep(-.05, .1, uSunDir.y);
-
-        float alpha = 1.;
-        if (uHasRefract > .5) {
-          alpha = smoothstep(0., .35, thick);                                  // soft shoreline, no hard polygon edge
-          float foam = (1. - smoothstep(.02, .22, thick)) * smoothstep(.35, .8, wnoise(p * 2.5 + t * .25) * wnoise(p * 6. - t * .4 + 7.));
-          col = mix(col, vec3(.82, .8, .74), foam * .55);
-        } else alpha = mix(.82, 1., F);
-        gl_FragColor = vec4(col, alpha);
+        vec2 p = vW.xz;
+        vec4 b = texture2D(tBank, p / uSize + .5);
+        float a = (b.b - .5) * PI; vec2 dir = vec2(cos(a), sin(a));
+        vec3 c = toonWater(b.r, dot(p, dir), dot(p, vec2(-dir.y, dir.x)), p, b.a);
+        gl_FragColor = vec4(c, 1.);
         #include <tonemapping_fragment>
         #include <colorspace_fragment>
         #include <fog_fragment>
       }`,
   });
-  mat.uniforms.tNormal.value = normalTex; mat.uniforms.tEnv.value = envTex;
-  return mat;
+}
+export function bindWater(mat, bankTex) { mat.uniforms.tBank.value = bankTex; mat.uniforms.uTime = waterTime; return mat; }
+
+// UV'd ribbons (street stream): u across 0..1, v metres along. Instancing-aware.
+let stream;
+export function toonStreamWaterMaterial(width = 0.86) {
+  if (stream) return stream;
+  stream = new THREE.ShaderMaterial({
+    fog: true,
+    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, colors()]),
+    vertexShader: /* glsl */`
+      varying vec2 vUv; varying vec3 vW;
+      #include <fog_pars_vertex>
+      void main() {
+        vUv = uv;
+        vec4 w = vec4(position, 1.);
+        #ifdef USE_INSTANCING
+          w = instanceMatrix * w;
+        #endif
+        w = modelMatrix * w; vW = w.xyz;
+        vec4 mvPosition = viewMatrix * w; gl_Position = projectionMatrix * mvPosition;
+        #include <fog_vertex>
+      }`,
+    fragmentShader: /* glsl */`
+      varying vec2 vUv; varying vec3 vW;
+      ${COMMON}
+      #include <common>
+      #include <fog_pars_fragment>
+      void main() {
+        float e = 2. * min(vUv.x, 1. - vUv.x);
+        vec3 c = toonWater(e, vUv.y, vUv.x * ${f(width)}, vW.xz, 1.);
+        gl_FragColor = vec4(c, 1.);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+        #include <fog_fragment>
+      }`,
+  });
+  stream.uniforms.uTime = waterTime;
+  return stream;
 }

@@ -157,11 +157,11 @@ export function tree(seed, { height = 4, spread = 1, leafHue = 0 } = {}) {
 
 export function bush(seed) {
   const r = rng(seed), leaves = [];
-  for (let k = 0; k < 110; k++) {
-    const l = strip(0.14 + r() * 0.06, 0.08, 2, 0.4, 0.8), a = r() * 6.28, rr = Math.sqrt(r()) * 0.6;
+  for (let k = 0; k < 72; k++) {
+    const l = strip(0.17 + r() * 0.07, 0.1, 2, 0.4, 0.8), a = r() * 6.28, rr = Math.sqrt(r()) * 0.6;
     l.rotateX(r() * 6.28); l.rotateY(r() * 6.28);
     l.translate(Math.cos(a) * rr, 0.1 + r() * 0.6 * (1 - rr), Math.sin(a) * rr);
-    leaves.push(paint(l, 0x2c4a1a, 0x5d7f30, 0, 0.7));
+    leaves.push(paint(l, 0x3A6424, 0x7FAE44, 0, 0.7));   // toon_leaf_dark → toon_leaf_light
   }
   return merge(leaves);
 }

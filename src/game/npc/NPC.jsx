@@ -54,7 +54,7 @@ export function NPC({ encounter }) {
     marker.scale.setScalar(0.6); marker.visible = false;
     const camels = members.filter(m => m.def.camel).map(m => {
       const [cx, cz] = m.def.camel, camel = makeCamel(); camel.position.set(cx, groundAt(cx, cz), cz); camel.rotation.y = m.def.facing + 1.3;
-      camel.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+      camel.traverse(o => { if (o.isMesh && !o.userData.outline) { o.castShadow = true; o.receiveShadow = true; } });
       return camel;
     });
     const [x, z] = host.def.position;

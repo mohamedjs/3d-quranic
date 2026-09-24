@@ -1,23 +1,21 @@
 // Fallback characters built from primitives (used when no GLB is supplied), with
-// procedural walk/idle/talk animation and PBR materials: subsurface-ish skin (sheen),
-// woven cotton cloth with a real normal/roughness map, glossy eyes.
+// procedural walk/idle/talk animation and the shared toon materials with thin ink hulls.
 import * as THREE from 'three';
-import { pbrSet } from '../systems/textures.js';
+import { toonMaterial, outlineMaterial } from '../shaders/toon.js';
 
 const matCache = new Map(), SKIN = new Set(), EYES = new Set([0xffffff, 0x2a1a10, 0x1a120c]);
 const M = hex => {
-  if (!matCache.has(hex)) {
-    let m;
-    if (SKIN.has(hex)) m = new THREE.MeshPhysicalMaterial({ color: hex, roughness: 0.55, sheen: 0.6, sheenColor: new THREE.Color(0xff9a7a), sheenRoughness: 0.5, clearcoat: 0.05 });
-    else if (EYES.has(hex)) m = new THREE.MeshPhysicalMaterial({ color: hex, roughness: 0.15, clearcoat: 1 });
-    else { const c = pbrSet('cotton_jersey', 4); m = new THREE.MeshStandardMaterial({ color: hex, roughness: 1, normalMap: c.normalMap, roughnessMap: c.roughnessMap, aoMap: c.aoMap, normalScale: new THREE.Vector2(0.6, 0.6) }); }
-    matCache.set(hex, m);
-  }
+  if (!matCache.has(hex)) matCache.set(hex, toonMaterial('proc_' + hex.toString(16), { color: hex, rim: SKIN.has(hex) ? 0.3 : 0.22 }));
   return matCache.get(hex);
 };
 function part(geo, hex, x = 0, y = 0, z = 0, parent) {
   const m = new THREE.Mesh(geo, M(hex));
   m.position.set(x, y, z); m.castShadow = true; m.receiveShadow = true;
+  if (!EYES.has(hex)) {                                    // ink hull: the same shape, slightly grown, back faces only
+    geo.computeBoundingSphere();
+    const hull = new THREE.Mesh(geo, outlineMaterial('env')); hull.scale.setScalar(1 + 0.025 / Math.max(geo.boundingSphere.radius, 0.05));
+    hull.userData.outline = true; m.add(hull);
+  }
   parent?.add(m);
   return m;
 }

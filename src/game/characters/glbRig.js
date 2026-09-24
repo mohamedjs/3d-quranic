@@ -3,7 +3,9 @@
 // seated character, sit / sit_talk) clips are blended by movement speed and speech (found by name, so Mixamo-style exports work as-is).
 // Draco- and Meshopt-compressed files are supported.
 import * as THREE from 'three';
-import { pbrSet } from '../systems/textures.js';
+import { toonMaterial, outlineMaterial } from '../shaders/toon.js';
+import { useGame } from '../systems/store.js';
+import { PRESETS } from '../systems/quality.js';
 
 let loader;
 async function gltfLoader() {   // loaded only when a model file actually exists
@@ -40,27 +42,28 @@ const CLIPS = {
 class GlbRig {
   constructor(gltf, targetHeight) {
     const model = gltf.scene;
-    const cotton = pbrSet('cotton_jersey', 6);
+    // toon_* materials → the shared cel material (keeping face/eye textures); `outline` → ink hull.
+    // Character hulls are exported with flipped normals, so their front faces are the far side.
+    const outlines = PRESETS[useGame.getState().detail]?.outlines !== false;
+    const hulls = [];
     model.traverse(o => {
       if (!o.isMesh) return;
-      o.castShadow = true; o.receiveShadow = true; o.frustumCulled = false;   // skinned: bounds move with the pose
+      o.frustumCulled = false;                             // skinned: bounds move with the pose
       const m = o.material; if (!m) return;
-      if (/^cloth_/.test(m.name)) {                       // woven fabric: real normal/roughness detail
-        m.normalMap = cotton.normalMap; m.roughnessMap = cotton.roughnessMap; m.roughness = 1; m.normalScale = new THREE.Vector2(0.7, 0.7);
+      const name = m.name.replace(/\.\d+$/, '');
+      if (name === 'outline') {
+        o.material = outlineMaterial('char'); o.castShadow = false; o.receiveShadow = false; o.visible = outlines;
+        o.userData.outline = true; hulls.push(o); return;
       }
-      if (/beard/.test(m.name)) m.roughness = 1;
-      if (/hair_clumps/.test(m.name)) { m.roughness = 0.42; m.envMapIntensity = 1.2; }          // sculpted, softly glossy hair
-      if (/^leather/.test(m.name)) { m.roughness = 0.55; m.normalMap = cotton.normalMap; m.normalScale = new THREE.Vector2(0.25, 0.25); }
-      if (/\.body/.test(m.name) && !m.isMeshPhysicalMaterial) {                                  // warm, glowing skin
-        o.material = new THREE.MeshPhysicalMaterial({ map: m.map, normalMap: m.normalMap, color: m.color, roughness: 0.55,
-          sheen: 0.6, sheenRoughness: 0.45, sheenColor: new THREE.Color(0xff8a6a), clearcoat: 0.04, clearcoatRoughness: 0.6 });
-        o.material.name = m.name; return;
-      }
-      if (m.transparent) {                                 // eyebrows/lashes/hair cards: cut-out, no sorting artefacts
-        m.transparent = false; m.alphaTest = 0.35; m.depthWrite = true; o.castShadow = false;
-      }
-      m.needsUpdate = true;
+      o.castShadow = true; o.receiveShadow = true;
+      const cut = m.transparent || m.alphaTest > 0 || /lash|brow/.test(name);
+      o.material = toonMaterial(`char_${name}_${m.map ? m.map.uuid : m.color.getHexString()}`, {
+        color: m.color.getHex(), map: m.map ?? null, side: m.side, rim: /skin|face/.test(name) ? 0.3 : 0.22,
+        alphaTest: cut ? 0.35 : 0,
+      });
+      if (cut) o.castShadow = false;
     });
+    this.hulls = hulls;
     const box = new THREE.Box3().setFromObject(model), h = box.max.y - box.min.y || 1;
     model.scale.setScalar(targetHeight / h);
     model.position.y = -box.min.y * (targetHeight / h);

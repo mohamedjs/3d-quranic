@@ -31,7 +31,7 @@ src/game/
   components/  Game.jsx (Canvas, adaptive quality)
   world/       World.jsx (scene graph), details.js (hand-placed canal scene)
   terrain/     heightfield.js (analytic land: height, paths, fields, water), geometry, <Terrain/>
-  water/       <Water/> + refraction/depth and planar-reflection passes
+  water/       <Water/> toon water (bands, bank foam, flowing streaks)
   vegetation/  plants.js (procedural geometry), <Vegetation/> (instanced scatter)
   buildings/   village.js, triplanar PBR materials, <Built/>
   characters/  procedural rigs, GLB loader, PlayerController
@@ -44,8 +44,9 @@ src/game/
   ui/          HUD / dialogue / Quran overlay (DOM), illustrations
 public/
   data/encounters.json   stories — edit here to add encounters, no code changes
-  textures/  hdri/       Poly Haven CC0 assets (1K)
-  models/                optional GLB characters (see README there)
+  models/                anime cast GLBs + models/env/ toon environment (built in blender/v2)
+  illustrations/         painted story scenes (WebP ≤150 KB, blender/illustrations)
+  ui/                    icon sprite, ornaments, world map
 ```
 
 ## Quality levels
@@ -58,16 +59,39 @@ Auto starts from a GPU guess and steps down/up from measured frame rate while ex
 | Resolution scale | 0.8 | 1 | 1.25 | 1.75 |
 | Shadow map | 1K | 2K | 2K | 4K |
 | Grass clumps | 14k | 30k | 55k | 90k |
-| Water | sky reflection | + refraction, depth colour, foam | + planar reflection | full-res passes |
-| AO / bloom / god rays / DoF | – | ✓ / ✓ / – / ✓ | ✓ all | ✓ all |
+| Water | toon water (bands, foam, streaks) — one pass on every level | | | |
+| Outlines / bloom / DoF | – / ✓ / ✓ | ✓ | ✓ | ✓ |
 
 ## Assets
 
-Textures and HDRI: [Poly Haven](https://polyhaven.com), CC0 — aerial_grass_rock,
-dry_ground_01, farm_soil, brown_mud_02, aerial_rocks_02, aerial_sand, clay_plaster,
-old_planks_02, large_sandstone_blocks, palm_bark, bark_brown_02, cotton_jersey,
-qwantani_late_afternoon_puresky. Shipped as 1K JPG with GPU mipmaps; no KTX2 yet
-(`toktx` isn't installed here — convert with `gltf-transform`/`toktx` to cut VRAM further).
+Art style: anime / toon (see `blender/v2/STYLE.md`, `docs/art-direction.md`). All models are
+built procedurally in Blender — `blender/v2/env/build_all.py` (houses, crops, water, props) and
+`blender/v2/characters/build_all.py` (cast); the preview village is `blender/v2/village_v2.blend`.
+No texture packs or HDRIs are shipped; colours come from `src/game/shaders/toonPalette.js`.
+Old v1 scripts are kept for reference in `blender/legacy_v1/`.
 
 Quran text, translation, tafsir and recitation: fetched live from Quran.com API v4.
 Nothing Quranic is stored in this repository.
+
+### Characters (anime cast, Blender v2)
+
+`blender/v2/characters/` rebuilds all five cast GLBs from scratch (MPFB body + `game_engine`
+skeleton, anime head with a painted face texture, sculpted-clump hair/beards, simple smooth
+garments, inverted-hull outlines, keyframed clips):
+
+    python3 blender/v2/bg.py blender/v2/characters/build_all.py cast     # poll blender/v2/_jobs/cast.log for BG_DONE
+
+| file | who | clips |
+|---|---|---|
+| `player.glb` | the village boy, 1.25 m | idle, walk, run, talk |
+| `farmer.glb` | Grandpa Salim, 1.74 m | idle, walk, talk |
+| `grandma_zainab.glb` | Grandma Zainab, seated on the 0.45 m mastaba | sit, sit_talk |
+| `grandma.glb` | Grandma Amina, 1.60 m | idle, walk, talk |
+| `trader.glb` | Uncle Hamdan, 1.78 m | idle, walk, talk |
+
+Scripts: `toon_lib.py` (materials, outlines, render helpers), `body.py` (MPFB), `head.py`
+(anime head + face painter + blink lids/mouth), `garments.py`, `anim.py`, `cast.py` (per-character
+config), `preview.py` (turnarounds, `cast_lineup.png`, `cast_faces.png` in `blender/v2/previews/`).
+Each GLB = one skinned mesh `<key>` (materials `toon_*`) + `<key>_outline` (material `outline`,
+flipped normals — render BackSide/unlit). Extra bones `lid_l`, `lid_r`, `mouth` (children of `head`)
+are scale-keyed in every clip: blinks and a talking mouth.

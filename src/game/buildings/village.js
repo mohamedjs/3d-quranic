@@ -1,6 +1,6 @@
-// Village layout. Houses, well, stalls and hay bales are placed as Blender models; the
-// river bridge, oasis shelter and ancient ruins are still generated here and merged per
-// material (triplanar PBR, tinted by vertex colour).
+// Village layout. Houses, the mastaba, well, stalls and hay bales are placed as Blender
+// models; the river bridge, oasis shelter and ancient ruins are still generated here and
+// merged per material (toon cel material, coloured per vertex).
 import * as THREE from 'three';
 import { height, pathDist, riverZ, rng, OASIS, RUINS, BRIDGE, STREET } from '../terrain/heightfield.js';
 import { paint, merge } from '../vegetation/plants.js';
@@ -83,12 +83,16 @@ export function buildVillage() {
     placements.push({ model: 'house_a', x: HOME.x, y: height(HOME.x, HOME.z) - 0.05, z: HOME.z, rot: HOME.rot, sx: 1, sy: 1, sz: 1 });
     placed.push({ x: HOME.x, z: HOME.z, R: 3 });
     collide(HOME.x, HOME.z, 2.55, 3.0);                                  // rot = 90°: depth along x, width along z
-    const g = height(HOME.x, HOME.z), HM = new THREE.Matrix4().makeRotationY(HOME.rot).setPosition(HOME.x, g, HOME.z);
-    const { h, depth, len, x0, wallZ } = MASTABA, cx = x0 + len / 2, cz = wallZ + depth / 2;
-    put(box(len, h + 0.2 - 0.05, depth), 0xd9c4a0, HM, cx, (h - 0.25) / 2, cz);              // mud-brick body, sunk 0.2 m
-    put(box(len + 0.04, 0.05, depth + 0.04), 0xe6d6b8, HM, cx, h - 0.025, cz);              // smooth plastered top
-    put(box(1.3, 0.012, depth - 0.1), 0xb5563a, HM, cx - 0.2, h + 0.006, cz);               // a kilim where grandma sits
-    put(box(0.34, 0.1, 0.3), 0xcbb48a, HM, cx - 0.2 + 0.65 + 0.2, h + 0.05, wallZ + 0.16); // folded cushion at her side
+    // the mastaba is its own model, authored in house_a's model space (x 0.05–2.55, z 2.4–3.0,
+    // seat 0.45 m): same transform as the house, at ground level (the house sits 5 cm lower)
+    const g = height(HOME.x, HOME.z), { depth } = MASTABA;
+    placements.push({ model: 'mastaba', x: HOME.x, y: g, z: HOME.z, rot: HOME.rot });
+    const Wm = (mx, mz) => [HOME.x + mx * Math.cos(HOME.rot) + mz * Math.sin(HOME.rot), HOME.z - mx * Math.sin(HOME.rot) + mz * Math.cos(HOME.rot)];
+    const [bx, bz] = Wm(3.35, 2.1), [px, pz] = Wm(-2.9, 2.55);          // bougainvillea by the bench, a pot by the door
+    placements.push({ model: 'bougainvillea', x: bx, y: height(bx, bz) - 0.05, z: bz, rot: 0.6, sx: 1.15, sy: 1.15, sz: 1.15 });
+    placements.push({ model: 'pot_plant', x: px, y: height(px, pz) - 0.03, z: pz, rot: 1, sx: 1.1, sy: 1.1, sz: 1.1 });
+    collide(bx, bz, 0.5, 0.5);
+    const { len } = MASTABA;
     const w = mastabaSeat(depth / 2);
     collide(w.x, w.z, Math.abs(Math.sin(HOME.rot)) * depth / 2 + Math.abs(Math.cos(HOME.rot)) * len / 2 + 0.05,
       Math.abs(Math.cos(HOME.rot)) * depth / 2 + Math.abs(Math.sin(HOME.rot)) * len / 2 + 0.05);

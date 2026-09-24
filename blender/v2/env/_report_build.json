@@ -54,7 +54,7 @@
   "name": "house_c",
   "tris": 2696,
   "tris_outline": 1480,
-  "tris_lod1": 941,
+  "tris_lod1": 942,
   "kb": 47.8,
   "mats": [
    "outline",
@@ -178,7 +178,7 @@
   "name": "well",
   "tris": 868,
   "tris_outline": 820,
-  "tris_lod1": 433,
+  "tris_lod1": 432,
   "kb": 23.2,
   "mats": [
    "outline",
@@ -227,7 +227,7 @@
   "tris": 856,
   "tris_outline": 856,
   "tris_lod1": 0,
-  "kb": 8.9,
+  "kb": 9.0,
   "mats": [
    "outline",
    "toon_rope",
@@ -365,10 +365,10 @@
  },
  {
   "name": "stream",
-  "tris": 1828,
-  "tris_outline": 1828,
+  "tris": 628,
+  "tris_outline": 628,
   "tris_lod1": 0,
-  "kb": 16.2,
+  "kb": 9.4,
   "mats": [
    "outline",
    "toon_mud",
@@ -443,9 +443,9 @@
  {
   "name": "crop_cotton",
   "tris": 492,
-  "tris_outline": 492,
+  "tris_outline": 172,
   "tris_lod1": 0,
-  "kb": 8.0,
+  "kb": 6.8,
   "mats": [
    "outline",
    "toon_bark",

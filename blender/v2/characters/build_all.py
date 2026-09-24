@@ -58,4 +58,4 @@ def main(keys=None, fresh=False, do_export=True, previews=True):
     return out
 
 if __name__ == '__main__':
-    main(globals().get('KEYS'), fresh=globals().get('FRESH', False))
+    main(globals().get('KEYS'), fresh=globals().get('FRESH', True))

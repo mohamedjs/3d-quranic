@@ -1,6 +1,6 @@
-// The scene graph. Suspends until textures, HDR sky and story data are loaded, then
+// The scene graph. Suspends until the Blender models and story data are loaded, then
 // builds everything once; the game loop starts when it mounts.
-import { use, useMemo, useState, useEffect, useRef } from 'react';
+import { use, useMemo, useEffect, useRef } from 'react';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Lighting } from '../lighting/Lighting.jsx';
 import { loadEnvironment } from '../lighting/environmentMap.js';
@@ -29,12 +29,10 @@ const loadData = () => (dataPromise ??= fetch('./data/encounters.json').then(r =
 }).then(normalizeEncounters));
 
 export function World() {
-  const gl = useThree(s => s.gl);
-  const env = use(loadEnvironment(gl));
+  const env = use(loadEnvironment());
   const data = use(loadData());
   const assets = use(loadEnvModels());
   refs.sunDir = env.sunDir;
-  const [sun, setSun] = useState(null);
 
   const world = useMemo(() => {
     const terrain = buildTerrainGeometry();
@@ -57,7 +55,7 @@ export function World() {
   // the camera before <Water/> renders its passes; <GameSystem/> starts once all exist
   return (
     <>
-      <Environment env={env} onSun={setSun} />
+      <Environment env={env} />
       <Lighting env={env} />
       <Terrain data={world.terrain} />
       <Built geometries={world.village.geometries} blocker />
@@ -70,18 +68,19 @@ export function World() {
       {data.encounters.map(e => <NPC key={e.id} encounter={e} />)}
       <DialogueSystem />
       <GameSystem world={world} data={data} />
-      <Water env={env} sunDir={env.sunDir} clock={refs.clock} />
-      <Effects sun={sun} />
+      <Water clock={refs.clock} />
+      <Effects />
     </>
   );
 }
 
 // Starts the imperative game (player, NPCs, story, UI) once the scene exists.
 function GameSystem({ world, data }) {
-  const camera = useThree(s => s.camera);
+  const camera = useThree(s => s.camera), gl = useThree(s => s.gl);
   const game = useRef(null);
   useEffect(() => {
     game.current = createGame({ camera, mapCanvas: world.terrain.mapCanvas, data });
+    if (window.__game) window.__game.renderer = gl;   // debug/perf probes (renderer.info)
     const l = document.getElementById('loading');
     l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

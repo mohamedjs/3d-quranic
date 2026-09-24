@@ -153,54 +153,41 @@ export function waterDist(x, z) {
   return Math.max(0, d);
 }
 
-// ---- colour ---------------------------------------------------------------
-const hex = h => new THREE.Color().setHex(h, THREE.LinearSRGBColorSpace); // raw sRGB numbers
+// ---- colour: the toon ground palette (matches blender/v2/env/village.py) -------------
+const hex = h => new THREE.Color(h);   // sRGB hex → linear working colour
 const P = {
-  grassA: hex(0x6a8c34), grassB: hex(0x97aa4c), dry: hex(0xbba562), sand: hex(0xe3c48c), sand2: hex(0xcfa56d),
-  dirt: hex(0xbc9a6a), village: hex(0xcaa877), mud: hex(0x6b5638), rock: hex(0x8c7c6c), rock2: hex(0x6a5f58),
-  snow: hex(0xf4f1ec), bund: hex(0x9a8052),
-  crops: [hex(0x4f8a26), hex(0xd8b85a), hex(0x6f8a30), hex(0x3f7c22)],
+  grass: hex(0x8DB04C), grass2: hex(0x7AA443), grass3: hex(0x9DBE5A), village: hex(0xCFAF7C), villageGrass: hex(0xA9B862),
+  yard: hex(0xD8BA88), path: hex(0xDCC28F), bank: hex(0x80603F), mud: hex(0x6A4E34), hill: hex(0xA6B45A), rock: hex(0xB09A78),
+  bund: hex(0x9C7A50), crops: [hex(0x5FA03A), hex(0xD7B85C), hex(0x71923A), hex(0x86B44E)],
 };
-export function colorAt(x, z, h, slope, c) {
-  const n = fbm(x * 0.08, z * 0.08);
-  c.copy(P.grassA).lerp(P.grassB, n * 0.5 + 0.5);
-  c.lerp(P.village, 1 - smooth(22, 36, Math.hypot(x, z) + n * 5));
-  const fp = fieldPlot(x, z);
-  if (fp >= 0) c.copy(fp === 4 ? P.bund : P.crops[fp]).multiplyScalar(0.92 + n * 0.12);
-  c.lerp(P.dirt, 1 - smooth(1.2, 2.5, pathDist(x, z) + n * 0.8));
-  c.lerp(n > 0 ? P.rock : P.rock2, smooth(0.7, 1.1, slope) * 0.7);
-  c.lerp(P.mud, 1 - smooth(-0.4, 0.35, h));
+const HOME_YARD = { x: -5.9, z: 26 };
+// Ground colour without the crisp features (paths and fields are drawn sharp in the shader).
+export function groundColor(x, z, h, slope, c) {
+  const n = fbm(x * 0.09, z * 0.09);
+  c.copy(n < -0.1 ? P.grass2 : n < 0.2 ? P.grass : P.grass3);
+  const vil = Math.max(1 - smooth(40, 46, Math.hypot(x, z)), (1 - smooth(14, 16, Math.abs(x))) * smooth(-64, -60, z) * (1 - smooth(-10, -6, z)));
+  if (vil > 0) c.lerp(n < 0.12 ? P.village : P.villageGrass, vil);
+  c.lerp(P.yard, 1 - smooth(3.5, 5, Math.hypot(x - HOME_YARD.x, z - HOME_YARD.z)));
+  c.lerp(P.hill, smooth(4, 14, h) * 0.6);
+  c.lerp(P.rock, smooth(0.8, 1.2, slope) * 0.8);
+  c.lerp(P.bank, (1 - smooth(0.4, 1.0, waterDist(x, z))) * (1 - smooth(0.8, 1.1, h)));
+  c.lerp(P.mud, 1 - smooth(-0.35, -0.15, h));
   return c;
 }
-
-// ---- splat weights: which PBR layer covers the ground here --------------
-// 0 grass · 1 dry dirt (paths, village) · 2 farm soil · 3 wet mud · 4 rock · 5 sand (unused: no desert)
-export function splatAt(x, z, h, slope, out) {
-  const n = fbm(x * 0.08, z * 0.08);
-  out.fill(0); out[0] = 1;
-  out[1] += 1 - smooth(20, 34, Math.hypot(x, z) + n * 6);
-  const fp = fieldPlot(x, z);
-  if (fp >= 0) {                                           // green crops read as green from afar
-    if (fp === 4) out[1] += 1.2;
-    else if (fp === 0 || fp === 3) out[0] += 3;
-    else out[2] += fp === 2 ? 2.2 : 3;
-  }
-  out[1] += 3 * (1 - smooth(1.0, 2.4, pathDist(x, z) + n * 0.8));
-  out[4] += 3 * smooth(0.75, 1.2, slope);
-  out[3] += 4 * (1 - smooth(-0.3, 0.55, h + n * 0.2));
-  let sum = 0; for (let i = 0; i < 6; i++) sum += out[i];
-  for (let i = 0; i < 6; i++) out[i] /= sum;
+// Sharp-feature masks for the shader: [farmland 0..1, path 0..1]
+export function groundMask(x, z, out) {
+  out[0] = fieldPlot(x, z) >= 0 ? 1 : 0;
+  out[1] = 1 - smooth(1.2, 2.4, pathDist(x, z));
   return out;
 }
-// Tint over the textures: berseem fields a vivid green, wheat golden, hills a touch drier.
-export function tintAt(x, z, h, out) {
-  out[0] = out[1] = out[2] = 1;
+export const FIELD_COLORS = { crops: P.crops, bund: P.bund, path: P.path };
+// Full colour (minimap / world map): ground + paths + fields.
+export function colorAt(x, z, h, slope, c) {
+  groundColor(x, z, h, slope, c);
   const fp = fieldPlot(x, z);
-  if (fp === 0 || fp === 3) { out[0] = 0.78; out[1] = 1.12; out[2] = 0.62; }
-  else if (fp === 1) { out[0] = 1.25; out[1] = 1.08; out[2] = 0.62; }
-  const hill = smooth(4, 20, h) * 0.3;
-  out[0] += hill * 0.1; out[2] -= hill * 0.1;
-  return out;
+  if (fp >= 0) c.copy(fp === 4 ? P.bund : P.crops[fp]);
+  c.lerp(P.path, 1 - smooth(1.6, 2.0, pathDist(x, z)));
+  return c.convertLinearToSRGB();
 }
 
 // Top-down painted map (north = +z at the top) for the minimap and world map.

@@ -24,7 +24,7 @@ SPEC = [
 ] + [(k, f, 0.008, None, 4) for k, f in crops.PLANTS.items()]
 
 DEC = dict(house_a=0.6, house_b=0.55, house_c=0.6, sycamore=0.6, stall=0.6)
-MINSIZE = dict(house_a=0.16, house_b=0.2, house_c=0.16, stall=0.12, crop_cotton=0.12, stream=0.0, well=0.1, basket=0.1, palm_a=0.0, sycamore=0.0)
+MINSIZE = dict(house_a=0.16, house_b=0.2, house_c=0.16, stall=0.12, crop_cotton=0.2, stream=0.0, well=0.1, basket=0.1, palm_a=0.0, sycamore=0.0)
 WIDTH = {0: 9.0, 1: 7.0, 2: 5.0, 3: 2.2, 4: 1.6}
 cursor = {}
 root = collection('env_assets')

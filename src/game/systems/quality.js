@@ -2,11 +2,12 @@
 // and <PerformanceMonitor> steps it down (or back up) from measured frame rate.
 export const LEVELS = ['low', 'medium', 'high', 'ultra'];
 
+// outlines: ink hulls on props/characters · cropDist/outlineDist: crop chunks drawn / crop hulls drawn
 export const PRESETS = {
-  low:    { dpr: 0.8,  shadowMap: 1024, shadowRange: 30, grass: 20000, grassDist: 55,  trees: 0.55, antiTile: false, water: 'env',     reflectRes: 0,   refractRes: 0,   ao: false, bloom: false, godrays: false, dof: false, particles: 0.4 },
-  medium: { dpr: 1,    shadowMap: 2048, shadowRange: 40, grass: 40000, grassDist: 75,  trees: 0.8,  antiTile: true,  water: 'refract', reflectRes: 0,   refractRes: 0.5, ao: true,  bloom: true,  godrays: false, dof: true,  particles: 0.7 },
-  high:   { dpr: 1.25, shadowMap: 2048, shadowRange: 45, grass: 65000, grassDist: 95,  trees: 1,    antiTile: true,  water: 'full',    reflectRes: 0.5, refractRes: 0.5, ao: true,  bloom: true,  godrays: true,  dof: true,  particles: 1 },
-  ultra:  { dpr: 1.75, shadowMap: 4096, shadowRange: 55, grass: 100000, grassDist: 120, trees: 1,    antiTile: true,  water: 'full',    reflectRes: 1,   refractRes: 1,   ao: true,  bloom: true,  godrays: true,  dof: true,  particles: 1 },
+  low:    { dpr: 0.8,  shadowMap: 1024, shadowRange: 30, grass: 20000, grassDist: 55,  cropDist: 38, outlineDist: 0,  trees: 0.55, outlines: false, bloom: false, dof: false, particles: 0.4 },
+  medium: { dpr: 1,    shadowMap: 2048, shadowRange: 40, grass: 40000, grassDist: 75,  cropDist: 55, outlineDist: 22, trees: 0.8,  outlines: true,  bloom: true,  dof: true,  particles: 0.7 },
+  high:   { dpr: 1.25, shadowMap: 2048, shadowRange: 45, grass: 65000, grassDist: 95,  cropDist: 70, outlineDist: 30, trees: 1,    outlines: true,  bloom: true,  dof: true,  particles: 1 },
+  ultra:  { dpr: 1.75, shadowMap: 4096, shadowRange: 55, grass: 100000, grassDist: 120, cropDist: 90, outlineDist: 40, trees: 1,    outlines: true,  bloom: true,  dof: true,  particles: 1 },
 };
 
 // A cheap first guess from what the browser tells us; the monitor corrects it within seconds.

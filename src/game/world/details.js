@@ -1,9 +1,10 @@
 // Hand-placed details around the canal where the farmer works. Composed on purpose:
 // the sluice at the canal head, a shaduf lifting water, tools left mid-task, a palm-rib
-// fence along the road, puddles where water spilled and footprints leading to him.
+// fence along the road, stone-lined canal banks, puddles where water spilled and footprints
+// leading to him.
 import * as THREE from 'three';
-import { height, groundAt, rng, FOOTBRIDGES, FOOTBRIDGE_DECK } from '../terrain/heightfield.js';
-import { paint, merge, lump } from '../vegetation/plants.js';
+import { height, groundAt, rng, FOOTBRIDGES, FOOTBRIDGE_DECK, WATER_Y } from '../terrain/heightfield.js';
+import { paint, merge } from '../vegetation/plants.js';
 
 
 export function buildCanalScene(npcPos, home = null) {
@@ -41,22 +42,34 @@ export function buildCanalScene(npcPos, home = null) {
     collide((a + b) / 2, 15.4, (b - a) / 2, 0.12);
   }
 
-  // stones lining the canal banks
-  for (let i = 0; i < 26; i++) {
-    const z = 18.5 + r() * 20, s = r() < 0.5 ? -1 : 1, x = CX + s * (1.35 + r() * 0.5), sc = 0.12 + r() * 0.25;
-    put('stone', lump(40 + i, 1, 0.6).scale(sc, sc, sc), 0xa89880, at(x, z));
+  // the canal edge: stone-lined mud banks along both sides by grandma's house (Blender
+  // canal_bank, 4 m pieces, grassy lip at x < 0 sloping down toward +x). The carved canal
+  // is steeper than the model, so each piece is squeezed to the terrain's slope: lip on the
+  // bank top 1.8 m from the axis, foot just under the water 0.9 m from it. Loose stones
+  // at the waterline where the banks stop (footbridge, sluice).
+  for (let z = 20.5; z < 66; z += 4) {
+    if (Math.abs(z - 34.5) < 2.5) continue;
+    for (const side of [-1, 1]) {
+      const x = CX + side * 1.8, top = height(CX + side * 2.2, z), sy = (top - WATER_Y + 0.25) / 1.4;
+      placements.push({ model: 'canal_bank', x, y: top, z, rot: side < 0 ? 0 : Math.PI, sx: 0.8, sy, sz: 1 });
+    }
   }
+  for (const [x, z, rot] of [[CX - 1.15, 33.2, 0], [CX + 1.15, 33.2, Math.PI], [CX - 1.15, 36, 0.1], [CX + 1.15, 36, Math.PI - 0.1], [CX - 1.15, 20.2, 0], [CX + 1.15, 20.2, Math.PI]])
+    placements.push({ model: 'canal_stones', x, y: WATER_Y + 0.05, z, rot });
 
   // puddles and footprints are thin overlays, not merged into the lit geometry
   const overlays = new THREE.Group();
-  const puddleMat = new THREE.MeshPhysicalMaterial({ color: 0x2a2018, roughness: 0.04, metalness: 0, clearcoat: 1, polygonOffset: true, polygonOffsetFactor: -2 });
+  const puddleMat = new THREE.MeshBasicMaterial({ color: 0x5E9A94, polygonOffset: true, polygonOffsetFactor: -2 });   // toon water, mid tone
+  const rimMat = new THREE.MeshBasicMaterial({ color: 0x6A4E34, polygonOffset: true, polygonOffsetFactor: -1 });        // wet mud ring
   for (const [x, z, s] of [[CX + 2.1, 17.6, 0.9], [CX + 3.2, 16.9, 0.5], ...(home ? [] : [[nx + 0.6, nz - 1.4, 0.6]]), [-1.6, 6, 0.8]]) {
     const g = new THREE.CircleGeometry(1, 20), p = g.attributes.position;
     for (let i = 1; i < p.count; i++) { const k = 0.7 + r() * 0.45; p.setXY(i, p.getX(i) * k, p.getY(i) * k * 0.7); }
     const m = new THREE.Mesh(g, puddleMat); m.rotation.x = -Math.PI / 2; m.scale.setScalar(s);
-    m.position.set(x, groundAt(x, z) + 0.015, z); m.receiveShadow = true; overlays.add(m);
+    m.position.set(x, groundAt(x, z) + 0.015, z); overlays.add(m);
+    const ring = new THREE.Mesh(g, rimMat); ring.rotation.x = -Math.PI / 2; ring.scale.setScalar(s * 1.18);
+    ring.position.set(x, groundAt(x, z) + 0.012, z); overlays.add(ring);
   }
-  const printMat = new THREE.MeshStandardMaterial({ color: 0x3b2a18, transparent: true, opacity: 0.4, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3, roughness: 1 });
+  const printMat = new THREE.MeshBasicMaterial({ color: 0x9A7550, transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 });
   const printGeo = new THREE.CircleGeometry(1, 10).scale(0.07, 0.13, 1);
   const trail = [];
   for (let z = -52; z < nz - 1.6; z += 0.55) trail.push([0.35 * Math.sin(z * 0.2) + Math.max(0, (z - nz + 8) / 8) * (nx - 0.3), z]);   // up the street to him

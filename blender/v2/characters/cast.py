@@ -67,6 +67,9 @@ def fresh_collection(key):
         col = bpy.data.collections.new('char_' + key); bpy.context.scene.collection.children.link(col)
     for a in list(bpy.data.actions):
         if a.name.startswith(key + '|'): bpy.data.actions.remove(a)
+    for coll in (bpy.data.meshes, bpy.data.armatures):
+        for m in list(coll):
+            if m.users == 0: coll.remove(m)
     return col
 
 def add_face_bones(rig, lids, mouth):
@@ -237,7 +240,7 @@ def outfit_grandma(h, hf, M, cfg):
     M['robe'] = toon_mat('toon_dress_green', '#2F6B55', shadow='#8E9AB0')
     M['tarha'] = toon_mat('toon_tarha_indigo', '#3E4A8C', shadow='#9A94BE', rim=0.25)
     M['shoe'] = toon_mat('toon_slipper_brown', '#5A3A24', shadow='#B08E90')
-    M['gold'] = toon_mat('toon_glasses_gold', '#B8862E', shadow='#C9A0A0')
+    M['gold'] = toon_mat('toon_glasses_gold', '#8A5A26', shadow='#C9A0A0', rim=0)
     parts = [h.visible_skin(h.key + '_skin', skin_keep_fn(h, 0.72, neck=False), M['skin'])]
     r, top = robe(h, M, M['robe'], hem=0.02, flare=0.28, sleeve_end=0.84, flare_sleeve=0.03, folds=0.04)
     parts += r

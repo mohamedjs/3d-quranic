@@ -21,7 +21,7 @@ CAST = {
         face=dict(skin='#B97D55', eye_z=-0.36, eye_x=0.35, eye_w=0.2, eye_h=0.16, lid_top=0.62, lid_bot=0.7, lid_lift=-0.12,
                   iris_hi='#24120A', iris_lo='#7A4A25', iris_rx=0.52, nose_z=-0.7, mouth_z=-0.98, mouth_w=0.11, smile=0.035,
                   brow_col='#F2EDE4', brow_w=0.034, brow_gap=0.1, brow_tilt=0.07, age_lines=True, blush=0.14, chin=0.46, lash_w=0.019),
-        clips=['idle', 'walk', 'talk'], style=dict(energy=0.8, stoop=8, staff=True),
+        clips=['idle', 'walk', 'talk'], style=dict(energy=0.8, stoop=8, staff=True, robe=True),
     ),
     'grandma_zainab': dict(
         height=1.58, outline=0.006,
@@ -39,7 +39,7 @@ CAST = {
         face=dict(ears=False, skin='#D2A27C', eye_z=-0.36, eye_x=0.35, eye_w=0.2, eye_h=0.2, lid_top=0.72, lid_lift=-0.04, lashes=True,
                   iris_hi='#2E1A0C', iris_lo='#A0703A', nose_z=-0.72, mouth_z=-0.98, mouth_w=0.1, smile=0.04,
                   brow_col='#6B5548', brow_w=0.02, age_lines=True, blush=0.28, cheeks=0.05, chin=0.44),
-        clips=['idle', 'walk', 'talk'], style=dict(energy=0.9, stoop=4),
+        clips=['idle', 'walk', 'talk'], style=dict(energy=0.9, stoop=4, robe=True),
     ),
     'trader': dict(
         height=1.78, outline=0.006,
@@ -48,7 +48,7 @@ CAST = {
         face=dict(ears=False, skin='#C08A60', eye_z=-0.36, eye_x=0.35, eye_w=0.2, eye_h=0.16, lid_top=0.72, lid_bot=0.72, lid_lift=0.06,
                   iris_hi='#1A0E08', iris_lo='#6A4020', iris_rx=0.52, nose_z=-0.7, mouth_z=-0.98, mouth_w=0.11, smile=0.03,
                   brow_col='#1E120C', brow_w=0.032, brow_gap=0.09, brow_tilt=-0.05, blush=0.12, chin=0.5, lash_w=0.02),
-        clips=['idle', 'walk', 'talk'], style=dict(energy=1.0),
+        clips=['idle', 'walk', 'talk'], style=dict(energy=1.0, robe=True),
     ),
 }
 
@@ -130,7 +130,7 @@ def outline_for(mesh, th):
     skip = {i for i, m in enumerate(ol.data.materials)}
     # drop faces of face-overlay materials from the hull (lids, mouth)
     src = mesh.data.materials
-    drop = {i for i, m in enumerate(src) if m and m.name in ('toon_lash', 'toon_mouth') or (m and m.name.startswith('toon_skin_') and False)}
+    drop = {i for i, m in enumerate(src) if m and m.name in ('toon_lash', 'toon_mouth', 'toon_glasses_gold') or (m and m.name.startswith('toon_skin_') and False)}
     bm = bmesh.new(); bm.from_mesh(ol.data)
     orig = [p.material_index for p in mesh.data.polygons]
     lid_faces = set()
@@ -187,7 +187,7 @@ def skin_keep_fn(h, fore=0.6, neck=True):
 
 def robe(h, M, mat, hem=0.03, flare=0.2, sleeve_end=0.8, flare_sleeve=0.04, folds=0.035, skirt_on=True):
     arm_z = h.rig.data.bones['upperarm_l'].head_local.z - 0.07
-    top = G.robe_top(h, h.key + '_robe', mat, loose=0.016, sleeve_end=sleeve_end, sleeve_flare=flare_sleeve, drape=50,
+    top = G.robe_top(h, h.key + '_robe', mat, loose=0.016, sleeve_end=sleeve_end, sleeve_flare=flare_sleeve, drape=130,
                      cut_z=(arm_z - 0.1) if skirt_on else None, collar=-0.01)
     out = [top]
     if skirt_on:
@@ -207,7 +207,7 @@ def outfit_farmer(h, hf, M, cfg):
     parts.append(G.shoes(h, h.key + '_shoes', M['shoe'], height=0.06))
     sc = G.scarf_collar(h, h.key + '_scarf', M['scarf']); uv_box(sc, 0.09); parts.append(sc)
     for o in G.turban(hf, h.key + '_turban', col, M['turban'], band_front=0.34): parts.append(rigid_to(o, h.rig, 'head'))
-    for o in G.beard(hf, h.key + '_beard', col, M['beard'], thick=0.1, chin_len=0.24, side_up=-0.12): parts.append(rigid_to(o, h.rig, 'head'))
+    for o in G.beard(hf, h.key + '_beard', col, M['beard'], thick=0.13, chin_len=0.36, side_up=-0.12): parts.append(rigid_to(o, h.rig, 'head'))
     return parts
 
 def post_farmer(h, M, cfg):

@@ -96,8 +96,8 @@ def skirt_weights(o, h, top_z, hem_z):
     for v in o.data.vertices:
         t = min(1, max(0, (top_z - v.co.z) / max(0.01, top_z - hem_z)))
         side = 0.5 + 0.5 * max(-1, min(1, v.co.x / 0.12))
-        gp.add([v.index], max(0.05, 1 - 0.7 * t), 'REPLACE')
-        gl.add([v.index], 0.7 * t * side, 'REPLACE'); gr.add([v.index], 0.7 * t * (1 - side), 'REPLACE')
+        gp.add([v.index], max(0.05, 1 - 0.85 * t), 'REPLACE')
+        gl.add([v.index], 0.85 * t * side, 'REPLACE'); gr.add([v.index], 0.85 * t * (1 - side), 'REPLACE')
     bind(o, h.rig)
 
 def trousers(h, name, mat, hem_up=0.07, loose=0.02, dec=0.35):
@@ -213,7 +213,7 @@ def curly_hair(hf, name, col, mat, front_z=0.32, back_z=-0.72, n_curls=30, lengt
     return [cap, curls]
 
 # ---------------------------------------------------------------- beard
-def beard(hf, name, col, mat, top=0.02, side_up=-0.35, chin_len=0.14, thick=0.05, moustache=True, mouth_hole=True):
+def beard(hf, name, col, mat, top=0.05, side_up=-0.35, chin_len=0.14, thick=0.05, moustache=True, mouth_hole=True):
     F = hf.F; mz, mw = F['mouth_z'], F['mouth_w']
     def top_z(x): return mz + top + (side_up - mz - top) * ss(0.35, 0.72, abs(x))
     def keep(u):
@@ -270,7 +270,7 @@ def turban(hf, name, col, mat, band_front=0.42, band_back=-0.2, puff=0.2, wraps=
         hx, hy, cy = head_width_at(F, z)
         k = 1 + puff * 1.05 - 0.07 * t * t
         ring_tube(bm, hf.w((0, cy, 0)), (hx + puff * 0.45) * hf.R * (1 - 0.08 * t), (hy + puff * 0.45) * hf.R * (1 - 0.08 * t),
-                  hf.w((0, 0, z)).z, (0.14 - 0.02 * t) * hf.R, tilt=(0.16 if i % 2 else -0.13) * hf.R, phase=0.6 * i, bulge=0.12)
+                  hf.w((0, 0, z)).z, (0.16 - 0.02 * t) * hf.R, tilt=(0.16 if i % 2 else -0.13) * hf.R, phase=0.6 * i, bulge=0.12)
     wr = bm_obj(bm, name + '_wraps', col, mat)
     return [dome, wr]
 

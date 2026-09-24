@@ -133,6 +133,8 @@ class Moves:
         stride = 0.9 if run else 0.55
         amp = math.degrees(math.asin(min(0.9, stride / (2 * self.leg)))) * (0.9 if run else 1)
         lean = 10 if run else 3
+        robe = st.get('robe', False)
+        if robe: amp *= 0.8
         def pose(rig, t):
             self.arms_down(out=0.13, elbow=40 if run else 14); self.stoop(0.8)
             ph = s(t)
@@ -142,7 +144,7 @@ class Moves:
                 w = sign * ph
                 rot(rig, f'thigh_{side}', X, -amp * w - (8 if run else 0))
                 sw = max(0, -s(t, 1, 0.08 if sign > 0 else 0.58))
-                knee = sw * (95 if run else 55) + (12 if run else 5)
+                knee = sw * (95 if run else (32 if robe else 55)) + (12 if run else 5)
                 rot(rig, f'calf_{side}', X, knee)
                 rot(rig, f'foot_{side}', X, -10 * w - (8 * sw if run else 0))
                 arm = (40 if run else 22) * w * (0.35 if (side == 'l' and st.get('staff')) else 1)

@@ -1,0 +1,90 @@
+// The scene graph. Suspends until textures, HDR sky and story data are loaded, then
+// builds everything once; the game loop starts when it mounts.
+import { use, useMemo, useState, useEffect, useRef } from 'react';
+import { useThree, useFrame } from '@react-three/fiber';
+import { Lighting } from '../lighting/Lighting.jsx';
+import { loadEnvironment } from '../lighting/environmentMap.js';
+import { Terrain } from '../terrain/Terrain.jsx';
+import { buildTerrainGeometry } from '../terrain/terrainGeometry.js';
+import { Water } from '../water/Water.jsx';
+import { Vegetation } from '../vegetation/Vegetation.jsx';
+import { Built } from '../buildings/Buildings.jsx';
+import { buildVillage } from '../buildings/village.js';
+import { buildCanalScene } from './details.js';
+import { loadEnvModels } from './envAssets.js';
+import { Props } from './Props.jsx';
+import { Environment } from '../environment/Environment.jsx';
+import { Player } from '../characters/Player.jsx';
+import { NPC } from '../npc/NPC.jsx';
+import { DialogueSystem } from '../components/DialogueSystem.jsx';
+import { Effects } from '../effects/Effects.jsx';
+import { createGame } from '../systems/game.js';
+import { refs } from '../systems/refs.js';
+import { normalizeEncounters } from '../systems/cast.js';
+
+let dataPromise;
+const loadData = () => (dataPromise ??= fetch('./data/encounters.json').then(r => {
+  if (!r.ok) throw new Error('encounters.json: HTTP ' + r.status);
+  return r.json();
+}).then(normalizeEncounters));
+
+export function World() {
+  const gl = useThree(s => s.gl);
+  const env = use(loadEnvironment(gl));
+  const data = use(loadData());
+  const assets = use(loadEnvModels());
+  refs.sunDir = env.sunDir;
+  const [sun, setSun] = useState(null);
+
+  const world = useMemo(() => {
+    const terrain = buildTerrainGeometry();
+    const village = buildVillage();
+    const first = data.encounters[0], farmer = (first.characters.find(c => c.pose !== 'sit') ?? first.character).position;
+    const canal = buildCanalScene(farmer, first.characters.some(c => c.pose === 'sit') ? village.home : null);
+    const colliders = [...village.colliders, ...canal.colliders];
+    const clearings = [...canal.clearings];
+    for (const e of data.encounters) for (const c of e.characters) {
+      const [x, z] = c.position;
+      colliders.push({ x0: x - 0.35, x1: x + 0.35, z0: z - 0.35, z1: z + 0.35 });
+      clearings.push([x, z, 2.2]);
+      if (c.camel) { const [cx, cz] = c.camel; colliders.push({ x0: cx - 1.1, x1: cx + 1.1, z0: cz - 1.1, z1: cz + 1.1 }); clearings.push([cx, cz, 2]); }
+    }
+    clearings.push([village.home.x + 2.5, village.home.z, 5.5]);   // grandma's yard: no bushes on the stage
+    return { terrain, village, canal, colliders, clearings };
+  }, [data]);
+
+  // order matters: meshes the player needs (terrain, walls) mount first; <Player/> updates
+  // the camera before <Water/> renders its passes; <GameSystem/> starts once all exist
+  return (
+    <>
+      <Environment env={env} onSun={setSun} />
+      <Lighting env={env} />
+      <Terrain data={world.terrain} />
+      <Built geometries={world.village.geometries} blocker />
+      <Props assets={assets} placements={world.village.placements} blocker lodDistance={55} />
+      <Built geometries={world.canal.geometries} />
+      <Props assets={assets} placements={world.canal.placements} lodDistance={40} />
+      <primitive object={world.canal.overlays} />
+      <Vegetation colliders={world.colliders} clearings={world.clearings} assets={assets} gardens={world.village.gardens} />
+      <Player colliders={world.colliders} />
+      {data.encounters.map(e => <NPC key={e.id} encounter={e} />)}
+      <DialogueSystem />
+      <GameSystem world={world} data={data} />
+      <Water env={env} sunDir={env.sunDir} clock={refs.clock} />
+      <Effects sun={sun} />
+    </>
+  );
+}
+
+// Starts the imperative game (player, NPCs, story, UI) once the scene exists.
+function GameSystem({ world, data }) {
+  const camera = useThree(s => s.camera);
+  const game = useRef(null);
+  useEffect(() => {
+    game.current = createGame({ camera, mapCanvas: world.terrain.mapCanvas, data });
+    const l = document.getElementById('loading');
+    l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  useFrame((_, dt) => game.current?.tick(dt));
+  return null;
+}

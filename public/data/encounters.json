@@ -1,0 +1,811 @@
+{
+  "_note": "Story encounters. Verses are referenced by key only; their text and audio are always fetched from Quran.com at runtime. Narration is a simplified retelling of what the listed tafsir sources state — have it reviewed by a qualified teacher before release.",
+  "encounters": [
+    {
+      "id": "people-of-the-elephant",
+      "area": "village",
+      "requires": [],
+      "title": {
+        "ar": "أصحاب الفيل",
+        "en": "The People of the Elephant"
+      },
+      "host": "grandma",
+      "characters": [
+        {
+          "id": "grandma",
+          "name": {
+            "ar": "الجدّة زينب",
+            "en": "Grandma Zainab"
+          },
+          "role": {
+            "ar": "جدّتك",
+            "en": "Your Grandmother"
+          },
+          "look": {
+            "robe": 2433074,
+            "inner": 14140072,
+            "skin": 10582104,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 2105376,
+            "staff": false,
+            "height": 1.58
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            -6.75,
+            24.7
+          ],
+          "facing": 1.5708,
+          "pose": "sit",
+          "seat": 0.45,
+          "yOffset": 0
+        },
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            -6.0,
+            26.2
+          ],
+          "facing": 1.92,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى بيت الجدّة زينب عند الترعة",
+          "هي والجدّ سالم عند المصطبة"
+        ],
+        "en": [
+          "Go to Grandma Zainab's house by the canal",
+          "She and Grandpa Salim are at the mastaba"
+        ]
+      },
+      "greeting": {
+        "ar": "تعالَ يا حبيبي! اقعد معنا، عندنا لك حكاية.",
+        "en": "Come here, my darling! Sit with us — we have a story for you."
+      },
+      "after": {
+        "ar": "بارك الله فيك يا حبيبي. تذكّر: الله أقوى من كل شيء، فتوكّل عليه.",
+        "en": "May Allah bless you, my darling. Remember: Allah is stronger than everything — so trust in Him."
+      },
+      "sources": [
+        "Qur'an 105:1–5",
+        "Tafsir Ibn Kathir — Surat al-Fil",
+        "Tafsir al-Muyassar — Surat al-Fil"
+      ],
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "grandma",
+          "ar": "أهلًا بحبيبي! تعالَ، اقعد قدّامنا هنا عند المصطبة. كنتُ أنا وجدّك سالم نتذكّر قصةً عظيمة حكاها الله لنا في القرآن.",
+          "en": "Welcome, my darling! Come and sit here in front of the mastaba. Grandpa Salim and I were just remembering a great story that Allah tells us in the Quran."
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "قصة أصحاب الفيل! هل سمعتَ بها يا بُنيّ؟",
+          "en": "The story of the People of the Elephant! Have you heard it, my son?",
+          "options": [
+            {
+              "ar": "لا، احكيا لي من فضلكما!",
+              "en": "No — please tell me!",
+              "reply": {
+                "speaker": "grandma",
+                "ar": "من عينيّ! اسمع جيدًا، وكلّما أردتَ أن تسأل، فاسأل.",
+                "en": "With all my heart! Listen well — and whenever you want to ask something, just ask."
+              }
+            },
+            {
+              "ar": "سمعتُ عن فيلٍ كبير… لكن ما القصة؟",
+              "en": "I heard about a big elephant… but what's the story?",
+              "reply": {
+                "speaker": "grandma",
+                "ar": "صحيح، كان فيه فيلٌ كبير! اسمع القصة من أولها، واسألنا عمّا تريد.",
+                "en": "That's right, there was a big elephant! Listen from the beginning, and ask us whatever you like."
+              }
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "grandma",
+          "scene": "kaaba",
+          "ar": "منذ زمنٍ بعيد، قبل أن يُبعث نبيّنا محمد ﷺ، كانت في مكة الكعبةُ، بيتُ الله الذي بناه إبراهيم وإسماعيل عليهما السلام، وكان الناس يأتون إليها من كل مكان.",
+          "en": "Long ago, before our Prophet Muhammad ﷺ was sent, the Kaaba stood in Makkah — the House of Allah that Ibrahim and Isma'il, peace be upon them, built. People came to it from everywhere."
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "يا جدّي، سمعتُ اسم «أبرهة». مَن هو أبرهة؟",
+              "en": "Grandpa, I've heard the name “Abraha”. Who was Abraha?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "army",
+                  "ar": "أبرهة كان حاكمًا على اليمن من قِبَل ملك الحبشة. بنى في صنعاء كنيسةً كبيرةً مزخرفة، وأراد أن يترك العربُ الكعبةَ ويحجّوا إليها بدلًا منها.",
+                  "en": "Abraha ruled Yemen for the king of Abyssinia. He built a huge, decorated church in Sana'a, and he wanted the Arabs to leave the Kaaba and make their pilgrimage to his church instead."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا أراد أن يهدم الكعبة؟",
+              "en": "And why did he want to destroy the Kaaba?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "لأن العرب ظلّوا يحبّون الكعبة ويقصدونها، ولم يتركوها من أجل كنيسته. فغضب أبرهة غضبًا شديدًا، وأقسم أن يسير إلى مكة ويهدمها.",
+                  "en": "Because the Arabs kept loving the Kaaba and travelling to it — they would not leave it for his church. Abraha became very angry and swore to march to Makkah and tear it down."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "army",
+                  "ar": "فخرج بجيشٍ عظيم، ومعه فيلٌ ضخم اسمه «محمود». ولمّا اقتربوا من مكة، أخذ جنودُه إبلَ أهلها، ومنها مئتا بعيرٍ لعبد المطّلب، جدّ النبي ﷺ وسيّد قريش.",
+                  "en": "So he set out with a mighty army, and with them a giant elephant called “Mahmoud”. Near Makkah his soldiers seized the people's camels — among them two hundred camels belonging to Abdul-Muttalib, the Prophet's ﷺ grandfather and the chief of Quraysh."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال عبد المطّلب لأبرهة؟",
+              "en": "What did Abdul-Muttalib say to Abraha?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "scene": "kaaba",
+                  "ar": "ذهب إليه وطلب أن يردّ عليه إبله. فتعجّب أبرهة وقال: تكلّمني في إبلك، وتترك البيت الذي هو دينك ودين آبائك؟",
+                  "en": "He went to Abraha and asked for his camels back. Abraha was surprised and said: “You talk to me about your camels, and say nothing about the House that is your religion and your fathers' religion?”"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "kaaba",
+                  "ar": "فقال عبد المطّلب: «أنا ربُّ الإبل، وللبيت ربٌّ يحميه». يعني: أنا صاحب الإبل، أمّا الكعبة فلها ربٌّ يحفظها، وهو الله. ثم أمر أهلَ مكة أن يحتموا في الجبال، ووقف عند باب الكعبة يدعو الله.",
+                  "en": "Abdul-Muttalib answered: “I am the owner of the camels, and the House has a Lord who will protect it.” He meant: the camels are mine, but the Kaaba has a Lord who guards it — Allah. Then he told the people of Makkah to shelter in the mountains, and he stood at the door of the Kaaba praying to Allah."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعل الفيل محمود لمّا وجّهوه نحو مكة؟",
+              "en": "And what did Mahmoud the elephant do when they turned him toward Makkah?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "elephant",
+                  "ar": "في الصباح جهّزوه ووجّهوه نحو مكة، فبَرَك على الأرض ولم يتحرّك! ضربوه ليقوم فأبى. فإذا وجّهوه نحو اليمن قام يُسرع، وإذا وجّهوه نحو مكة برك من جديد.",
+                  "en": "In the morning they got him ready and pointed him at Makkah — and he knelt down on the ground and would not move! They beat him to make him stand, but he refused. When they turned him toward Yemen he got up and hurried off; when they turned him back toward Makkah, he knelt again."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "grandma",
+          "ar": "مَن تظنّ الذي منع الجيش وحمى الكعبة؟",
+          "en": "Who do you think stopped the army and protected the Kaaba?",
+          "options": [
+            {
+              "ar": "الله سبحانه وتعالى",
+              "en": "Allah, the Most High",
+              "correct": true
+            },
+            {
+              "ar": "الفيل محمود",
+              "en": "Mahmoud the elephant"
+            },
+            {
+              "ar": "جيش أبرهة",
+              "en": "Abraha's army"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر كلمة عبد المطّلب: «وللبيت ربٌّ يحميه»…",
+            "en": "Remember Abdul-Muttalib's words: “the House has a Lord who will protect it”…"
+          },
+          "praise": {
+            "ar": "أحسنت يا حبيبي! الله هو الذي حمى بيته.",
+            "en": "Well done, my darling! Allah protected His House."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وما هي الطير الأبابيل يا جدّتي؟",
+              "en": "Grandma, what are the Ababil birds?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "scene": "birds",
+                  "ar": "أرسل الله عليهم من ناحية البحر طيورًا كثيرة، جماعاتٍ وراء جماعات — وهذا معنى «أبابيل». مع كل طائرٍ ثلاثة أحجار صغيرة: حجرٌ في منقاره، وحجران في رجليه، مثل حبّ الحمّص والعدس.",
+                  "en": "Allah sent birds against them from the direction of the sea — many birds, flock after flock; that is what “Ababil” means. Each bird carried three little stones: one in its beak and two in its feet, the size of chickpeas and lentils."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "birds",
+                  "ar": "وكانت الحجارة «من سِجّيل»، أي من طينٍ متحجّر. فرمتهم الطير بها، فلا يُصيب حجرٌ أحدًا منهم إلا هلك، وأصاب أبرهةَ أيضًا فهلك. ولم يصلوا إلى الكعبة أبدًا.",
+                  "en": "The stones were “of sijjil” — clay baked hard as stone. The birds pelted them, and no one hit by a stone survived; Abraha himself was struck and died. They never reached the Kaaba."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وما معنى «كعصفٍ مأكول»؟",
+              "en": "What does “like eaten straw” mean?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "scene": "straw",
+                  "ar": "العَصْف هو ورق الزرع وقشّه اليابس، مثل التبن الذي تأكله البهائم في الغيط. فصار الجيش مثل القشّ الذي أكلته الدوابّ ورمته مُفتّتًا. هكذا أفسد الله كيدهم.",
+                  "en": "“Asf” is the dry leaves and straw of the crops — like the chaff our animals eat in the field. The army became like straw that animals have chewed and dropped in pieces. That is how Allah ruined their plan."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ومتى وُلد النبي ﷺ؟",
+              "en": "And when was the Prophet ﷺ born?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "year",
+                  "ar": "في ذلك العام نفسه وُلد نبيّنا محمد ﷺ، ولذلك سمّاه العرب «عام الفيل»، وكان نحو سنة ٥٧٠ للميلاد.",
+                  "en": "In that very same year our Prophet Muhammad ﷺ was born — so the Arabs called it “the Year of the Elephant”. It was around the year 570 CE."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "grandma",
+          "ar": "وقد حكى الله لنا هذه القصة في سورةٍ قصيرة اسمها سورة الفيل. تعالَ نسمع الآيات بصوت الشيخ.",
+          "en": "Allah tells us this story in a short surah called Surat Al-Fil. Come, let's listen to the verses in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "105:1",
+          "to": "105:5"
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "رأيتَ يا بُنيّ؟ الله يحمي بيته، ولا أحدَ أقوى من الله، مهما كان جيشه كبيرًا وفيله ضخمًا.",
+          "en": "You see, my son? Allah protects His House, and no one is stronger than Allah — however big the army, however huge the elephant."
+        },
+        {
+          "type": "question",
+          "speaker": "grandma",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "الله هو الأقوى، وهو يحمي بيته، فنتوكّل عليه",
+              "en": "Allah is the strongest and protects His House — so we trust in Him",
+              "correct": true
+            },
+            {
+              "ar": "الجيش الكبير يفوز دائمًا",
+              "en": "The biggest army always wins"
+            },
+            {
+              "ar": "الفيلة مخيفة",
+              "en": "Elephants are scary"
+            }
+          ],
+          "hint": {
+            "ar": "فكّر: هل استطاع الجيش الكبير أن يهدم الكعبة؟",
+            "en": "Think: was the huge army able to destroy the Kaaba?"
+          },
+          "praise": {
+            "ar": "ممتاز! وإذا خفتَ من شيء، فتوكّل على الله، فهو يحفظ مَن يتوكّل عليه.",
+            "en": "Excellent! And whenever you are afraid of something, trust in Allah — He takes care of those who rely on Him."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأتذكّر دائمًا: الله أقوى من كل شيء!",
+          "en": "I'll always remember: Allah is stronger than everything!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة أصحاب الفيل.",
+        "en": "You learned the story of the People of the Elephant."
+      }
+    },
+    {
+      "id": "quraysh-journeys",
+      "area": "desert",
+      "requires": [
+        "people-of-the-elephant"
+      ],
+      "title": {
+        "ar": "رحلة الشتاء والصيف",
+        "en": "The Winter and Summer Journeys"
+      },
+      "character": {
+        "name": {
+          "ar": "العمّ حمدان",
+          "en": "Uncle Hamdan"
+        },
+        "role": {
+          "ar": "صاحب القافلة",
+          "en": "The Caravan Trader"
+        },
+        "look": {
+          "robe": 3033695,
+          "inner": 15329767,
+          "skin": 11036482,
+          "beard": 3813417,
+          "headwear": "keffiyeh",
+          "cloth": 15724527,
+          "band": 1710618,
+          "staff": true,
+          "height": 1.78
+        },
+        "position": [
+          112,
+          -26.5
+        ],
+        "facing": 3.14,
+        "camel": [
+          114.8,
+          -24.2
+        ],
+        "model": "models/trader.glb"
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى العمّ حمدان في الغيطان الشرقية",
+          "صاحب القافلة ينتظرك"
+        ],
+        "en": [
+          "Find Uncle Hamdan in the Eastern Fields",
+          "The caravan trader is waiting"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا وسهلًا! رجعتُ للتوّ من سفر طويل مع جملي.",
+        "en": "Welcome, welcome! I've just come back from a long journey with my camel."
+      },
+      "locked": {
+        "ar": "أهلًا يا صغيري! اسمع أولًا قصة الجدّة زينب والجدّ سالم عند بيتهما، ثم تعالَ إليّ.",
+        "en": "Hello, little one! First hear Grandma Zainab and Grandpa Salim's story at their house, then come back to me."
+      },
+      "after": {
+        "ar": "كلّما أكلت وشبعت، قل: الحمد لله!",
+        "en": "Every time you eat and are full, say: Alhamdulillah!"
+      },
+      "sources": [
+        "Qur'an 106:1–4",
+        "Tafsir Ibn Kathir — Surat Quraysh",
+        "Tafsir al-Muyassar — Surat Quraysh"
+      ],
+      "steps": [
+        {
+          "type": "say",
+          "ar": "أهلًا وسهلًا! هل تحبّ السفر والقوافل؟",
+          "en": "Welcome! Do you like journeys and caravans?"
+        },
+        {
+          "type": "choice",
+          "ar": "كانت هناك قبيلة تسافر كل عام رحلتين كبيرتين. هل تريد أن تعرف قصتها؟",
+          "en": "There was a tribe that made two great journeys every year. Would you like to hear about it?",
+          "options": [
+            {
+              "ar": "نعم!",
+              "en": "Yes!"
+            },
+            {
+              "ar": "إلى أين كانوا يسافرون؟",
+              "en": "Where did they travel?"
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "scene": "kaaba",
+          "ar": "في مكة عاشت قبيلة قريش، قبيلة النبي ﷺ. ومكة وادٍ جاف لا يكاد ينبت فيه زرع.",
+          "en": "In Makkah lived the tribe of Quraysh — the Prophet's ﷺ tribe. Makkah is a dry valley where hardly any crops grow."
+        },
+        {
+          "type": "say",
+          "scene": "caravan",
+          "ar": "فكانت قوافلهم تسافر في الشتاء إلى اليمن، وفي الصيف إلى الشام، للتجارة ولجلب الطعام.",
+          "en": "So their caravans travelled to Yemen in the winter and to Ash-Sham in the summer, to trade and to bring back food."
+        },
+        {
+          "type": "say",
+          "scene": "caravan",
+          "ar": "وكانوا يسافرون آمنين، لأن الناس كانوا يحترمونهم لأنهم أهل مكة، جيران بيت الله.",
+          "en": "And they travelled in safety, because people respected them as the people of Makkah — the neighbours of Allah's House."
+        },
+        {
+          "type": "question",
+          "ar": "مَن الذي أعطى قريشًا الطعام والأمان؟",
+          "en": "Who gave Quraysh their food and their safety?",
+          "options": [
+            {
+              "ar": "الله سبحانه وتعالى",
+              "en": "Allah, the Most High",
+              "correct": true
+            },
+            {
+              "ar": "الجِمال",
+              "en": "The camels"
+            },
+            {
+              "ar": "التجّار وحدهم",
+              "en": "The traders on their own"
+            }
+          ],
+          "hint": {
+            "ar": "الجِمال تحمل الطعام… لكن مَن الذي خلق الطعام وحفظ الطريق؟",
+            "en": "Camels carry the food… but who created the food and kept the road safe?"
+          },
+          "praise": {
+            "ar": "صحيح! كل النِّعَم من الله.",
+            "en": "That's right! Every blessing is from Allah."
+          }
+        },
+        {
+          "type": "say",
+          "ar": "ذكّرهم الله بهذه النِّعَم في سورة قريش، وهي السورة التي بعد سورة الفيل مباشرة. اسمع!",
+          "en": "Allah reminded them of these blessings in Surat Quraysh — the surah right after Surat Al-Fil. Listen!"
+        },
+        {
+          "type": "verses",
+          "from": "106:1",
+          "to": "106:4"
+        },
+        {
+          "type": "say",
+          "ar": "أطعمهم الله من جوع، وآمنهم من خوف، فأمرهم أن يعبدوا ربّ هذا البيت. وكذلك نحن: نشكر الله على الطعام والأمان ونعبده.",
+          "en": "Allah fed them against hunger and made them safe from fear, so He told them to worship the Lord of this House. We do the same: we thank Allah for our food and safety, and we worship Him."
+        },
+        {
+          "type": "question",
+          "ar": "عندما تأكل طعامًا لذيذًا وتشبع، ماذا تقول؟",
+          "en": "When you finish a delicious meal, what do you say?",
+          "options": [
+            {
+              "ar": "الحمد لله",
+              "en": "Alhamdulillah",
+              "correct": true
+            },
+            {
+              "ar": "لا أقول شيئًا",
+              "en": "Nothing"
+            },
+            {
+              "ar": "أنا وحدي جلبتُه",
+              "en": "I got it all by myself"
+            }
+          ],
+          "hint": {
+            "ar": "نشكر مَن أعطانا الطعام…",
+            "en": "We thank the One who gave us the food…"
+          },
+          "praise": {
+            "ar": "أحسنت! الحمد لله على كل نعمة.",
+            "en": "Well done! Alhamdulillah for every blessing."
+          }
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة رحلة الشتاء والصيف.",
+        "en": "You learned about the Winter and Summer Journeys."
+      }
+    },
+    {
+      "id": "yusuf-dream",
+      "area": "oasis",
+      "requires": [
+        "people-of-the-elephant"
+      ],
+      "title": {
+        "ar": "رؤيا يوسف",
+        "en": "The Dream of Yusuf"
+      },
+      "character": {
+        "name": {
+          "ar": "الجدّة آمنة",
+          "en": "Grandma Amina"
+        },
+        "role": {
+          "ar": "حكّاءة الواحة",
+          "en": "The Oasis Storyteller"
+        },
+        "look": {
+          "robe": 3822412,
+          "inner": 14140072,
+          "skin": 11564650,
+          "beard": null,
+          "headwear": "hijab",
+          "cloth": 15984612,
+          "staff": false,
+          "height": 1.6
+        },
+        "position": [
+          -89.5,
+          -7.5
+        ],
+        "facing": 1.57,
+        "model": "models/grandma.glb"
+      },
+      "objective": {
+        "ar": [
+          "زُر الجدّة آمنة في واحة النخيل",
+          "عندها قصة عن حُلم عجيب"
+        ],
+        "en": [
+          "Visit Grandma Amina at the Palm Oasis",
+          "She has a story about a wonderful dream"
+        ]
+      },
+      "greeting": {
+        "ar": "السلام عليكم يا حبيبي! تعالَ استرِح في الظلّ.",
+        "en": "Peace be upon you, dear! Come and rest in the shade."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اذهب أولًا إلى بيت الجدّة زينب عند الترعة، فعندها والجدّ سالم قصة لك.",
+        "en": "Hello, dear! First go to Grandma Zainab's house by the canal — she and Grandpa Salim have a story for you."
+      },
+      "after": {
+        "ar": "احكِ لأبيك وأمك دائمًا عمّا يهمّك، فهم يحبونك.",
+        "en": "Always tell your mum and dad what matters to you — they love you."
+      },
+      "sources": [
+        "Qur'an 12:4–5",
+        "Qur'an 12:100",
+        "Tafsir Ibn Kathir — Surat Yusuf",
+        "Tafsir al-Muyassar — Surat Yusuf"
+      ],
+      "steps": [
+        {
+          "type": "say",
+          "ar": "السلام عليكم يا حبيبي! اجلس هنا في ظلّ النخيل.",
+          "en": "Peace be upon you, dear! Sit here in the shade of the palms."
+        },
+        {
+          "type": "choice",
+          "ar": "هل تتذكّر أحلامك عندما تستيقظ؟",
+          "en": "Do you remember your dreams when you wake up?",
+          "options": [
+            {
+              "ar": "نعم، أحيانًا!",
+              "en": "Yes, sometimes!"
+            },
+            {
+              "ar": "لا، أنساها",
+              "en": "No, I forget them"
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "scene": "dream",
+          "ar": "كان هناك ولدٌ اسمه يوسف، ابن النبي يعقوب عليهما السلام. رأى يوسف في منامه أحد عشر كوكبًا والشمس والقمر، يسجدون له!",
+          "en": "There was a boy called Yusuf, the son of Prophet Ya'qub, peace be upon them both. In a dream, Yusuf saw eleven stars, the sun and the moon — all bowing down to him!"
+        },
+        {
+          "type": "say",
+          "scene": "dream",
+          "ar": "فحكى يوسف رؤياه لأبيه. وكان أبوه يعقوب يحبّه كثيرًا، فقال له: يا بُنيّ، لا تحكِ رؤياك لإخوتك، لئلا يحسدوك ويكيدوا لك.",
+          "en": "Yusuf told his father about the dream. His father Ya'qub loved him very much and said: “My son, don't tell your brothers about your dream, in case they become jealous and plot against you.”"
+        },
+        {
+          "type": "question",
+          "ar": "لِمَن حكى يوسف رؤياه؟",
+          "en": "Who did Yusuf tell about his dream?",
+          "options": [
+            {
+              "ar": "لأبيه يعقوب",
+              "en": "His father, Ya'qub",
+              "correct": true
+            },
+            {
+              "ar": "لإخوته",
+              "en": "His brothers"
+            },
+            {
+              "ar": "لم يحكِها لأحد",
+              "en": "He told no one"
+            }
+          ],
+          "hint": {
+            "ar": "حكاها لمن يحبّه كثيرًا وينصحه…",
+            "en": "He told the one who loved him most and gave him good advice…"
+          },
+          "praise": {
+            "ar": "أحسنت! حكاها لأبيه.",
+            "en": "Well done! He told his father."
+          }
+        },
+        {
+          "type": "say",
+          "ar": "والله يحكي لنا هذا في سورة يوسف. تعالَ نسمع الآيتين.",
+          "en": "Allah tells us about this in Surat Yusuf. Let's listen to the two verses."
+        },
+        {
+          "type": "verses",
+          "from": "12:4",
+          "to": "12:5"
+        },
+        {
+          "type": "say",
+          "ar": "نتعلّم من يوسف أن نحكي أسرارنا وما يقلقنا لآبائنا وأمهاتنا، فهم يحبوننا وينصحوننا. وقد تحقّقت رؤيا يوسف بعد سنوات طويلة — وهذه قصة جميلة ستسمع بقيّتها يومًا ما!",
+          "en": "Yusuf teaches us to share our secrets and worries with our parents, because they love us and give us good advice. And many years later, Yusuf's dream came true — a beautiful story you'll hear the rest of one day!"
+        },
+        {
+          "type": "question",
+          "ar": "إذا كان عندك أمرٌ مهمّ، لِمَن تحكيه؟",
+          "en": "If you have something important to share, who do you tell?",
+          "options": [
+            {
+              "ar": "لأبي وأمي",
+              "en": "My mum and dad",
+              "correct": true
+            },
+            {
+              "ar": "لشخص غريب لا أعرفه",
+              "en": "A stranger I don't know"
+            }
+          ],
+          "hint": {
+            "ar": "مثل يوسف: مَن يحبّك أكثر من الجميع؟",
+            "en": "Like Yusuf: who loves you most of all?"
+          },
+          "praise": {
+            "ar": "رائع! هكذا فعل يوسف.",
+            "en": "Wonderful! That's just what Yusuf did."
+          }
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة رؤيا يوسف.",
+        "en": "You learned about the Dream of Yusuf."
+      }
+    }
+  ],
+  "areas": [
+    {
+      "id": "village",
+      "x": 0,
+      "z": 0,
+      "r": 42,
+      "ar": "القرية",
+      "en": "The Village"
+    },
+    {
+      "id": "fields",
+      "x": 0,
+      "z": 55,
+      "r": 60,
+      "ar": "النهر والحقول",
+      "en": "River & Farms"
+    },
+    {
+      "id": "oasis",
+      "x": -110,
+      "z": -20,
+      "r": 45,
+      "ar": "واحة النخيل",
+      "en": "Palm Oasis"
+    },
+    {
+      "id": "desert",
+      "x": 130,
+      "z": -40,
+      "r": 55,
+      "ar": "الغيطان الشرقية",
+      "en": "Eastern Fields"
+    },
+    {
+      "id": "ruins",
+      "x": 160,
+      "z": -140,
+      "r": 40,
+      "ar": "الدار القديمة",
+      "en": "The Old Homestead"
+    },
+    {
+      "id": "mountains",
+      "x": 40,
+      "z": 170,
+      "r": 70,
+      "ar": "التلال",
+      "en": "The Hills"
+    }
+  ]
+}

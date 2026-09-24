@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Quran Journey — رحلة القرآن</title>
+<meta name="description" content="A peaceful 3D world where children discover Quran stories and listen to authentic recitation.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Nunito:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="root"></div>
+<div id="sprites" aria-hidden="true"></div>
+<div id="vignette"></div>
+<div id="letterbox"><i></i><i></i></div>
+<div id="bubble" hidden></div>
+
+<div id="hud" hidden>
+  <div id="objective"><span class="ico"><svg class="ic" aria-hidden="true"><use href="#i-alert"/></svg></span><div><b></b><small></small></div></div>
+  <div id="minimap"><canvas width="180" height="180"></canvas><svg class="ring" viewBox="0 0 100 100" aria-hidden="true"><g class="ticks"></g><g class="cards"><text x="50" y="92">S</text><text x="92" y="50">E</text><text x="8" y="50">W</text></g></svg><span class="n">N</span></div>
+  <div id="points"><span class="ico"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></span><b>0</b></div>
+  <button id="talk" hidden><kbd>E</kbd><span></span></button>
+  <div id="dock">
+    <button data-open="journal"><svg class="ic" aria-hidden="true"><use href="#i-quran"/></svg></button>
+    <button data-open="map"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></button>
+    <button data-open="settings"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></button>
+  </div>
+</div>
+<div id="banner"><small></small><b></b></div>
+<div id="toast"></div>
+
+<div id="scene" hidden></div>
+<div id="dialogue" hidden>
+  <div class="box">
+    <div class="lesson"><svg class="ic" aria-hidden="true"><use href="#i-bulb"/></svg><span></span></div>
+    <div class="name"></div><p class="text"></p><div class="next"><svg class="ic" aria-hidden="true"><use href="#i-chevron"/></svg></div>
+  </div>
+  <div class="choices"></div>
+</div>
+
+<div id="quran" hidden>
+  <div class="q-wrap">
+    <header><div class="q-surah"></div><div class="q-sub"></div><svg class="q-div" viewBox="0 0 240 16" aria-hidden="true"><use href="#o-divider"/></svg><div class="q-vno"></div></header>
+    <div class="q-frame">
+      <svg class="orn tl" aria-hidden="true"><use href="#o-corner"/></svg><svg class="orn tr" aria-hidden="true"><use href="#o-corner"/></svg>
+      <svg class="orn bl" aria-hidden="true"><use href="#o-corner"/></svg><svg class="orn br" aria-hidden="true"><use href="#o-corner"/></svg>
+      <svg class="ros l" aria-hidden="true"><use href="#o-rosette"/></svg><svg class="ros r" aria-hidden="true"><use href="#o-rosette"/></svg>
+      <p class="q-text" dir="rtl" lang="ar"></p>
+    </div>
+    <div class="q-dots"></div>
+    <p class="q-meaning"></p><small class="q-src"></small>
+    <div class="q-bar">
+      <button class="q-toggle"><svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg></button>
+      <div class="q-info"><span class="q-reciter"></span><div class="q-progress"><i></i></div></div>
+      <span class="q-time">0:00</span>
+      <button class="q-replay"><svg class="ic" aria-hidden="true"><use href="#i-replay"/></svg></button>
+      <button class="q-skip"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button>
+    </div>
+    <div class="q-msg" hidden><p></p><div><button class="q-retry"></button><button class="q-giveup"></button></div></div>
+  </div>
+</div>
+
+<div id="reward" hidden><div class="card"><div class="rays"></div><div class="medal"></div><small class="kicker"></small><h2></h2><p></p><div class="pts"></div><button></button></div></div>
+<div id="panel" hidden><div class="sheet"><header><h2></h2><button class="x"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button></header><div class="body"></div></div></div>
+
+<div id="title">
+  <div class="lockup">
+    <svg class="crest" viewBox="0 0 200 124" aria-hidden="true"><use href="#o-emblem"/></svg>
+    <h1></h1>
+    <p class="alt"></p>
+    <svg class="rule" viewBox="0 0 240 16" aria-hidden="true"><use href="#o-divider"/></svg>
+    <p class="tagline"></p>
+    <p class="tagline2"></p>
+  </div>
+  <nav><button id="btn-continue" class="primary"></button><button id="btn-new"></button><button id="btn-settings"></button></nav>
+  <p class="credit">Quran text &amp; recitation: Quran.com · Reciter: Mohamed Siddiq al-Minshawi</p>
+</div>
+<div id="loading"><div class="spin"></div><p>Building the world… · نبني العالم…</p></div>
+<noscript>This game needs JavaScript and WebGL.</noscript>
+<script>
+  // Apache serves this source page too; the playable build lives in dist/.
+  addEventListener('DOMContentLoaded', () => {
+    if (document.querySelector('script[src="/src/main.jsx"]') && !location.port && location.protocol !== 'file:') location.replace('dist/');
+  });
+  // ES modules cannot load from file:// — say so instead of hanging on the spinner.
+  if (location.protocol === 'file:') {
+    document.querySelector('#loading .spin').hidden = true;
+    document.querySelector('#loading p').innerHTML = 'Open this game through a web server, not as a file:<br><b>http://localhost/old/3d-quranic/dist/</b><br><small>(or run <code>npm run dev</code> in this folder)</small>';
+  }
+</script>
+<link rel="icon" href="data:,">
+<script type="module" src="/src/main.jsx"></script>
+</body>
+</html>

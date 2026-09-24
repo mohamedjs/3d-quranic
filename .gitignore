@@ -1,0 +1,7 @@
+node_modules
+dist
+__pycache__/
+*.blend1
+blender/_bridge/in/
+blender/_bridge/out/
+blender/v2/_jobs/

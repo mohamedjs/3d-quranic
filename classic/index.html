@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Quran Journey — رحلة القرآن</title>
+<meta name="description" content="A peaceful 3D world where children discover Quran stories and listen to authentic recitation.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Nunito:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+<script type="importmap">{ "imports": {
+  "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+  "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/" } }</script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="vignette"></div>
+<div id="letterbox"><i></i><i></i></div>
+<div id="bubble" hidden></div>
+
+<div id="hud" hidden>
+  <div id="objective"><span class="ico">!</span><div><b></b><small></small></div></div>
+  <div id="minimap"><canvas width="180" height="180"></canvas><span class="n">N</span></div>
+  <div id="points"><span class="ico">✦</span><b>0</b></div>
+  <button id="talk" hidden><kbd>E</kbd><span></span></button>
+  <div id="dock">
+    <button data-open="journal"><svg viewBox="0 0 24 24"><path d="M4 5c3-1.3 5.5-1 8 1 2.5-2 5-2.3 8-1v14c-3-1.3-5.5-1-8 1-2.5-2-5-2.3-8-1z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M12 6v14" stroke="currentColor" stroke-width="1.8"/></svg></button>
+    <button data-open="map"><svg viewBox="0 0 24 24"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg></button>
+    <button data-open="settings"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+  </div>
+</div>
+<div id="banner"><small></small><b></b></div>
+<div id="toast"></div>
+
+<div id="scene" hidden></div>
+<div id="dialogue" hidden>
+  <div class="box"><div class="name"></div><p class="text"></p><div class="next">▾</div></div>
+  <div class="choices"></div>
+</div>
+
+<div id="quran" hidden>
+  <div class="q-wrap">
+    <header><div class="q-surah"></div><div class="q-sub"></div><div class="q-vno"></div></header>
+    <div class="q-frame"><p class="q-text" dir="rtl" lang="ar"></p></div>
+    <div class="q-dots"></div>
+    <p class="q-meaning"></p><small class="q-src"></small>
+    <div class="q-bar">
+      <button class="q-toggle"><svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg></button>
+      <div class="q-info"><span class="q-reciter"></span><div class="q-progress"><i></i></div></div>
+      <span class="q-time">0:00</span>
+      <button class="q-replay"><svg viewBox="0 0 24 24"><path d="M12 5V2L7 6l5 4V7a5 5 0 1 1-5 5H5a7 7 0 1 0 7-7z"/></svg></button>
+      <button class="q-skip"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>
+    </div>
+    <div class="q-msg" hidden><p></p><div><button class="q-retry"></button><button class="q-giveup"></button></div></div>
+  </div>
+</div>
+
+<div id="reward" hidden><div class="card"><div class="medal"></div><h2></h2><p></p><div class="pts"></div><button></button></div></div>
+<div id="panel" hidden><div class="sheet"><header><h2></h2><button class="x">✕</button></header><div class="body"></div></div></div>
+
+<div id="title">
+  <div class="crest"><svg viewBox="0 0 160 90"><g fill="none" stroke="#f6e3b4" stroke-width="2.2" stroke-linecap="round">
+    <path d="M52 78h56M60 78V52h40v26M66 52c0-16 28-16 28 0M80 30v6M80 26a3 3 0 1 0 .1 0"/><path d="M40 78V40l4-8 4 8v38M112 78V40l4-8 4 8v38"/>
+    <path d="M10 70c20 0 24-6 30-6M150 70c-20 0-24-6-30-6" opacity=".6"/></g></svg></div>
+  <h1></h1><p class="tagline"></p>
+  <nav><button id="btn-continue" class="primary"></button><button id="btn-new"></button><button id="btn-settings"></button></nav>
+  <p class="credit">Quran text &amp; recitation: Quran.com · Reciter: Mohamed Siddiq al-Minshawi</p>
+</div>
+<div id="loading"><div class="spin"></div><p>…</p></div>
+<noscript>This game needs JavaScript and WebGL.</noscript>
+<script>
+  // ES modules cannot load from file:// — say so instead of hanging on the spinner.
+  if (location.protocol === 'file:') {
+    document.querySelector('#loading .spin').hidden = true;
+    document.querySelector('#loading p').innerHTML = 'Open this game through a web server, not as a file:<br><b>http://localhost/old/3d-quranic/</b><br><small>(or run <code>python3 -m http.server</code> in this folder and open http://localhost:8000)</small>';
+  }
+</script>
+<link rel="icon" href="data:,">
+<script type="module" src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,545 @@
+[
+ {
+  "name": "house_a",
+  "tris": 3100,
+  "tris_outline": 2868,
+  "tris_lod1": 1085,
+  "kb": 57.3,
+  "mats": [
+   "outline",
+   "toon_clay",
+   "toon_firewood",
+   "toon_iron",
+   "toon_lime",
+   "toon_lime_warm",
+   "toon_mud",
+   "toon_paint_blue",
+   "toon_paint_green",
+   "toon_paint_ochre",
+   "toon_paint_red",
+   "toon_plaster",
+   "toon_stalks",
+   "toon_straw",
+   "toon_window_dark",
+   "toon_wood",
+   "toon_wood_blue",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "house_b",
+  "tris": 4400,
+  "tris_outline": 3922,
+  "tris_lod1": 1539,
+  "kb": 66.6,
+  "mats": [
+   "outline",
+   "toon_clay",
+   "toon_firewood",
+   "toon_iron",
+   "toon_lime_warm",
+   "toon_mud",
+   "toon_paint_white",
+   "toon_pigeon",
+   "toon_plaster",
+   "toon_plaster_light",
+   "toon_stalks",
+   "toon_window_dark",
+   "toon_wood",
+   "toon_wood_dark",
+   "toon_wood_green"
+  ]
+ },
+ {
+  "name": "house_c",
+  "tris": 2696,
+  "tris_outline": 2468,
+  "tris_lod1": 941,
+  "kb": 50.4,
+  "mats": [
+   "outline",
+   "toon_firewood",
+   "toon_iron",
+   "toon_lime",
+   "toon_lime_warm",
+   "toon_mud",
+   "toon_paint_blue",
+   "toon_paint_green",
+   "toon_paint_ochre",
+   "toon_paint_red",
+   "toon_plaster",
+   "toon_stalks",
+   "toon_window_dark",
+   "toon_wood",
+   "toon_wood_dark",
+   "toon_wood_green"
+  ]
+ },
+ {
+  "name": "mastaba",
+  "tris": 634,
+  "tris_outline": 632,
+  "tris_lod1": 0,
+  "kb": 12.3,
+  "mats": [
+   "outline",
+   "toon_fabric_blue",
+   "toon_fabric_cream",
+   "toon_fabric_ochre",
+   "toon_fabric_red",
+   "toon_lime",
+   "toon_lime_warm",
+   "toon_paint_blue"
+  ]
+ },
+ {
+  "name": "palm_a",
+  "tris": 1656,
+  "tris_outline": 1580,
+  "tris_lod1": 576,
+  "kb": 31.0,
+  "mats": [
+   "outline",
+   "toon_bark",
+   "toon_bark_dark",
+   "toon_dates",
+   "toon_dates_gold",
+   "toon_frond",
+   "toon_frond_dry",
+   "toon_frond_light"
+  ]
+ },
+ {
+  "name": "palm_b",
+  "tris": 1968,
+  "tris_outline": 1884,
+  "tris_lod1": 684,
+  "kb": 33.7,
+  "mats": [
+   "outline",
+   "toon_bark",
+   "toon_bark_dark",
+   "toon_dates",
+   "toon_dates_gold",
+   "toon_frond",
+   "toon_frond_dry",
+   "toon_frond_light"
+  ]
+ },
+ {
+  "name": "palm_c",
+  "tris": 1376,
+  "tris_outline": 1308,
+  "tris_lod1": 478,
+  "kb": 28.4,
+  "mats": [
+   "outline",
+   "toon_bark",
+   "toon_bark_dark",
+   "toon_dates",
+   "toon_dates_gold",
+   "toon_frond",
+   "toon_frond_dry",
+   "toon_frond_light"
+  ]
+ },
+ {
+  "name": "sycamore",
+  "tris": 3248,
+  "tris_outline": 3248,
+  "tris_lod1": 1136,
+  "kb": 40.2,
+  "mats": [
+   "outline",
+   "toon_bark",
+   "toon_bark_dark",
+   "toon_leaf",
+   "toon_leaf_dark",
+   "toon_leaf_light"
+  ]
+ },
+ {
+  "name": "bougainvillea",
+  "tris": 1226,
+  "tris_outline": 1226,
+  "tris_lod1": 0,
+  "kb": 14.3,
+  "mats": [
+   "outline",
+   "toon_bark_dark",
+   "toon_flower_magenta",
+   "toon_flower_pink",
+   "toon_leaf",
+   "toon_leaf_dark"
+  ]
+ },
+ {
+  "name": "well",
+  "tris": 868,
+  "tris_outline": 820,
+  "tris_lod1": 433,
+  "kb": 23.2,
+  "mats": [
+   "outline",
+   "toon_clay",
+   "toon_lime_warm",
+   "toon_paint_blue",
+   "toon_rope",
+   "toon_stone",
+   "toon_water",
+   "toon_wood",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "shaduf",
+  "tris": 700,
+  "tris_outline": 692,
+  "tris_lod1": 0,
+  "kb": 11.0,
+  "mats": [
+   "outline",
+   "toon_clay",
+   "toon_mud",
+   "toon_plaster",
+   "toon_rope",
+   "toon_wood",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "sluice",
+  "tris": 1172,
+  "tris_outline": 1172,
+  "tris_lod1": 0,
+  "kb": 11.6,
+  "mats": [
+   "outline",
+   "toon_iron",
+   "toon_stone",
+   "toon_wood",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "footbridge",
+  "tris": 856,
+  "tris_outline": 856,
+  "tris_lod1": 0,
+  "kb": 9.0,
+  "mats": [
+   "outline",
+   "toon_rope",
+   "toon_wood",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "stall",
+  "tris": 1102,
+  "tris_outline": 1102,
+  "tris_lod1": 551,
+  "kb": 28.4,
+  "mats": [
+   "outline",
+   "toon_cabbage",
+   "toon_dates",
+   "toon_fabric_cream",
+   "toon_fabric_red",
+   "toon_produce",
+   "toon_straw",
+   "toon_tomato",
+   "toon_wood",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "garden_wall",
+  "tris": 976,
+  "tris_outline": 972,
+  "tris_lod1": 488,
+  "kb": 18.4,
+  "mats": [
+   "outline",
+   "toon_lime",
+   "toon_lime_warm",
+   "toon_paint_blue",
+   "toon_stone",
+   "toon_stone_dark"
+  ]
+ },
+ {
+  "name": "fence",
+  "tris": 334,
+  "tris_outline": 334,
+  "tris_lod1": 0,
+  "kb": 8.4,
+  "mats": [
+   "outline",
+   "toon_frond_dry",
+   "toon_rope",
+   "toon_stalks",
+   "toon_wood",
+   "toon_wood_dark"
+  ]
+ },
+ {
+  "name": "hay",
+  "tris": 250,
+  "tris_outline": 250,
+  "tris_lod1": 0,
+  "kb": 5.9,
+  "mats": [
+   "outline",
+   "toon_rope",
+   "toon_stalks",
+   "toon_straw"
+  ]
+ },
+ {
+  "name": "jar",
+  "tris": 318,
+  "tris_outline": 246,
+  "tris_lod1": 0,
+  "kb": 6.0,
+  "mats": [
+   "outline",
+   "toon_clay",
+   "toon_fabric_cream",
+   "toon_paint_white"
+  ]
+ },
+ {
+  "name": "jar_b",
+  "tris": 288,
+  "tris_outline": 216,
+  "tris_lod1": 0,
+  "kb": 4.9,
+  "mats": [
+   "outline",
+   "toon_clay_dark",
+   "toon_paint_ochre"
+  ]
+ },
+ {
+  "name": "basket",
+  "tris": 684,
+  "tris_outline": 684,
+  "tris_lod1": 0,
+  "kb": 10.1,
+  "mats": [
+   "outline",
+   "toon_dates",
+   "toon_produce",
+   "toon_straw",
+   "toon_wood"
+  ]
+ },
+ {
+  "name": "hoe",
+  "tris": 148,
+  "tris_outline": 148,
+  "tris_lod1": 0,
+  "kb": 3.9,
+  "mats": [
+   "outline",
+   "toon_iron",
+   "toon_wood"
+  ]
+ },
+ {
+  "name": "pot_plant",
+  "tris": 600,
+  "tris_outline": 440,
+  "tris_lod1": 0,
+  "kb": 9.4,
+  "mats": [
+   "outline",
+   "toon_clay",
+   "toon_flower_red",
+   "toon_leaf",
+   "toon_leaf_light",
+   "toon_paint_white"
+  ]
+ },
+ {
+  "name": "stream",
+  "tris": 1828,
+  "tris_outline": 1828,
+  "tris_lod1": 0,
+  "kb": 16.4,
+  "mats": [
+   "outline",
+   "toon_mud",
+   "toon_stone",
+   "toon_stone_dark",
+   "toon_water"
+  ]
+ },
+ {
+  "name": "canal_bank",
+  "tris": 1052,
+  "tris_outline": 1004,
+  "tris_lod1": 0,
+  "kb": 12.4,
+  "mats": [
+   "outline",
+   "toon_grass",
+   "toon_ground_green",
+   "toon_mud",
+   "toon_stone",
+   "toon_stone_dark"
+  ]
+ },
+ {
+  "name": "canal_stones",
+  "tris": 640,
+  "tris_outline": 640,
+  "tris_lod1": 0,
+  "kb": 7.4,
+  "mats": [
+   "outline",
+   "toon_stone",
+   "toon_stone_dark"
+  ]
+ },
+ {
+  "name": "crop_berseem",
+  "tris": 340,
+  "tris_outline": 240,
+  "tris_lod1": 0,
+  "kb": 5.1,
+  "mats": [
+   "outline",
+   "toon_berseem",
+   "toon_berseem_flower"
+  ]
+ },
+ {
+  "name": "crop_maize",
+  "tris": 161,
+  "tris_outline": 149,
+  "tris_lod1": 0,
+  "kb": 5.4,
+  "mats": [
+   "outline",
+   "toon_maize",
+   "toon_maize_cob",
+   "toon_maize_tassel"
+  ]
+ },
+ {
+  "name": "crop_wheat",
+  "tris": 242,
+  "tris_outline": 0,
+  "tris_lod1": 0,
+  "kb": 3.2,
+  "mats": [
+   "outline",
+   "toon_wheat",
+   "toon_wheat_green"
+  ]
+ },
+ {
+  "name": "crop_cotton",
+  "tris": 372,
+  "tris_outline": 372,
+  "tris_lod1": 0,
+  "kb": 7.4,
+  "mats": [
+   "outline",
+   "toon_bark",
+   "toon_cotton",
+   "toon_leaf",
+   "toon_leaf_light"
+  ]
+ },
+ {
+  "name": "crop_cabbage",
+  "tris": 188,
+  "tris_outline": 188,
+  "tris_lod1": 0,
+  "kb": 4.7,
+  "mats": [
+   "outline",
+   "toon_cabbage",
+   "toon_cabbage_dark"
+  ]
+ },
+ {
+  "name": "grass_a",
+  "tris": 45,
+  "tris_outline": 0,
+  "tris_lod1": 0,
+  "kb": 2.4,
+  "mats": [
+   "outline",
+   "toon_grass",
+   "toon_grass_light"
+  ]
+ },
+ {
+  "name": "grass_b",
+  "tris": 60,
+  "tris_outline": 0,
+  "tris_lod1": 0,
+  "kb": 2.6,
+  "mats": [
+   "outline",
+   "toon_grass",
+   "toon_grass_light"
+  ]
+ },
+ {
+  "name": "grass_c",
+  "tris": 45,
+  "tris_outline": 0,
+  "tris_lod1": 0,
+  "kb": 2.4,
+  "mats": [
+   "outline",
+   "toon_grass",
+   "toon_grass_dry"
+  ]
+ },
+ {
+  "name": "reeds",
+  "tris": 93,
+  "tris_outline": 0,
+  "tris_lod1": 0,
+  "kb": 2.6,
+  "mats": [
+   "outline",
+   "toon_reed",
+   "toon_reed_head"
+  ]
+ },
+ {
+  "name": "wildflowers",
+  "tris": 213,
+  "tris_outline": 40,
+  "tris_lod1": 0,
+  "kb": 7.8,
+  "mats": [
+   "outline",
+   "toon_flower_purple",
+   "toon_flower_red",
+   "toon_flower_white",
+   "toon_flower_yellow",
+   "toon_grass",
+   "toon_produce"
+  ]
+ },
+ {
+  "name": "field_bund",
+  "tris": 214,
+  "tris_outline": 160,
+  "tris_lod1": 0,
+  "kb": 4.5,
+  "mats": [
+   "outline",
+   "toon_earth",
+   "toon_grass"
+  ]
+ }
+]

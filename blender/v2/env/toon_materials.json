@@ -1,0 +1,298 @@
+{
+ "outline": {
+  "color": "#2B1A10",
+  "flags": ""
+ },
+ "toon_bark": {
+  "color": "#8C6A48",
+  "flags": ""
+ },
+ "toon_bark_dark": {
+  "color": "#6A4C32",
+  "flags": ""
+ },
+ "toon_berseem": {
+  "color": "#4F9A34",
+  "flags": "w"
+ },
+ "toon_berseem_flower": {
+  "color": "#F2EEF0",
+  "flags": "nw"
+ },
+ "toon_cabbage": {
+  "color": "#8CBF5A",
+  "flags": "w"
+ },
+ "toon_cabbage_dark": {
+  "color": "#5E9A3C",
+  "flags": "w"
+ },
+ "toon_clay": {
+  "color": "#C8703E",
+  "flags": ""
+ },
+ "toon_clay_dark": {
+  "color": "#9C5230",
+  "flags": ""
+ },
+ "toon_cotton": {
+  "color": "#F6F2E8",
+  "flags": ""
+ },
+ "toon_dates": {
+  "color": "#B8481C",
+  "flags": ""
+ },
+ "toon_dates_gold": {
+  "color": "#E0A03A",
+  "flags": ""
+ },
+ "toon_earth": {
+  "color": "#9A7550",
+  "flags": ""
+ },
+ "toon_fabric_blue": {
+  "color": "#3D6E9E",
+  "flags": ""
+ },
+ "toon_fabric_cream": {
+  "color": "#EDD9AE",
+  "flags": ""
+ },
+ "toon_fabric_ochre": {
+  "color": "#D89A38",
+  "flags": ""
+ },
+ "toon_fabric_red": {
+  "color": "#B8472E",
+  "flags": ""
+ },
+ "toon_firewood": {
+  "color": "#8E6A45",
+  "flags": ""
+ },
+ "toon_flower_magenta": {
+  "color": "#B82E78",
+  "flags": ""
+ },
+ "toon_flower_pink": {
+  "color": "#E0408A",
+  "flags": ""
+ },
+ "toon_flower_purple": {
+  "color": "#8E6CC8",
+  "flags": "n"
+ },
+ "toon_flower_red": {
+  "color": "#D9443A",
+  "flags": "n"
+ },
+ "toon_flower_white": {
+  "color": "#FFF8EC",
+  "flags": "n"
+ },
+ "toon_flower_yellow": {
+  "color": "#F4C94A",
+  "flags": "n"
+ },
+ "toon_frond": {
+  "color": "#5E8C2E",
+  "flags": "dw"
+ },
+ "toon_frond_dry": {
+  "color": "#B8904E",
+  "flags": "dw"
+ },
+ "toon_frond_light": {
+  "color": "#8DB64A",
+  "flags": "dw"
+ },
+ "toon_grass": {
+  "color": "#6FA23A",
+  "flags": "ndw"
+ },
+ "toon_grass_dry": {
+  "color": "#C8B266",
+  "flags": "ndw"
+ },
+ "toon_grass_light": {
+  "color": "#A4C656",
+  "flags": "ndw"
+ },
+ "toon_ground_green": {
+  "color": "#8DAE4C",
+  "flags": ""
+ },
+ "toon_iron": {
+  "color": "#4C4A4E",
+  "flags": ""
+ },
+ "toon_leaf": {
+  "color": "#4E7E2C",
+  "flags": "w"
+ },
+ "toon_leaf_dark": {
+  "color": "#3A6424",
+  "flags": "w"
+ },
+ "toon_leaf_light": {
+  "color": "#7FAE44",
+  "flags": "w"
+ },
+ "toon_lime": {
+  "color": "#F1E4C8",
+  "flags": ""
+ },
+ "toon_lime_warm": {
+  "color": "#E8CFA4",
+  "flags": ""
+ },
+ "toon_maize": {
+  "color": "#6FA03A",
+  "flags": "dw"
+ },
+ "toon_maize_cob": {
+  "color": "#E8C85A",
+  "flags": ""
+ },
+ "toon_maize_tassel": {
+  "color": "#E0C26A",
+  "flags": "nw"
+ },
+ "toon_mud": {
+  "color": "#7E5E40",
+  "flags": ""
+ },
+ "toon_paint_blue": {
+  "color": "#2F74B0",
+  "flags": "n"
+ },
+ "toon_paint_green": {
+  "color": "#3F8F5A",
+  "flags": "n"
+ },
+ "toon_paint_ochre": {
+  "color": "#D9962E",
+  "flags": "n"
+ },
+ "toon_paint_red": {
+  "color": "#B8452E",
+  "flags": "n"
+ },
+ "toon_paint_white": {
+  "color": "#FAF3E2",
+  "flags": "n"
+ },
+ "toon_pigeon": {
+  "color": "#E9E6E0",
+  "flags": ""
+ },
+ "toon_plaster": {
+  "color": "#D29A62",
+  "flags": ""
+ },
+ "toon_plaster_light": {
+  "color": "#E2B07A",
+  "flags": ""
+ },
+ "toon_produce": {
+  "color": "#E88A2A",
+  "flags": ""
+ },
+ "toon_reed": {
+  "color": "#7C9C40",
+  "flags": "ndw"
+ },
+ "toon_reed_head": {
+  "color": "#9A7248",
+  "flags": "n"
+ },
+ "toon_rope": {
+  "color": "#B89A62",
+  "flags": ""
+ },
+ "toon_stalks": {
+  "color": "#C9A566",
+  "flags": ""
+ },
+ "toon_stone": {
+  "color": "#CDB897",
+  "flags": ""
+ },
+ "toon_stone_dark": {
+  "color": "#A89678",
+  "flags": ""
+ },
+ "toon_straw": {
+  "color": "#E3BC62",
+  "flags": ""
+ },
+ "toon_tomato": {
+  "color": "#D8432E",
+  "flags": ""
+ },
+ "toon_water": {
+  "color": "#3E9C94",
+  "flags": "n"
+ },
+ "toon_wheat": {
+  "color": "#DDBB5C",
+  "flags": "ndw"
+ },
+ "toon_wheat_green": {
+  "color": "#A8A84A",
+  "flags": "ndw"
+ },
+ "toon_window_dark": {
+  "color": "#3A2A22",
+  "flags": "n"
+ },
+ "toon_wood": {
+  "color": "#9A6A3E",
+  "flags": ""
+ },
+ "toon_wood_blue": {
+  "color": "#3F8CC0",
+  "flags": ""
+ },
+ "toon_wood_dark": {
+  "color": "#5E3D24",
+  "flags": ""
+ },
+ "toon_wood_green": {
+  "color": "#4E9A72",
+  "flags": ""
+ },
+ "_water": {
+  "deep": "#1F6E74",
+  "mid": "#3E9C94",
+  "shallow": "#7CC8B0",
+  "foam": "#F2FBF4",
+  "streak": "#FFF6D8",
+  "shallow_to_mid": 0.22,
+  "mid_to_deep": 0.55,
+  "noise_scale": 0.35,
+  "foam_edge": 0.12,
+  "foam_noise": 0.05,
+  "dash_band": [
+   0.16,
+   0.2
+  ],
+  "dash_period_m": 1.6,
+  "dash_duty": 0.45,
+  "streak_scale": [
+   9.0,
+   0.2
+  ],
+  "streak_threshold": 0.7,
+  "streak_speed": 0.35,
+  "flow_speed": 0.25,
+  "opacity": 0.92
+ },
+ "_shadow_tint": [
+  0.56,
+  0.47,
+  0.62
+ ],
+ "_ink": "#2B1A10"
+}

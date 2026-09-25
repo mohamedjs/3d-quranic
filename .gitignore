@@ -5,3 +5,9 @@ __pycache__/
 blender/_bridge/in/
 blender/_bridge/out/
 blender/v2/_jobs/
+.env
+tools/voice_raw/
+tools/_ping.php
+tools/voice_upload.php
+tools/voice_receiver.html
+.git/*.stale*

@@ -12,8 +12,9 @@ mpath = os.path.join(ROOT, 'public/audio/manifest.json')
 manifest = json.load(open(mpath)) if os.path.exists(mpath) else {}
 done = 0
 for L in lines:
-    wav = os.path.join(src, L['id'].replace('/', '__') + '.wav')
-    if not os.path.exists(wav): continue
+    base = os.path.join(src, L['id'].replace('/', '__'))
+    wav = next((base + x for x in ('.wav', '.mp3') if os.path.exists(base + x)), None)
+    if not wav: continue
     rel = 'audio/' + L['id'] + '.mp3'; out = os.path.join(ROOT, 'public', rel)
     os.makedirs(os.path.dirname(out), exist_ok=True)
     post = voices.get(L['speaker'], {}).get('post') or 'anull'

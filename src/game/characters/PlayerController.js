@@ -2,6 +2,12 @@
 // Owns the orbit input (yaw/pitch/dist); the CameraRig turns that into a smooth camera.
 import * as THREE from 'three';
 import { groundAt, HALF } from '../terrain/heightfield.js';
+import { ZOOM_MIN, ZOOM_MAX, ZOOM_DEFAULT } from '../camera/CameraRig.js';
+
+// zoom keys: + / PageDown / Z bring the camera down (in); − / PageUp / Q lift it (out)
+const ZOOM_IN = ['Equal', 'NumpadAdd', 'PageDown', 'KeyZ'], ZOOM_OUT = ['Minus', 'NumpadSubtract', 'PageUp', 'KeyQ'];
+// wheel / pinch go through overlays that have their own scrolling or zoom
+const OWN_WHEEL = '#panel, #quran, #dialogue, #title, #reward, #scene';
 
 const WALK = 2.3, RUN = 4.6, RADIUS = 0.3;   // a child's pace
 
@@ -9,7 +15,8 @@ export class PlayerController {
   constructor(rig, camera, dom, colliders, terrain, scene) {
     Object.assign(this, { rig, camera, dom, colliders, terrain });
     this.pos = new THREE.Vector3(); this.vel = new THREE.Vector3(); this.facing = 0; this.speed = 0;
-    this.yaw = Math.PI; this.pitch = 0.22; this.dist = 5.2;  // camera orbit
+    this.yaw = Math.PI; this.pitch = 0.22; this.dist = ZOOM_DEFAULT;  // camera orbit (dist: target boom length)
+    this.zoomHold = 0;                                                // +1 out / −1 in while a HUD zoom button is held
     this.keys = new Set(); this.target = null; this.enabled = false; this.stepPhase = 0;
     this.marker = new THREE.Mesh(new THREE.RingGeometry(0.25, 0.38, 24).rotateX(-Math.PI / 2),
       new THREE.MeshBasicMaterial({ color: 0xffe08a, transparent: true, opacity: 0.8, depthWrite: false }));
@@ -18,23 +25,54 @@ export class PlayerController {
     this.bind();
   }
   bind() {
-    addEventListener('keydown', e => { if (!e.repeat) this.keys.add(e.code); if (this.enabled && /Arrow|Key[WASD]/.test(e.code)) this.target = null; });
+    addEventListener('keydown', e => {
+      if (!e.repeat) this.keys.add(e.code);
+      if (this.enabled && /Arrow|Key[WASD]/.test(e.code)) this.target = null;
+      if (this.enabled && (ZOOM_IN.includes(e.code) || ZOOM_OUT.includes(e.code))) e.preventDefault();   // no page scroll / browser zoom
+    });
     addEventListener('keyup', e => this.keys.delete(e.code));
-    addEventListener('blur', () => this.keys.clear());
-    let down = null;
-    this.dom.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY, moved: 0 }; this.dom.setPointerCapture(e.pointerId); });
+    addEventListener('blur', () => { this.keys.clear(); this.zoomHold = 0; });
+    // one finger / mouse: drag to orbit, tap to walk · two fingers: pinch to zoom
+    const pts = new Map();
+    let down = null, pinch = null;
+    const spread = () => { const [a, b] = [...pts.values()]; return Math.hypot(a.x - b.x, a.y - b.y) || 1; };
+    this.dom.addEventListener('pointerdown', e => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      try { this.dom.setPointerCapture(e.pointerId); } catch { /* synthetic events */ }
+      if (pts.size === 1) down = { moved: 0 };
+      else if (pts.size === 2) { pinch = { d0: spread(), dist0: this.dist }; if (down) down.moved = 1e9; }   // a pinch is never a tap
+    });
     this.dom.addEventListener('pointermove', e => {
+      const pt = pts.get(e.pointerId); if (!pt) return;
+      const dx = e.clientX - pt.x, dy = e.clientY - pt.y; pt.x = e.clientX; pt.y = e.clientY;
+      if (pinch && pts.size >= 2) { if (this.enabled) this.dist = THREE.MathUtils.clamp(pinch.dist0 * pinch.d0 / spread(), ZOOM_MIN, ZOOM_MAX); return; }
       if (!down) return;
-      const dx = e.movementX ?? 0, dy = e.movementY ?? 0;
       down.moved += Math.abs(dx) + Math.abs(dy);
       if (down.moved > 6 && this.enabled) { this.yaw -= dx * 0.005; this.pitch = THREE.MathUtils.clamp(this.pitch + dy * 0.004, -0.05, 1.0); }
     });
-    this.dom.addEventListener('pointerup', e => {
-      if (down && down.moved <= 6 && this.enabled) this.tapTo(e.clientX, e.clientY);
-      down = null;
-    });
-    this.dom.addEventListener('wheel', e => { this.dist = THREE.MathUtils.clamp(this.dist + e.deltaY * 0.004, 2.6, 12); }, { passive: true });
+    const up = e => {
+      if (!pts.delete(e.pointerId)) return;
+      if (e.type === 'pointerup' && down && !pinch && pts.size === 0 && down.moved <= 6 && this.enabled) this.tapTo(e.clientX, e.clientY);
+      if (pts.size < 2) pinch = null;
+      if (pts.size === 0) down = null;
+    };
+    this.dom.addEventListener('pointerup', up);
+    this.dom.addEventListener('pointercancel', up);
+    // mouse wheel, and trackpad pinch (arrives as ctrl+wheel): exponential, so each notch
+    // feels the same close up and far out
+    addEventListener('wheel', e => {
+      if (!this.enabled || e.target?.closest?.(OWN_WHEEL)) return;
+      if (e.ctrlKey) e.preventDefault();                 // otherwise the browser zooms the page
+      const d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
+      this.zoomBy(Math.exp(THREE.MathUtils.clamp(d, -300, 300) * (e.ctrlKey ? 0.012 : 0.0018)));
+    }, { passive: false });
+    // Safari trackpad pinch arrives as gesture events (touch pinches are handled above)
+    let g0 = null;
+    addEventListener('gesturestart', e => { if (!this.enabled || pts.size) return; e.preventDefault(); g0 = this.dist; });
+    addEventListener('gesturechange', e => { if (g0 === null) return; e.preventDefault(); this.dist = THREE.MathUtils.clamp(g0 / (e.scale || 1), ZOOM_MIN, ZOOM_MAX); });
+    addEventListener('gestureend', () => { g0 = null; });
   }
+  zoomBy(k) { this.dist = THREE.MathUtils.clamp(this.dist * k, ZOOM_MIN, ZOOM_MAX); }
   tapTo(cx, cy) {
     const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(cx / innerWidth * 2 - 1, -(cy / innerHeight) * 2 + 1);
     ray.setFromCamera(ndc, this.camera);
@@ -73,6 +111,10 @@ export class PlayerController {
         want.subVectors(this.target, this.pos).setY(0);
         if (want.length() < 0.35) { this.target = null; want.set(0, 0, 0); } else want.normalize();
       }
+    }
+    if (this.enabled) {                                   // held zoom keys / HUD buttons: smooth, ~1.5 s from close to bird's-eye
+      const k = this.keys, dir = ZOOM_OUT.some(c => k.has(c)) - ZOOM_IN.some(c => k.has(c)) + this.zoomHold;
+      if (dir) this.zoomBy(Math.exp(Math.sign(dir) * dt * 1.9));
     }
     const run = this.keys.has('ShiftLeft') || this.keys.has('ShiftRight') || (this.target && this.pos.distanceTo(this.target) > 18);
     want.multiplyScalar(run ? RUN : WALK);

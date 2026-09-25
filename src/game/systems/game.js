@@ -10,10 +10,11 @@ import { UI, STR, MEDAL } from '../ui/ui.js';
 import { useGame } from './store.js';
 import { refs } from './refs.js';
 import { wind } from '../shaders/wind.js';
+import { ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX } from '../camera/CameraRig.js';
 
 const SAVE_KEY = 'quran-journey-v1';
 const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false,
-  settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, volume: 0.7, music: false, quality: 'auto' } });
+  settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT } });
 function loadSave() {
   const f = fresh();
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s) return { ...f, ...s, settings: { ...f.settings, ...s.settings } }; } catch { /* private mode */ }
@@ -41,6 +42,7 @@ export function createGame({ camera, mapCanvas, data }) {
   // ---- UI + story ---------------------------------------------------------------------
   const ui = new UI({ mapCanvas, data, save, persist, onSettings: applySettings });
   function applySettings() {
+    if (refs.dialogue) refs.dialogue.autoAdvance = save.settings.auto !== false;
     Voice.enabled = save.settings.voice; Sound.setVolume(save.settings.volume); Sound.setMusic(save.settings.music);
     useGame.getState().setQualitySetting(save.settings.quality);
     ui.applyLang(); updateObjective();
@@ -205,12 +207,23 @@ export function createGame({ camera, mapCanvas, data }) {
     else if (mode === 'panel' && e.code === 'Escape') ui.closePanel?.();
   });
   $('talk').onclick = () => nearNpc && startEncounter(nearNpc);
+  // HUD zoom buttons: a tap steps, holding keeps zooming (smoothly, via the controller)
+  for (const b of document.querySelectorAll('#zoom button')) {
+    const dir = b.dataset.zoom === 'out' ? 1 : -1;
+    const stop = () => { player.zoomHold = 0; };
+    b.addEventListener('pointerdown', e => { e.preventDefault(); if (!player.enabled) return; player.zoomBy(dir > 0 ? 1.35 : 1 / 1.35); player.zoomHold = dir; });
+    for (const ev of ['pointerup', 'pointerleave', 'pointercancel']) b.addEventListener(ev, stop);
+    b.addEventListener('contextmenu', e => e.preventDefault());
+  }
+  const rememberZoom = () => { save.settings.zoom = +player.dist.toFixed(2); };
+  addEventListener('pagehide', () => { if (mode !== 'title') { rememberZoom(); persist(); } });
   $('dock').onclick = e => { const b = e.target.closest('button'); if (b) panel(b.dataset.open); };
 
   // ---- title ------------------------------------------------------------------------------------
   function begin(newGame) {
     if (newGame) { const st = save.settings; save = fresh(); save.settings = st; ui.save = save; persist(); }
     player.place(...(save.pos ?? [SPAWN.x, SPAWN.z, 0]));
+    player.dist = THREE.MathUtils.clamp(+save.settings.zoom || ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX);
     Sound.start(save.settings); primeAudio(); window.speechSynthesis?.getVoices();
     applySettings(); refreshNpcs(); updateObjective();
     $('title').classList.add('gone'); setTimeout(() => { $('title').hidden = true; }, 1200);
@@ -281,12 +294,12 @@ export function createGame({ camera, mapCanvas, data }) {
       }
       lastArea = area ?? lastArea;
       if ((miniTimer += dt) > 0.05) { miniTimer = 0; ui.minimap(player, npcs); }
-      if ((saveTimer += dt) > 4) { saveTimer = 0; save.pos = [+player.pos.x.toFixed(1), +player.pos.z.toFixed(1), +player.facing.toFixed(2)]; persist(); updateObjective(); }
+      if ((saveTimer += dt) > 4) { saveTimer = 0; save.pos = [+player.pos.x.toFixed(1), +player.pos.z.toFixed(1), +player.facing.toFixed(2)]; rememberZoom(); persist(); updateObjective(); }
       Sound.setWater(waterDist(player.pos.x, player.pos.z));
     }
   }
 
   refs.game = { recite, grant, speaker: id => cine.speaker(id), lang: () => save.settings.lang };
-  window.__game = { player, npcs, camera, cameraRig: rig, startEncounter, get state() { return mode; }, save: () => save };
+  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, get state() { return mode; }, save: () => save };
   return { tick };
 }

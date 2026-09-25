@@ -49,18 +49,45 @@ public/
   ui/                    icon sprite, ornaments, world map
 ```
 
+## Controls
+
+| | |
+|---|---|
+| Walk | WASD / arrows, or tap/click the ground |
+| Look | drag (mouse or one finger) |
+| Zoom / fly up | mouse wheel · trackpad pinch · two-finger pinch · `+` / `−` · `PageDown` / `PageUp` · `Z` (in) / `Q` (out) · the ＋/－ HUD buttons (hold to keep zooming) |
+| Talk · Map · Journal | `E` · `M` · `J` |
+
+The camera eases from a close follow (2.6 m, default 5.2 m) out to a bird's-eye view (60 m);
+on the way out the pitch leans to ~68° so it looks down over the village. The zoom is saved
+(`settings.zoom`); dialogue and Quran shots use their own framing and hand the player's zoom
+back afterwards. The world map (`M`) zooms with the wheel / pinch / buttons, pans by dragging,
+double-click zooms in, and ◎ centres on the child.
+
 ## Quality levels
 
 Settings → Graphics quality: Auto / Low / Medium / High / Ultra.
-Auto starts from a GPU guess and steps down/up from measured frame rate while exploring.
+Auto starts at Low or Medium from a device guess (GPU string, `deviceMemory`,
+`hardwareConcurrency`, phone/tablet UA; High only for clearly strong desktop GPUs). While
+exploring, drei's `PerformanceMonitor` first trims the resolution (down to 70 %), then steps the
+level down (or back up). Phones cap the pixel ratio at 1.5. Menus redraw at ~12 fps, hidden tabs not at all.
 
 | | Low | Medium | High | Ultra |
 |---|---|---|---|---|
 | Resolution scale | 0.8 | 1 | 1.25 | 1.75 |
-| Shadow map | 1K | 2K | 2K | 4K |
-| Grass clumps | 14k | 30k | 55k | 90k |
+| Shadow map · redrawn every | 1K · 3rd frame | 2K · 2nd frame | 2K · frame | 4K · frame |
+| Grass clumps | 12k | 34k | 65k | 100k |
+| Terrain grid | 256² | 320² | 360² | 360² |
+| Cast drawn within | 60 m | 90 m | 140 m | 200 m |
+| Post-processing | off (not even downloaded) | bloom, DoF, SMAA… | ✓ | ✓ |
 | Water | toon water (bands, foam, streaks) — one pass on every level | | | |
-| Outlines / bloom / DoF | – / ✓ / ✓ | ✓ | ✓ | ✓ |
+
+The shadow map is also redrawn whenever the child moves, so their own shadow never lags.
+Grass, flowers, crops, reeds and bushes are chunked (24 m) and thinned toward their draw
+distance (instances are shuffled, so drawing the first N is an even thinning). Draw distances
+are measured from what the camera frames and stretch (thinner) as it zooms out; the shadow box
+grows with the zoom. Voice (Piper / onnxruntime) and post-processing are lazy chunks; three and
+React are separate cached chunks. All GLBs go through one loader with one local Draco decoder.
 
 ## Assets
 

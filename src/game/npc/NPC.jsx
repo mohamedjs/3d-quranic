@@ -8,6 +8,8 @@ import { makeElder, makeCamel } from '../characters/procedural.js';
 import { loadGlbRig } from '../characters/glbRig.js';
 import { groundAt } from '../terrain/heightfield.js';
 import { refs } from '../systems/refs.js';
+import { useGame } from '../systems/store.js';
+import { PRESETS } from '../systems/quality.js';
 
 function markerTexture(glyph, bg) {
   const c = document.createElement('canvas'); c.width = c.height = 128; const x = c.getContext('2d');
@@ -17,6 +19,7 @@ function markerTexture(glyph, bg) {
   x.fillStyle = '#3a2408'; x.font = 'bold 46px Nunito, sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(glyph, 64, 66);
   const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t;
 }
+const _m = new THREE.Matrix4(), _fr = new THREE.Frustum(), _s = new THREE.Sphere();
 let MARK;
 export const markers = () => (MARK ??= { open: markerTexture('!', '#ffcc4d'), done: markerTexture('✓', '#f3ecd8') });
 
@@ -75,12 +78,27 @@ export function NPC({ encounter }) {
     }
   }, [npc]);
 
-  useFrame((_, dt) => {
-    const t = refs.clock.wind;
-    for (const m of npc.members) m.rig.animate(Math.min(dt, 0.05) * refs.clock.scale, t, 0);
-    const r = npc.host.rig.root;
-    npc.marker.position.set(r.position.x, npc.host.headY + 0.6 + Math.sin(t * 2 + npc.x) * 0.06, r.position.z);
-    for (const c of npc.camels) c.userData.animate(t);
+  // Skinned characters skip three's frustum culling (their bounds move with the pose), so
+  // each cast member is culled here against a generous sphere round the body (its shadow can
+  // reach into view), hidden and not animated at all beyond npcDist, and loses its ink hull
+  // at a distance where it would be a pixel wide. Its "!" marker stays, and grows as the
+  // camera zooms out so stories can be found from the bird's-eye view.
+  useFrame(({ camera }, dt) => {
+    const t = refs.clock.wind, r = npc.host.rig.root, preset = PRESETS[useGame.getState().quality];
+    _m.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_m);
+    let anyShown = false;
+    for (const m of npc.members) {
+      const root = m.rig.root, d = camera.position.distanceTo(root.position);
+      _s.center.set(root.position.x, root.position.y + 1, root.position.z); _s.radius = 3.5;
+      const show = d < preset.npcDist + refs.view.dist && _fr.intersectsSphere(_s);   // zoomed out: still shown round the child
+      root.visible = show; anyShown ||= show;
+      if (show) m.rig.animate(Math.min(dt, 0.05) * refs.clock.scale, t, 0);
+      if (m.rig.hulls) { const ink = preset.outlines && d < Math.max(28, preset.outlineDist * 1.6); for (const h of m.rig.hulls) h.visible = ink; }
+    }
+    const k = Math.max(1, refs.view.dist / 9);
+    npc.marker.scale.setScalar(0.6 * k);
+    npc.marker.position.set(r.position.x, npc.host.headY + 0.6 * k + Math.sin(t * 2 + npc.x) * 0.06 * k, r.position.z);
+    for (const c of npc.camels) { c.visible = anyShown; if (anyShown) c.userData.animate(t); }
   });
   return (
     <>

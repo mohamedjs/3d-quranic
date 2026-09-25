@@ -2,30 +2,49 @@
 // shade) and a light lavender-warm hemisphere that *is* the shadow colour, so shaded sides
 // and cast shadows read as one soft tint instead of going dark. The shadow frustum follows
 // the player and is snapped to shadow-map texels (no shimmering edges while walking).
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useEffect } from 'react';
 import * as THREE from 'three';
-import { useFrame } from '@react-three/fiber';
-import { usePreset } from '../systems/store.js';
+import { useFrame, useThree } from '@react-three/fiber';
+import { usePreset, useGame } from '../systems/store.js';
 import { refs } from '../systems/refs.js';
 
 export const SUN_COLOR = new THREE.Color('#ffe0b0');
 
+// The shadow box grows with the camera zoom (so the bird's-eye view has shadows to the edges
+// of the screen, not a square round the child) and is re-rendered every `shadowEvery` frames
+// on the lighter levels, or sooner when the child has moved (their own shadow never lags).
 export function Lighting({ env }) {
   const preset = usePreset();
+  const gl = useThree(s => s.gl);
   const sun = useRef();
+  const st = useRef({ frame: 0, r: 0, last: new THREE.Vector3(1e9, 0, 0) });
   const basis = useMemo(() => {
     const f = env.sunDir.clone().negate(), right = new THREE.Vector3().crossVectors(f, new THREE.Vector3(0, 1, 0)).normalize();
     return { right, up: new THREE.Vector3().crossVectors(right, f).normalize() };
   }, [env]);
+  useEffect(() => { gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; return () => { gl.shadowMap.autoUpdate = true; }; }, [gl]);
 
   useFrame(() => {
     const l = sun.current, p = refs.player?.pos; if (!l || !p) return;
-    const r = preset.shadowRange, texel = (2 * r) / preset.shadowMap;
+    const s = st.current, base = preset.shadowRange;
+    if (s.light !== l) { s.light = l; s.r = 0; }                   // a new light (quality change) starts from its props
+    const want = Math.max(base, refs.view.dist * 1.35), r = want <= base ? base : Math.ceil(want / 8) * 8;
+    let force = false;
+    if (r !== s.r) {
+      const c = l.shadow.camera; s.r = r; force = true;
+      c.left = -r; c.right = r; c.top = r; c.bottom = -r; c.updateProjectionMatrix();
+      l.shadow.normalBias = 0.04 * Math.max(1, r / base);
+    }
+    const texel = (2 * r) / preset.shadowMap;
     const a = Math.round(p.dot(basis.right) / texel) * texel - p.dot(basis.right);
     const b = Math.round(p.dot(basis.up) / texel) * texel - p.dot(basis.up);
-    const c = new THREE.Vector3().copy(p).addScaledVector(basis.right, a).addScaledVector(basis.up, b);
+    const c = _c.copy(p).addScaledVector(basis.right, a).addScaledVector(basis.up, b);
     l.target.position.copy(c); l.position.copy(c).addScaledVector(env.sunDir, 150);
     l.target.updateMatrixWorld();
+    const cinematic = useGame.getState().mode !== 'explore';
+    if (force || cinematic || ++s.frame >= preset.shadowEvery || s.last.distanceToSquared(p) > 0.015) {
+      gl.shadowMap.needsUpdate = true; s.frame = 0; s.last.copy(p);
+    }
   });
 
   const r = preset.shadowRange;
@@ -39,3 +58,4 @@ export function Lighting({ env }) {
     </>
   );
 }
+const _c = new THREE.Vector3();

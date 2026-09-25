@@ -1,0 +1,1460 @@
+[
+{
+"id": "people-of-the-elephant/zainab-1c838e9fce",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "تعالَ يا حبيبي! اقعد معنا، عندنا لك حكاية."
+},
+{
+"id": "people-of-the-elephant/zainab-99423973ed",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "بارك الله فيك يا حبيبي. تذكّر: الله أقوى من كل شيء، فتوكّل عليه."
+},
+{
+"id": "people-of-the-elephant/zainab-475f279350",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "أهلًا بحبيبي! تعالَ، اقعد قدّامنا هنا عند المصطبة. كنتُ أنا وجدّك سالم نتذكّر قصةً عظيمة حكاها الله لنا في القرآن."
+},
+{
+"id": "people-of-the-elephant/farmer-dff74b1eaf",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "قصة أصحاب الفيل! هل سمعتَ بها يا بُنيّ؟"
+},
+{
+"id": "people-of-the-elephant/player-9fcdbd4edd",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "لا، احكيا لي من فضلكما!"
+},
+{
+"id": "people-of-the-elephant/zainab-39799d6135",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "من عينيّ! اسمع جيدًا، وكلّما أردتَ أن تسأل، فاسأل."
+},
+{
+"id": "people-of-the-elephant/player-3c82e4c9ac",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "سمعتُ عن فيلٍ كبير… لكن ما القصة؟"
+},
+{
+"id": "people-of-the-elephant/zainab-a8ed9bfedf",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "صحيح، كان فيه فيلٌ كبير! اسمع القصة من أولها، واسألنا عمّا تريد."
+},
+{
+"id": "people-of-the-elephant/zainab-ed04ee6ea3",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "منذ زمنٍ بعيد، قبل أن يُبعث نبيّنا محمد ﷺ، كانت في مكة الكعبةُ، بيتُ الله الذي بناه إبراهيم وإسماعيل عليهما السلام، وكان الناس يأتون إليها من كل مكان."
+},
+{
+"id": "people-of-the-elephant/player-7983631745",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "يا جدّي، سمعتُ اسم «أبرهة». مَن هو أبرهة؟"
+},
+{
+"id": "people-of-the-elephant/farmer-5a9d11d35d",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "أبرهة كان حاكمًا على اليمن من قِبَل ملك الحبشة. بنى في صنعاء كنيسةً كبيرةً مزخرفة، وأراد أن يترك العربُ الكعبةَ ويحجّوا إليها بدلًا منها."
+},
+{
+"id": "people-of-the-elephant/player-626f24b52f",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "ولماذا أراد أن يهدم الكعبة؟"
+},
+{
+"id": "people-of-the-elephant/zainab-f1bda3fbba",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "لأن العرب ظلّوا يحبّون الكعبة ويقصدونها، ولم يتركوها من أجل كنيسته. فغضب أبرهة غضبًا شديدًا، وأقسم أن يسير إلى مكة ويهدمها."
+},
+{
+"id": "people-of-the-elephant/farmer-3da05e7eef",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "فخرج بجيشٍ عظيم، ومعه فيلٌ ضخم اسمه «محمود». ولمّا اقتربوا من مكة، أخذ جنودُه إبلَ أهلها، ومنها مئتا بعيرٍ لعبد المطّلب، جدّ النبي ﷺ وسيّد قريش."
+},
+{
+"id": "people-of-the-elephant/player-2224d11ec2",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "وماذا قال عبد المطّلب لأبرهة؟"
+},
+{
+"id": "people-of-the-elephant/zainab-93334c25a1",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "ذهب إليه وطلب أن يردّ عليه إبله. فتعجّب أبرهة وقال: تكلّمني في إبلك، وتترك البيت الذي هو دينك ودين آبائك؟"
+},
+{
+"id": "people-of-the-elephant/farmer-46b23d44c7",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "فقال عبد المطّلب: «أنا ربُّ الإبل، وللبيت ربٌّ يحميه». يعني: أنا صاحب الإبل، أمّا الكعبة فلها ربٌّ يحفظها، وهو الله. ثم أمر أهلَ مكة أن يحتموا في الجبال، ووقف عند باب الكعبة يدعو الله."
+},
+{
+"id": "people-of-the-elephant/player-626d6a8981",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "وماذا فعل الفيل محمود لمّا وجّهوه نحو مكة؟"
+},
+{
+"id": "people-of-the-elephant/farmer-6eaf1e942a",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "في الصباح جهّزوه ووجّهوه نحو مكة، فبَرَك على الأرض ولم يتحرّك! ضربوه ليقوم فأبى. فإذا وجّهوه نحو اليمن قام يُسرع، وإذا وجّهوه نحو مكة برك من جديد."
+},
+{
+"id": "people-of-the-elephant/zainab-cfc4682c46",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "مَن تظنّ الذي منع الجيش وحمى الكعبة؟"
+},
+{
+"id": "people-of-the-elephant/zainab-4e8d276f5f",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "تذكّر كلمة عبد المطّلب: «وللبيت ربٌّ يحميه»…"
+},
+{
+"id": "people-of-the-elephant/zainab-7be2140bdd",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "أحسنت يا حبيبي! الله هو الذي حمى بيته."
+},
+{
+"id": "people-of-the-elephant/player-ea5078782a",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "وما هي الطير الأبابيل يا جدّتي؟"
+},
+{
+"id": "people-of-the-elephant/zainab-7663c96068",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "أرسل الله عليهم من ناحية البحر طيورًا كثيرة، جماعاتٍ وراء جماعات — وهذا معنى «أبابيل». مع كل طائرٍ ثلاثة أحجار صغيرة: حجرٌ في منقاره، وحجران في رجليه، مثل حبّ الحمّص والعدس."
+},
+{
+"id": "people-of-the-elephant/farmer-828071d3ef",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "وكانت الحجارة «من سِجّيل»، أي من طينٍ متحجّر. فرمتهم الطير بها، فلا يُصيب حجرٌ أحدًا منهم إلا هلك، وأصاب أبرهةَ أيضًا فهلك. ولم يصلوا إلى الكعبة أبدًا."
+},
+{
+"id": "people-of-the-elephant/player-d6643f656f",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "وما معنى «كعصفٍ مأكول»؟"
+},
+{
+"id": "people-of-the-elephant/zainab-c04437e6d6",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "العَصْف هو ورق الزرع وقشّه اليابس، مثل التبن الذي تأكله البهائم في الغيط. فصار الجيش مثل القشّ الذي أكلته الدوابّ ورمته مُفتّتًا. هكذا أفسد الله كيدهم."
+},
+{
+"id": "people-of-the-elephant/player-9b9a6245e8",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "ومتى وُلد النبي ﷺ؟"
+},
+{
+"id": "people-of-the-elephant/farmer-aaa87bc411",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "في ذلك العام نفسه وُلد نبيّنا محمد ﷺ، ولذلك سمّاه العرب «عام الفيل»، وكان نحو سنة ٥٧٠ للميلاد."
+},
+{
+"id": "people-of-the-elephant/zainab-f5d4dab45d",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "وقد حكى الله لنا هذه القصة في سورةٍ قصيرة اسمها سورة الفيل. تعالَ نسمع الآيات بصوت الشيخ."
+},
+{
+"id": "people-of-the-elephant/farmer-aae848a1b7",
+"enc": "people-of-the-elephant",
+"speaker": "farmer",
+"text": "رأيتَ يا بُنيّ؟ الله يحمي بيته، ولا أحدَ أقوى من الله، مهما كان جيشه كبيرًا وفيله ضخمًا."
+},
+{
+"id": "people-of-the-elephant/zainab-fb96e8306f",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "فماذا نتعلّم من هذه القصة؟"
+},
+{
+"id": "people-of-the-elephant/zainab-f3977c4303",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "فكّر: هل استطاع الجيش الكبير أن يهدم الكعبة؟"
+},
+{
+"id": "people-of-the-elephant/zainab-9041981b39",
+"enc": "people-of-the-elephant",
+"speaker": "zainab",
+"text": "ممتاز! وإذا خفتَ من شيء، فتوكّل على الله، فهو يحفظ مَن يتوكّل عليه."
+},
+{
+"id": "people-of-the-elephant/player-6346a54cac",
+"enc": "people-of-the-elephant",
+"speaker": "player",
+"text": "سأتذكّر دائمًا: الله أقوى من كل شيء!"
+},
+{
+"id": "quraysh-journeys/hamdan-5facc285a2",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "أهلًا وسهلًا! رجعتُ للتوّ من سفر طويل مع جملي."
+},
+{
+"id": "quraysh-journeys/hamdan-f0a263c3ad",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "كلّما أكلت وشبعت، قل: الحمد لله!"
+},
+{
+"id": "quraysh-journeys/hamdan-5151198609",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "أهلًا وسهلًا! هل تحبّ السفر والقوافل؟"
+},
+{
+"id": "quraysh-journeys/hamdan-28ed0bf3bb",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "كانت هناك قبيلة تسافر كل عام رحلتين كبيرتين. هل تريد أن تعرف قصتها؟"
+},
+{
+"id": "quraysh-journeys/player-81ee8ae187",
+"enc": "quraysh-journeys",
+"speaker": "player",
+"text": "نعم!"
+},
+{
+"id": "quraysh-journeys/player-869a95ecf5",
+"enc": "quraysh-journeys",
+"speaker": "player",
+"text": "إلى أين كانوا يسافرون؟"
+},
+{
+"id": "quraysh-journeys/hamdan-bb744e8024",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "في مكة عاشت قبيلة قريش، قبيلة النبي ﷺ. ومكة وادٍ جاف لا يكاد ينبت فيه زرع."
+},
+{
+"id": "quraysh-journeys/hamdan-4be4500f66",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "فكانت قوافلهم تسافر في الشتاء إلى اليمن، وفي الصيف إلى الشام، للتجارة ولجلب الطعام."
+},
+{
+"id": "quraysh-journeys/hamdan-ac92152258",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "وكانوا يسافرون آمنين، لأن الناس كانوا يحترمونهم لأنهم أهل مكة، جيران بيت الله."
+},
+{
+"id": "quraysh-journeys/hamdan-164d70236b",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "مَن الذي أعطى قريشًا الطعام والأمان؟"
+},
+{
+"id": "quraysh-journeys/hamdan-7cc05d99e7",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "الجِمال تحمل الطعام… لكن مَن الذي خلق الطعام وحفظ الطريق؟"
+},
+{
+"id": "quraysh-journeys/hamdan-69379e0186",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "صحيح! كل النِّعَم من الله."
+},
+{
+"id": "quraysh-journeys/hamdan-4d4d9ea21e",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "ذكّرهم الله بهذه النِّعَم في سورة قريش، وهي السورة التي بعد سورة الفيل مباشرة. اسمع!"
+},
+{
+"id": "quraysh-journeys/hamdan-9c7ca6eed5",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "أطعمهم الله من جوع، وآمنهم من خوف، فأمرهم أن يعبدوا ربّ هذا البيت. وكذلك نحن: نشكر الله على الطعام والأمان ونعبده."
+},
+{
+"id": "quraysh-journeys/hamdan-94f1f1c3ad",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "عندما تأكل طعامًا لذيذًا وتشبع، ماذا تقول؟"
+},
+{
+"id": "quraysh-journeys/hamdan-9aecd37baa",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "نشكر مَن أعطانا الطعام…"
+},
+{
+"id": "quraysh-journeys/hamdan-55677a7097",
+"enc": "quraysh-journeys",
+"speaker": "hamdan",
+"text": "أحسنت! الحمد لله على كل نعمة."
+},
+{
+"id": "yusuf-dream/amina-75c32eebf5",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "السلام عليكم يا حبيبي! تعالَ استرِح في الظلّ."
+},
+{
+"id": "yusuf-dream/amina-65a86dfcb1",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "احكِ لأبيك وأمك دائمًا عمّا يهمّك، فهم يحبونك."
+},
+{
+"id": "yusuf-dream/amina-ff92add876",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "السلام عليكم يا حبيبي! اجلس هنا في ظلّ النخيل."
+},
+{
+"id": "yusuf-dream/amina-14464dd5c9",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "هل تتذكّر أحلامك عندما تستيقظ؟"
+},
+{
+"id": "yusuf-dream/player-29ecc413c7",
+"enc": "yusuf-dream",
+"speaker": "player",
+"text": "نعم، أحيانًا!"
+},
+{
+"id": "yusuf-dream/player-5e8f0b62d5",
+"enc": "yusuf-dream",
+"speaker": "player",
+"text": "لا، أنساها"
+},
+{
+"id": "yusuf-dream/amina-af61d82a36",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "كان هناك ولدٌ اسمه يوسف، ابن النبي يعقوب عليهما السلام. رأى يوسف في منامه أحد عشر كوكبًا والشمس والقمر، يسجدون له!"
+},
+{
+"id": "yusuf-dream/amina-0a497e61ed",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "فحكى يوسف رؤياه لأبيه. وكان أبوه يعقوب يحبّه كثيرًا، فقال له: يا بُنيّ، لا تحكِ رؤياك لإخوتك، لئلا يحسدوك ويكيدوا لك."
+},
+{
+"id": "yusuf-dream/amina-87312b9198",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "لِمَن حكى يوسف رؤياه؟"
+},
+{
+"id": "yusuf-dream/amina-4044e16b8b",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "حكاها لمن يحبّه كثيرًا وينصحه…"
+},
+{
+"id": "yusuf-dream/amina-ea92ece7ff",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "أحسنت! حكاها لأبيه."
+},
+{
+"id": "yusuf-dream/amina-a2745afcbd",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "والله يحكي لنا هذا في سورة يوسف. تعالَ نسمع الآيتين."
+},
+{
+"id": "yusuf-dream/amina-eb2b15a893",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "نتعلّم من يوسف أن نحكي أسرارنا وما يقلقنا لآبائنا وأمهاتنا، فهم يحبوننا وينصحوننا. وقد تحقّقت رؤيا يوسف بعد سنوات طويلة — وهذه قصة جميلة ستسمع بقيّتها يومًا ما!"
+},
+{
+"id": "yusuf-dream/amina-fe9493a082",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "إذا كان عندك أمرٌ مهمّ، لِمَن تحكيه؟"
+},
+{
+"id": "yusuf-dream/amina-8f94abfe09",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "مثل يوسف: مَن يحبّك أكثر من الجميع؟"
+},
+{
+"id": "yusuf-dream/amina-8a5a2c42bd",
+"enc": "yusuf-dream",
+"speaker": "amina",
+"text": "رائع! هكذا فعل يوسف."
+},
+{
+"id": "threads-of-dawn/amina-28b913e772",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "أهلًا يا حبيبي! تعالَ، عندي لك حكاية عن خيطين عجيبين."
+},
+{
+"id": "threads-of-dawn/amina-df48e958d7",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "إذا لم تفهم شيئًا، فاسأل مَن يعلم — هكذا نتعلّم."
+},
+{
+"id": "threads-of-dawn/amina-1c33cd0f15",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "أهلًا يا حبيبي! كنتُ أنظر من هذه النافذة إلى السماء قبل الفجر. هل تعلم أنّ في القرآن آيةً فيها خيطٌ أبيض وخيطٌ أسود؟"
+},
+{
+"id": "threads-of-dawn/amina-542976850c",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "هل تحبّ أن تسمع قصتهما؟"
+},
+{
+"id": "threads-of-dawn/player-adcf12c14c",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "نعم يا جدّتي، احكي لي!"
+},
+{
+"id": "threads-of-dawn/amina-cb2b5c9e7d",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "اسمع إذن، وكلّما خطر لك سؤالٌ فاسأل."
+},
+{
+"id": "threads-of-dawn/player-976e3cb957",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "خيوط؟ مثل خيوط الخياطة؟"
+},
+{
+"id": "threads-of-dawn/amina-bb0abdec7e",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "سؤالٌ جميل! وهذا بالضبط ما ظنّه بعض الناس أوّل مرة. اسمع القصة."
+},
+{
+"id": "threads-of-dawn/amina-7553c0fdec",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "في رمضان نصوم من الفجر إلى المغرب. وقد حكى الصحابيّ سهل بن سعد رضي الله عنه أنّه لمّا نزل قول الله تعالى: «وكلوا واشربوا حتى يتبيّن لكم الخيطُ الأبيض من الخيطِ الأسود»، لم تكن قد نزلت بعدُ كلمة «من الفجر»."
+},
+{
+"id": "threads-of-dawn/player-3ca8ab13f4",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "وماذا فعل الناس لمّا سمعوا هذه الآية؟"
+},
+{
+"id": "threads-of-dawn/amina-87d22e9ab9",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "قال سهل رضي الله عنه: كان رجالٌ إذا أرادوا الصوم ربط أحدُهم في رِجله الخيطَ الأبيض والخيطَ الأسود."
+},
+{
+"id": "threads-of-dawn/amina-67a8a78e70",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "ولم يزل يأكل حتى يتبيّن له الخيطان ويستطيع أن يراهما."
+},
+{
+"id": "threads-of-dawn/player-2921d502d7",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "خيطٌ حقيقي في رِجله؟ وهل كان يراه في الظلام؟"
+},
+{
+"id": "threads-of-dawn/amina-20de33430e",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "في ظلام الليل لا تكاد تفرّق بين الخيطين. فكان ينتظر حتى يصير الضوء كافيًا ليرى الأبيض من الأسود. هكذا فهموا الآية أوّل مرة."
+},
+{
+"id": "threads-of-dawn/player-346ff8ae18",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "وكيف عرفوا المعنى الصحيح؟"
+},
+{
+"id": "threads-of-dawn/amina-64f690c62b",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "أنزل الله بعد ذلك كلمة «مِنَ الفجر». قال سهل رضي الله عنه: فعلموا أنّه يعني الليل والنهار."
+},
+{
+"id": "threads-of-dawn/amina-8d6c4bae46",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "فالخيط الأبيض هو بياض النهار الذي يظهر في الأفق عند الفجر، والخيط الأسود هو سواد الليل. خطٌّ رفيعٌ من نور، يرسمه الله في السماء كلّ صباح!"
+},
+{
+"id": "threads-of-dawn/amina-83cdd6dfa1",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "ما المقصود بالخيط الأبيض والخيط الأسود في الآية؟"
+},
+{
+"id": "threads-of-dawn/amina-9dc26fa4ad",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "تذكّر الكلمة التي نزلت بعد ذلك: «من الفجر»…"
+},
+{
+"id": "threads-of-dawn/amina-3807159a84",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "أحسنت يا حبيبي! هما ضوء الفجر وظلمة الليل."
+},
+{
+"id": "threads-of-dawn/player-4f5aa6700a",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "إذن متى نتوقّف عن السحور؟"
+},
+{
+"id": "threads-of-dawn/amina-70b5404906",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "نتسحّر في الليل — تمرًا وماءً ولبنًا — فإذا طلع الفجر وظهر ذلك الخيط الأبيض في الأفق، أمسكنا عن الطعام والشراب حتى المغرب."
+},
+{
+"id": "threads-of-dawn/amina-62153ada61",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "تعالَ نسمع هذا الجزء من الآية بصوت الشيخ. انتبه لكلمة «مِنَ الفجر»!"
+},
+{
+"id": "threads-of-dawn/amina-4df9ba154c",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "رأيتَ؟ الصحابة رضي الله عنهم أرادوا أن يطيعوا الله تمامًا، ولمّا لم يتّضح لهم المعنى، بيّنه الله لهم برحمته."
+},
+{
+"id": "threads-of-dawn/amina-fb96e8306f",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "فماذا نتعلّم من هذه القصة؟"
+},
+{
+"id": "threads-of-dawn/amina-72e2fd0d8e",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "تذكّر: لمّا لم يتّضح المعنى للصحابة… ماذا حدث؟"
+},
+{
+"id": "threads-of-dawn/amina-ee122dd3a1",
+"enc": "threads-of-dawn",
+"speaker": "amina",
+"text": "ممتاز! نسأل أهل العلم ونتعلّم، والله يبيّن لنا."
+},
+{
+"id": "threads-of-dawn/player-8d3ae932fc",
+"enc": "threads-of-dawn",
+"speaker": "player",
+"text": "سأنظر إلى الأفق عند الفجر لأرى الخيط الأبيض!"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-3fab7368b0",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "أهلًا يا بُنيّ! تعبتُ اليوم في الغيط… تعالَ، أحكي لك عن فلاحٍ صائمٍ مثلي."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-56c0ae793e",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "الله رحيمٌ بنا يا بُنيّ، يحبّ لنا اليُسر."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-2472120176",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "أهلًا يا بُنيّ! انظر، الشمس تميل إلى الغروب، وهذا وقتٌ يرجع فيه الفلاحون إلى بيوتهم. أتعرف أنّ فلاحًا صائمًا كان سببًا في نزول آيةٍ من القرآن؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-a2d579eb20",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "هل تريد أن تسمع قصته؟"
+},
+{
+"id": "qays-the-fasting-farmer/player-d22ee38f19",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "نعم يا جدّي، احكِ لي!"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-84a90b61bf",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "اسمع يا بُنيّ، واسأل عمّا تريد."
+},
+{
+"id": "qays-the-fasting-farmer/player-44be6a4067",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "فلاحٌ صائم؟ مثلك يا جدّي؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-67f70a3706",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "نعم، كان يعمل في أرضه مثلي تمامًا! اسمع القصة."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-498a03f28e",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "حكى البراء بن عازب رضي الله عنه أنّ أصحاب النبيّ ﷺ كان لهم في الصيام أوّلَ الأمر حكمٌ غير الذي نعرفه اليوم."
+},
+{
+"id": "qays-the-fasting-farmer/player-7069eb1353",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "ما هو ذلك الحكم يا جدّي؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-174359f001",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "قال البراء رضي الله عنه: كان الرجل إذا كان صائمًا فحضر الإفطار، فنام قبل أن يُفطر، لم يأكل ليلته ولا يومه حتى يُمسي."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-97f2dcec6d",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "يعني: إذا غلبه النوم بعد المغرب قبل أن يأكل، بقي صائمًا تلك الليلة واليومَ الذي بعدها، حتى المساء!"
+},
+{
+"id": "qays-the-fasting-farmer/player-dae69de51f",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "ومَن هو الفلاح الصائم؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-b1b2e06bf0",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "رجلٌ من الأنصار اسمه قيس بن صِرمة رضي الله عنه. كان صائمًا، وكان يعمل في أرضه طولَ النهار."
+},
+{
+"id": "qays-the-fasting-farmer/player-03ff6feb05",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "وماذا حدث لمّا جاء وقت الإفطار؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-a47f9748d6",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "أتى امرأته فقال لها: أعندكِ طعام؟ قالت: لا، ولكن أنطلق فأطلب لك."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-1a20fe3d50",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "وكان يومَه يعمل، فغلبته عيناه، فنام قبل أن يأكل شيئًا."
+},
+{
+"id": "qays-the-fasting-farmer/player-f647b739d6",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "يا مسكين! وهل بقي صائمًا إلى اليوم التالي؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-d926fc0435",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "نعم. فلمّا انتصف النهار غُشِيَ عليه من شدّة التعب، فذُكر ذلك للنبيّ ﷺ."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-59ef4cf33a",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "ماذا تظنّ أنّ الله أنزل، رحمةً بالناس؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-66b949c601",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "الله رحيمٌ بعباده، ويحبّ لهم اليُسر…"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-25d24d4584",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "أحسنت! فنزلت: «وكلوا واشربوا حتى يتبيّن لكم الخيطُ الأبيض من الخيطِ الأسود»."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-58ad09b4af",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "قال البراء رضي الله عنه: ففرحوا بها فرحًا شديدًا. فصار الصائم يأكل ويشرب في الليل كلّه — حتى لو نام ثم استيقظ — إلى أن يطلع الفجر."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-b67898837c",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "هذه هي الآية نفسها التي حكت لك عنها الجدّة آمنة. اسمعها مرة أخرى بصوت الشيخ، وتذكّر قيسًا الفلاح الصائم."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-a3b28dea9d",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "الصيام عبادةٌ عظيمة، والله جعله سهلًا علينا. هو رحيمٌ بعباده، يحبّ لهم اليُسر ولا يريد أن يشقّ عليهم."
+},
+{
+"id": "qays-the-fasting-farmer/farmer-b062dd0299",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "فماذا نتعلّم من قصة قيسٍ رضي الله عنه؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-109a1a3d35",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "تذكّر: كيف فرح الصحابة لمّا نزلت الآية؟"
+},
+{
+"id": "qays-the-fasting-farmer/farmer-0ff5425d48",
+"enc": "qays-the-fasting-farmer",
+"speaker": "farmer",
+"text": "ممتاز! ونشكر الله على رحمته، ونقدّر تعب الفلاحين وكل من يعمل بجدّ."
+},
+{
+"id": "qays-the-fasting-farmer/player-dde1ab461a",
+"enc": "qays-the-fasting-farmer",
+"speaker": "player",
+"text": "الحمد لله أنّ الله رحيمٌ بنا!"
+},
+{
+"id": "best-dates/hamdan-b8acb31436",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "أهلًا يا صغيري! تعالَ إلى ظلّ النخيل، التمر نضج!"
+},
+{
+"id": "best-dates/hamdan-65c1abd2e5",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "أعطِ غيرك ما تحبّ أن تُعطى."
+},
+{
+"id": "best-dates/hamdan-dafde09e12",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "أهلًا يا صغيري! انظر إلى هذه العذوق، ما أجمل التمر إذا نضج! كنتُ أنا والجدّ سالم نتذكّر قصةً عن التمر نزلت فيها آيةٌ من القرآن."
+},
+{
+"id": "best-dates/farmer-0bc27340ae",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "هل تعرف ما هو «القِنو» يا بُنيّ؟"
+},
+{
+"id": "best-dates/player-d6ae59aa4e",
+"enc": "best-dates",
+"speaker": "player",
+"text": "لا، ما هو؟"
+},
+{
+"id": "best-dates/farmer-b53e4ac7f5",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "القِنو هو العِذق: عنقود التمر الكبير كما هو على النخلة، بعيدانه وحبّاته."
+},
+{
+"id": "best-dates/player-e535b80f03",
+"enc": "best-dates",
+"speaker": "player",
+"text": "عنقود التمر!"
+},
+{
+"id": "best-dates/farmer-988041c33b",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "أحسنت! القِنو هو العِذق: عنقود التمر الكبير كما يُقطف من النخلة."
+},
+{
+"id": "best-dates/hamdan-3093b60d51",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "حكى البراء بن عازب رضي الله عنه فقال: نزلت فينا معشرَ الأنصار، كنّا أصحابَ نخل."
+},
+{
+"id": "best-dates/player-63ff8f4283",
+"enc": "best-dates",
+"speaker": "player",
+"text": "وماذا كانوا يفعلون بتمرهم؟"
+},
+{
+"id": "best-dates/hamdan-2679625635",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "قال البراء: كان الرجل يأتي من نخله على قدر كثرته وقلّته. يأتي بالقِنو والقِنوين، فيعلّقه في المسجد."
+},
+{
+"id": "best-dates/farmer-e444dfa8d5",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "وكان في المسجد فقراء ليس لهم طعام، هم «أهل الصُّفّة». فإذا جاع أحدهم أتى القِنو فضربه بعصاه، فيسقط البُسر والتمر فيأكل."
+},
+{
+"id": "best-dates/player-9570d8b302",
+"enc": "best-dates",
+"speaker": "player",
+"text": "ما أجمل هذا! وهل كانت كلّ العذوق طيّبة؟"
+},
+{
+"id": "best-dates/farmer-f0fefd4c3b",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "لا يا بُنيّ. قال البراء: وكان ناسٌ ممّن لا يرغب في الخير، يأتي الرجل بالقِنو فيه الشِّيص والحَشَف، وبالقِنو قد انكسر، فيعلّقه."
+},
+{
+"id": "best-dates/hamdan-b5567ff8e8",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "الشِّيص تمرٌ ضامرٌ لم يكتمل، والحَشَف تمرٌ يابسٌ رديء. يعني: كانوا يعطون أسوأ ما عندهم!"
+},
+{
+"id": "best-dates/player-bcc8ea39bb",
+"enc": "best-dates",
+"speaker": "player",
+"text": "وماذا أنزل الله في ذلك؟"
+},
+{
+"id": "best-dates/hamdan-77c41769dd",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "أنزل الله آيةً يأمر فيها المؤمنين أن يُنفقوا من الطيّبات — من أطيب ما يكسبون وممّا يُخرج لهم من الأرض — وألّا يقصدوا الرديء الخبيث فيُعطوه."
+},
+{
+"id": "best-dates/farmer-ccb0249aee",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "وهم أنفسهم لو أُعطوا ذلك الرديء ما أخذوه إلا وهم يُغمضون أعينهم عنه."
+},
+{
+"id": "best-dates/player-a2e8dbdce8",
+"enc": "best-dates",
+"speaker": "player",
+"text": "وماذا قال البراء بعد ذلك؟"
+},
+{
+"id": "best-dates/hamdan-07ee3955b3",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "قال: لو أنّ أحدكم أُهدي إليه مثلُ ما أعطى، لم يأخذه إلا على إغماضٍ أو حياء."
+},
+{
+"id": "best-dates/farmer-6c39a4fde4",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "قال البراء رضي الله عنه: فكنّا بعد ذلك يأتي الرجل بصالح ما عنده. أي: صار كلّ واحدٍ يأتي بأحسن تمره!"
+},
+{
+"id": "best-dates/hamdan-c54eaaf496",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "لو أهداك أحدٌ تمرًا يابسًا مكسورًا، هل كنتَ ستفرح به؟"
+},
+{
+"id": "best-dates/hamdan-9bd1e9b2ee",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "تذكّر كلام البراء: «لم يأخذه إلا على إغماضٍ أو حياء»…"
+},
+{
+"id": "best-dates/hamdan-2794ed1374",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "صحيح! فلا نُعطي غيرنا ما لا نرضاه لأنفسنا."
+},
+{
+"id": "best-dates/farmer-a447222243",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "تعالَ نسمع الآية بصوت الشيخ."
+},
+{
+"id": "best-dates/hamdan-44e6043836",
+"enc": "best-dates",
+"speaker": "hamdan",
+"text": "ولهذا يا صغيري، إذا تصدّقتَ أو أهديت، فاختر الأطيب: التمرة اللامعة الممتلئة، لا اليابسة المكسورة."
+},
+{
+"id": "best-dates/farmer-fb96e8306f",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "فماذا نتعلّم من هذه القصة؟"
+},
+{
+"id": "best-dates/farmer-823d2bdc65",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "فكّر: ماذا صار الأنصار يأتون به بعد نزول الآية؟"
+},
+{
+"id": "best-dates/farmer-a8fb3937c4",
+"enc": "best-dates",
+"speaker": "farmer",
+"text": "ممتاز! الكرم الحقيقي أن تُهدي الأطيب."
+},
+{
+"id": "best-dates/player-0bd054682f",
+"enc": "best-dates",
+"speaker": "player",
+"text": "سأختار أجمل عِذقٍ وأُعطيه لمن يحتاج!"
+},
+{
+"id": "houses-by-their-doors/hamdan-7e4dfa8c2a",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "أهلًا يا صغيري! من أين تدخل بيتكم: من الباب أم من الجدار؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-782bed87b7",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "الخير في قلبك وعملك الصالح، لا في العادات الغريبة."
+},
+{
+"id": "houses-by-their-doors/hamdan-a1d1a3f5cc",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "أهلًا يا صغيري! انظر إلى هذا الباب الخشبي الجميل."
+},
+{
+"id": "houses-by-their-doors/hamdan-e2c5445615",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "سؤالٌ سريع: من أين يدخل الناس بيوتهم؟"
+},
+{
+"id": "houses-by-their-doors/player-817b80d62b",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "من الباب طبعًا!"
+},
+{
+"id": "houses-by-their-doors/hamdan-152e50220d",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "أحسنت! لكن هل تصدّق أنّ ناسًا في الماضي كانوا في وقتٍ من الأوقات لا يدخلون من الباب؟"
+},
+{
+"id": "houses-by-their-doors/player-c3af168735",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "من الشبّاك!"
+},
+{
+"id": "houses-by-their-doors/hamdan-6f588cd24f",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "لا يا صغيري! لكن اسمع: كان ناسٌ في الماضي، في وقتٍ من الأوقات، لا يدخلون من الباب!"
+},
+{
+"id": "houses-by-their-doors/player-a50308bd4d",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "لا يدخلون من الباب؟ ومتى كان ذلك؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-fd159792dc",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "حكى البراء بن عازب رضي الله عنه فقال: نزلت هذه الآية فينا. كانت الأنصار إذا حجّوا فجاؤوا، لم يدخلوا من قِبَل أبواب بيوتهم، ولكن من ظهورها."
+},
+{
+"id": "houses-by-their-doors/hamdan-60e09d1a06",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "كانت هذه عادةً قديمة من أيام الجاهلية، يظنّون أنها من البِرّ — أي من الخير."
+},
+{
+"id": "houses-by-their-doors/player-41a1a2749c",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "وماذا حدث بعد ذلك؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-a77cb2bfdc",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "قال البراء رضي الله عنه: فجاء رجلٌ من الأنصار فدخل من قِبَل بابه، فكأنّه عُيِّر بذلك."
+},
+{
+"id": "houses-by-their-doors/hamdan-7ec643f505",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "يعني: عابه بعض الناس لأنّه دخل من الباب، كما يدخل الناس عادةً!"
+},
+{
+"id": "houses-by-their-doors/hamdan-f2b6e7d122",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "في رأيك، هل كان الرجل الذي دخل من الباب مخطئًا؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-e4f8494f2f",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "هل يجعلنا الدخول من خلف البيت أقرب إلى الله؟ فكّر…"
+},
+{
+"id": "houses-by-their-doors/hamdan-3748829fac",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "أحسنت! وهذا ما بيّنه الله في القرآن."
+},
+{
+"id": "houses-by-their-doors/player-3cf3e42a1c",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "وماذا أنزل الله؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-94407cda35",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "فنزلت الآية تقول: ليس البِرّ أن تأتوا البيوت من ظهورها، ولكنّ البِرّ مَن اتّقى، وأْتوا البيوت من أبوابها."
+},
+{
+"id": "houses-by-their-doors/player-db45bd15e1",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "إذن ما هو البِرّ الحقيقي؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-d330823353",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "البِرّ هو التقوى: أن تطيع الله وتراقبه وتعمل الخير. أمّا العادات الغريبة التي لم يأمر الله بها فليست من البِرّ."
+},
+{
+"id": "houses-by-their-doors/hamdan-9720ed9716",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "تعالَ نسمع الآية بصوت الشيخ. انتبه لقوله: «وأْتوا البيوت من أبوابها»."
+},
+{
+"id": "houses-by-their-doors/hamdan-dd0494dbf9",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "وفي أوّل الآية ذكر الله الأهلّة — الهلال الذي نراه في أوّل كل شهر — وأنّها مواقيت للناس وللحجّ."
+},
+{
+"id": "houses-by-their-doors/hamdan-fb96e8306f",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "فماذا نتعلّم من هذه القصة؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-07f5a0b510",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "تذكّر: ما هو البِرّ الذي ذكرته الآية؟"
+},
+{
+"id": "houses-by-their-doors/hamdan-7bf81c2e19",
+"enc": "houses-by-their-doors",
+"speaker": "hamdan",
+"text": "ممتاز! ولا نخجل من فعل الصواب، حتى لو لامنا بعض الناس."
+},
+{
+"id": "houses-by-their-doors/player-bb222e5f2b",
+"enc": "houses-by-their-doors",
+"speaker": "player",
+"text": "من اليوم سأدخل من الباب، وأقول: بسم الله!"
+},
+{
+"id": "the-new-qibla/farmer-72779d9b03",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "السلام عليكم يا بُنيّ! ساحةٌ واسعة… مكانٌ جميلٌ للصلاة."
+},
+{
+"id": "the-new-qibla/farmer-c903e13a58",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "سارِع إلى طاعة الله، فالله لا يُضيع عملك."
+},
+{
+"id": "the-new-qibla/farmer-3ddfaf03fc",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "السلام عليكم يا بُنيّ! نحن في ساحةٍ واسعة، مكانٍ جميلٍ للصلاة."
+},
+{
+"id": "the-new-qibla/farmer-3e681d8d28",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "قل لي: إلى أيّ جهةٍ نتّجه حين نصلّي؟"
+},
+{
+"id": "the-new-qibla/player-aaafcad0a8",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "نحو الكعبة في مكة!"
+},
+{
+"id": "the-new-qibla/farmer-84a9e31062",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "أحسنت! الكعبة قِبلتنا. لكن هل تعلم أنّ المسلمين صلّوا مدّةً نحو جهةٍ أخرى؟"
+},
+{
+"id": "the-new-qibla/player-1b5df63956",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "لا أعرف…"
+},
+{
+"id": "the-new-qibla/farmer-c72683cc95",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "نتّجه نحو الكعبة في مكة، وهي قِبلتنا. لكن هل تعلم أنّ المسلمين صلّوا مدّةً نحو جهةٍ أخرى؟"
+},
+{
+"id": "the-new-qibla/player-851cd4d773",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "نحو أيّ جهةٍ كانوا يصلّون؟"
+},
+{
+"id": "the-new-qibla/hamdan-12d8f3dbd1",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "حكى البراء بن عازب رضي الله عنه أنّ رسول الله ﷺ صلّى نحو بيت المقدس ستة عشر شهرًا أو سبعة عشر شهرًا."
+},
+{
+"id": "the-new-qibla/farmer-5db94015fa",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "وبيت المقدس فيه المسجد الأقصى المبارك، وكان ذلك بعد أن هاجر النبيّ ﷺ إلى المدينة."
+},
+{
+"id": "the-new-qibla/player-b1bed4d78a",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "وأيّ قبلةٍ كان يحبّ النبيّ ﷺ؟"
+},
+{
+"id": "the-new-qibla/farmer-d2d5152446",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "قال البراء رضي الله عنه: وكان رسول الله ﷺ يحبّ أن يُوجَّه إلى الكعبة."
+},
+{
+"id": "the-new-qibla/hamdan-fa980b110c",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "فأنزل الله: «قد نرى تقلّب وجهك في السماء» — أي أنّ الله يرى نبيّه ﷺ يرفع وجهه إلى السماء ينتظر أمر ربّه — فأمره أن يتّجه في صلاته نحو المسجد الحرام، فتوجّه نحو الكعبة."
+},
+{
+"id": "the-new-qibla/player-f96e25319a",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "وكيف عرف الناس أنّ القِبلة تغيّرت؟"
+},
+{
+"id": "the-new-qibla/hamdan-7962c47782",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "قال البراء رضي الله عنه: فصلّى مع النبيّ ﷺ رجلٌ، ثم خرج بعدما صلّى، فمرّ على قومٍ من الأنصار في صلاة العصر نحو بيت المقدس."
+},
+{
+"id": "the-new-qibla/farmer-d306c9c8c5",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "فقال: هو يشهد أنّه صلّى مع رسول الله ﷺ، وأنّه توجّه نحو الكعبة."
+},
+{
+"id": "the-new-qibla/player-e74138618a",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "وماذا فعلوا وهم في صلاتهم؟"
+},
+{
+"id": "the-new-qibla/farmer-b9dc462ff8",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "قال البراء رضي الله عنه: فتحرّف القوم حتى توجّهوا نحو الكعبة. استداروا وهم في صلاتهم، ولم ينتظروا حتى يُنهوها!"
+},
+{
+"id": "the-new-qibla/hamdan-ee7c21b7d5",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "لماذا استدار الصحابة رضي الله عنهم فورًا وهم يصلّون؟"
+},
+{
+"id": "the-new-qibla/hamdan-39c6029906",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "فكّر: جاء أمر الله… فماذا يفعل المؤمن؟"
+},
+{
+"id": "the-new-qibla/hamdan-37f874aeee",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "أحسنت! سارعوا إلى طاعة الله فورًا."
+},
+{
+"id": "the-new-qibla/player-2bb9da3572",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "وماذا عن صلاة الذين ماتوا قبل أن تتغيّر القِبلة؟"
+},
+{
+"id": "the-new-qibla/farmer-e7bd996c3c",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "سأل الناس عن ذلك فعلًا! فأنزل الله: «وما كان الله ليُضيع إيمانكم» — أي صلاتكم التي صلّيتموها نحو بيت المقدس لن تضيع. فالله لا يُضيع عمل أحد."
+},
+{
+"id": "the-new-qibla/hamdan-733960c135",
+"enc": "the-new-qibla",
+"speaker": "hamdan",
+"text": "تعالَ نسمع الآية التي تحوّلت بها القِبلة، بصوت الشيخ."
+},
+{
+"id": "the-new-qibla/farmer-321e679d6c",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "ومن يومها يتّجه المسلمون في كلّ مكانٍ من العالم نحو الكعبة، في كلّ صلاة. ونحن هنا في هذه الساحة نتّجه نحوها أيضًا."
+},
+{
+"id": "the-new-qibla/farmer-3538c801a1",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "تذكّر ماذا فعل الأنصار في صلاة العصر…"
+},
+{
+"id": "the-new-qibla/farmer-b715cc3152",
+"enc": "the-new-qibla",
+"speaker": "farmer",
+"text": "ممتاز! نطيع الله بحبّ وبسرعة، ونثق أنّه لا يُضيع عملنا."
+},
+{
+"id": "the-new-qibla/player-e0d82833f8",
+"enc": "the-new-qibla",
+"speaker": "player",
+"text": "إذا صلّيتُ سأتّجه نحو الكعبة، وأسارع إلى طاعة الله!"
+},
+{
+"id": "the-guest-and-the-lamp/amina-cf57de832d",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "أهلًا يا حبيبي! انظر إلى السراج عند الباب… يُذكّرني بقصةٍ عن ضيفٍ كريم."
+},
+{
+"id": "the-guest-and-the-lamp/amina-3fd73cac10",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "أكرِم ضيفك يا حبيبي، وقدّم غيرك على نفسك."
+},
+{
+"id": "the-guest-and-the-lamp/amina-8d74472508",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "أهلًا يا حبيبي! تعالَ، اقترب. انظر إلى هذا السراج المضيء عند الباب. عندنا لك قصةٌ عن سراجٍ أُطفئ عن قصد!"
+},
+{
+"id": "the-guest-and-the-lamp/farmer-882b527cef",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "هل تعرف لماذا يُطفئ أحدٌ سراجه وعنده ضيف؟"
+},
+{
+"id": "the-guest-and-the-lamp/player-28bd63c505",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "لا! لماذا؟"
+},
+{
+"id": "the-guest-and-the-lamp/amina-ff59b6dc3e",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "اسمع القصة، وستعرف السرّ."
+},
+{
+"id": "the-guest-and-the-lamp/player-3afe1941b7",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "لكي يناموا؟"
+},
+{
+"id": "the-guest-and-the-lamp/farmer-6501b54ce7",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "لا يا بُنيّ! كان هناك سرٌّ جميل. اسمع القصة."
+},
+{
+"id": "the-guest-and-the-lamp/farmer-5e5e8fd62f",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "حكى أبو هريرة رضي الله عنه أنّ رجلًا أتى النبيّ ﷺ يحتاج إلى طعام، فبعث النبيّ ﷺ إلى بيوت نسائه، فقُلن: ما معنا إلا الماء."
+},
+{
+"id": "the-guest-and-the-lamp/player-6230bc0a5d",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "ما معهم إلا الماء؟! فماذا فعل النبيّ ﷺ؟"
+},
+{
+"id": "the-guest-and-the-lamp/amina-4214e1239c",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "قال رسول الله ﷺ: «مَن يضمّ — أو يُضيف — هذا؟» فقال رجلٌ من الأنصار: أنا."
+},
+{
+"id": "the-guest-and-the-lamp/farmer-c36838358e",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "فانطلق به إلى امرأته، فقال: أكرمي ضيفَ رسول الله ﷺ."
+},
+{
+"id": "the-guest-and-the-lamp/player-1f4bcd2689",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "وهل كان عندهم طعامٌ كثير؟"
+},
+{
+"id": "the-guest-and-the-lamp/amina-c387d546c4",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "لا يا حبيبي. قالت امرأته: ما عندنا إلا قوتُ صبياني — يعني طعامًا قليلًا يكفي أولادهما الصغار فقط."
+},
+{
+"id": "the-guest-and-the-lamp/player-c1b6279674",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "يا الله! وماذا فعلا؟"
+},
+{
+"id": "the-guest-and-the-lamp/farmer-fbdb60fae3",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "قال لها: هيّئي طعامك، وأصبحي سراجك — أي أشعليه — ونوّمي صبيانك إذا أرادوا عَشاءً."
+},
+{
+"id": "the-guest-and-the-lamp/amina-d567f6a3f1",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "فهيّأت طعامها، وأشعلت سراجها، ونوّمت صغارها، وقدّما الطعام للضيف."
+},
+{
+"id": "the-guest-and-the-lamp/player-a2a04a6998",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "ولماذا أُطفئ السراج؟"
+},
+{
+"id": "the-guest-and-the-lamp/amina-d4d6ad5d00",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "ثم قامت كأنها تُصلح سراجها، فأطفأته! فجعلا يُريان الضيف كأنهما يأكلان معه."
+},
+{
+"id": "the-guest-and-the-lamp/farmer-f45acbff98",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "هذا هو السرّ! في الظلام لا يرى الضيف أنّهما لا يأكلان، فيأكل هو مطمئنًّا ولا يستحيي."
+},
+{
+"id": "the-guest-and-the-lamp/player-e010ae7370",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "وهما… ماذا أكلا؟"
+},
+{
+"id": "the-guest-and-the-lamp/amina-76c684cc79",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "قال أبو هريرة رضي الله عنه: فباتا طاويين — أي ناما تلك الليلة جائعين. قدّما ضيفهما على أنفسهما، وهذا هو «الإيثار»."
+},
+{
+"id": "the-guest-and-the-lamp/farmer-07eb737b5b",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "لماذا أطفأت المرأة السراج؟"
+},
+{
+"id": "the-guest-and-the-lamp/farmer-a9b46b7b33",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "تذكّر: كان الطعام قليلًا، وأرادا أن يأكل الضيف مرتاحًا…"
+},
+{
+"id": "the-guest-and-the-lamp/farmer-cdf7f0dc0f",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "أحسنت! أرادا أن يُكرما الضيف دون أن يُحرجاه."
+},
+{
+"id": "the-guest-and-the-lamp/player-deea9590d2",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "وماذا حدث في الصباح؟"
+},
+{
+"id": "the-guest-and-the-lamp/farmer-646502c848",
+"enc": "the-guest-and-the-lamp",
+"speaker": "farmer",
+"text": "فلمّا أصبح غدا الرجل إلى رسول الله ﷺ، فقال النبيّ ﷺ: «ضحِك الله الليلةَ — أو عجِب — من فَعالكما»."
+},
+{
+"id": "the-guest-and-the-lamp/amina-402ddce929",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "وأنزل الله آيةً في القرآن يمدح فيها الأنصار: «ويُؤثِرون على أنفسهم ولو كان بهم خصاصة» — أي يقدّمون غيرهم على أنفسهم ولو كانوا هم محتاجين."
+},
+{
+"id": "the-guest-and-the-lamp/amina-a447222243",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "تعالَ نسمع الآية بصوت الشيخ."
+},
+{
+"id": "the-guest-and-the-lamp/amina-b33d2623da",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "تذكّر: ماذا فعل الرجل وامرأته بطعامهما القليل؟"
+},
+{
+"id": "the-guest-and-the-lamp/amina-5d25b7a472",
+"enc": "the-guest-and-the-lamp",
+"speaker": "amina",
+"text": "ممتاز! وهذا هو الإيثار، وقد قال الله عن أهله: «فأولئك هم المفلحون»."
+},
+{
+"id": "the-guest-and-the-lamp/player-5119314e13",
+"enc": "the-guest-and-the-lamp",
+"speaker": "player",
+"text": "سأشارك طعامي مع ضيوفنا وأصدقائي!"
+}
+]

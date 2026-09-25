@@ -14,7 +14,11 @@ export function Environment({ env }) {
     scene.environment = null; scene.background = new THREE.Color('#f3d3a6');
     scene.fog = new THREE.Fog('#efd2a8', 90, 620);
   }, [scene, env]);
-  useFrame(() => { sky.material.uniforms.uTime.value = refs.clock.wind; });
+  // the haze starts further out as the camera climbs, so the bird's-eye view stays crisp
+  useFrame(() => {
+    sky.material.uniforms.uTime.value = refs.clock.wind;
+    const f = scene.fog; if (f) { const d = refs.view.dist; f.near = 90 + d * 1.2; f.far = 620 + d * 3; }
+  });
   return (
     <>
       <primitive object={sky} />

@@ -1,0 +1,8 @@
+{
+  "_note": "Habibi-TTS (https://huggingface.co/spaces/chenxie95/Habibi-TTS) voices per character. ref = reference clip from the Space's assets (PLACEHOLDER voices for prototyping; for release replace with your own consented 6–12 s recordings + exact transcript). model: Specialized EGY/MSA are Apache-2.0. post = ffmpeg audio filter applied when importing.",
+  "farmer": { "lang": "EGY (Egyptian, Saidi, etc.)", "model": "Specialized", "ref": "EGY.mp3",   "post": "atempo=0.94" },
+  "hamdan": { "lang": "MSA (Modern Standard Arabic)", "model": "Specialized", "ref": "MSA.mp3",   "post": "" },
+  "zainab": { "lang": "EGY (Egyptian, Saidi, etc.)", "model": "Specialized", "ref": "IRQ.wav",   "post": "rubberband=pitch=0.94:tempo=0.93" },
+  "amina":  { "lang": "MSA (Modern Standard Arabic)", "model": "Specialized", "ref": "MAR.mp3",   "post": "rubberband=pitch=0.95:tempo=0.95" },
+  "player": { "lang": "EGY (Egyptian, Saidi, etc.)", "model": "Specialized", "ref": "ALG.wav",   "post": "rubberband=pitch=1.08" }
+}

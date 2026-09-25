@@ -67,14 +67,25 @@ export class Story {
   line(text, { wait = true } = {}) {
     const el = $('.text'), next = $('.next');
     this.stopLine?.();  // a hint may still be typing when the next line starts
-    this.talk(true); Voice.speak(text, this.lang());
+    this.talk(true);
+    const t0 = performance.now(), spoken = Voice.speak(text, this.lang());
     el.textContent = ''; next.hidden = true;
-    let n = 0, full = false;
+    let n = 0, full = false, finished = false, autoTimer = 0;
     return new Promise(resolve => {
       const timer = setInterval(() => { n += 2; el.textContent = text.slice(0, n); if (n >= text.length) complete(); }, 28);
-      this.stopLine = () => { clearInterval(timer); off(); };
+      this.stopLine = () => { clearInterval(timer); clearTimeout(autoTimer); off(); };
       const complete = () => { clearInterval(timer); el.textContent = text; full = true; next.hidden = !wait; if (!wait) done(); };
-      const done = () => { off(); resolve(); };
+      const done = () => { if (finished) return; finished = true; clearTimeout(autoTimer); off(); resolve(); };
+      // Auto-advance: when the voice finishes (or, with no voice, after a comfortable reading
+      // time) the dialogue moves on by itself. A tap still skips ahead at any moment.
+      if (wait && this.autoAdvance !== false) {
+        const readMs = Math.max(2200, 900 + text.length * 70);
+        spoken.then(voiced => {
+          if (finished) return;
+          const left = voiced ? 650 : Math.max(0, readMs - (performance.now() - t0));
+          autoTimer = setTimeout(() => { if (finished) return; if (!full) complete(); this.talk(false); done(); }, left);
+        });
+      }
       const advance = e => {
         if (e.type === 'keydown' && !['Space', 'Enter', 'KeyE'].includes(e.code)) return;
         if (e.type === 'keydown') e.preventDefault();

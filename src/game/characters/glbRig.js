@@ -7,16 +7,7 @@ import { toonMaterial, outlineMaterial } from '../shaders/toon.js';
 import { useGame } from '../systems/store.js';
 import { PRESETS } from '../systems/quality.js';
 
-let loader;
-async function gltfLoader() {   // loaded only when a model file actually exists
-  if (!loader) {
-    const [{ GLTFLoader }, { DRACOLoader }, { MeshoptDecoder }] = await Promise.all([
-      import('three/addons/loaders/GLTFLoader.js'), import('three/addons/loaders/DRACOLoader.js'), import('three/addons/libs/meshopt_decoder.module.js')]);
-    const draco = new DRACOLoader().setDecoderPath('./draco/');
-    loader = new GLTFLoader().setDRACOLoader(draco).setMeshoptDecoder(MeshoptDecoder);
-  }
-  return loader;
-}
+import { gltfLoader } from '../world/loaders.js';
 
 // Resolves to a rig, or null when the file is absent (so the caller falls back quietly).
 export async function loadGlbRig(url, targetHeight) {
@@ -24,7 +15,7 @@ export async function loadGlbRig(url, targetHeight) {
     const head = await fetch(url, { method: 'HEAD' });
     if (!head.ok || !/model|octet|gltf/.test(head.headers.get('content-type') || 'model/gltf-binary')) return null;
   } catch { return null; }
-  const gltf = await (await gltfLoader()).loadAsync(url);   // a present-but-broken file should fail loudly
+  const gltf = await gltfLoader().loadAsync(url);   // a present-but-broken file should fail loudly
   return new GlbRig(gltf, targetHeight);
 }
 

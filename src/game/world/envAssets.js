@@ -3,8 +3,7 @@
 // art contract (toon_* → cel material with palette colour, `outline` → ink hull), so the
 // whole world shares one small set of shaders.
 import * as THREE from 'three';
-import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+import { gltfLoader } from './loaders.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { toonFor, toonMaterial, outlineMaterial, windFor, WIND } from '../shaders/toon.js';
 import { TOON } from '../shaders/toonPalette.js';
@@ -21,7 +20,7 @@ const OUTLINE_WIND = { palm: WIND.frond, sycamore: WIND.leaf };
 let promise;
 export function loadEnvModels() {
   promise ??= (async () => {
-    const loader = new GLTFLoader().setDRACOLoader(new DRACOLoader().setDecoderPath('./draco/'));
+    const loader = gltfLoader();
     const out = {};
     await Promise.all(ENV_MODELS.map(async name => {
       const gltf = await loader.loadAsync(`./models/env/${name}.glb`).catch(e => { throw new Error(`models/env/${name}.glb: ${e.message || e}`); });

@@ -78,6 +78,13 @@ html[dir="rtl"] #talk { padding: 8px 8px 8px 24px; }
 #dock button { width: 56px; height: 56px; border-radius: 50%; background: var(--glass); border: 1.5px solid var(--line); display: grid; place-items: center; color: var(--sun); font-size: 28px;
   box-shadow: var(--glow); backdrop-filter: blur(8px); transition: transform .15s, background .15s, box-shadow .15s; }
 #dock button:hover { transform: translateY(-2px); background: var(--glass-2); box-shadow: 0 0 0 1px var(--sun), 0 0 22px rgba(244, 199, 102, .35); }
+/* camera zoom (+ close / − bird's-eye): opposite corner from the dock, thumb-sized on touch */
+#zoom { position: absolute; bottom: 22px; inset-inline-start: 22px; display: flex; flex-direction: column; gap: 10px; }
+#zoom button, .worldmap .tools button { width: 46px; height: 46px; border-radius: 50%; background: var(--glass); border: 1.5px solid var(--line); display: grid; place-items: center; color: var(--sun); font-size: 22px;
+  box-shadow: var(--glow); backdrop-filter: blur(8px); transition: transform .15s, background .15s, box-shadow .15s; touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+#zoom button:hover, .worldmap .tools button:hover { background: var(--glass-2); box-shadow: 0 0 0 1px var(--sun), 0 0 18px rgba(244, 199, 102, .35); }
+#zoom button:active, .worldmap .tools button:active { transform: scale(.94); }
+body.cinema #zoom { display: none; }
 
 #bubble { position: fixed; left: 0; top: 0; z-index: 3; max-width: 280px; padding: 10px 14px; background: rgba(255, 249, 236, .95); color: #3a2a18;
   border-radius: 14px; font-size: 15px; font-weight: 600; line-height: 1.45; pointer-events: none; box-shadow: 0 6px 18px rgba(0, 0, 0, .25); text-align: center; }
@@ -246,7 +253,18 @@ html[dir="rtl"] #reward .pts { padding: 5px 6px 5px 18px; }
 .worldmap .sub { margin: 0 0 12px; color: var(--ink-dim); }
 .worldmap .stage { position: relative; width: 100%; aspect-ratio: 1400 / 1000; border-radius: 16px; overflow: hidden; background: #6f8a3c;
   border: 1px solid var(--line); }
-.worldmap .stage > img, .worldmap .stage > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.worldmap .stage .layer > img, .worldmap .stage .layer > canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; }
+.worldmap .stage { touch-action: none; cursor: grab; user-select: none; -webkit-user-select: none;
+  width: min(100%, calc((92vh - 130px) * 1.4)); margin-inline: auto; }   /* whole map (and its zoom buttons) fit on short screens */
+.worldmap .stage.drag { cursor: grabbing; }
+.worldmap .stage .layer { position: absolute; inset: 0; transform-origin: 0 0; will-change: transform; }
+.worldmap .stage.ease .layer { transition: transform .3s ease; }
+.worldmap .stage.ease .pin, .worldmap .stage.ease .npc, .worldmap .stage.ease .me { transition: left .3s ease, top .3s ease; }
+.worldmap .tools { position: absolute; z-index: 6; bottom: 12px; inset-inline-end: 12px; display: flex; flex-direction: column; gap: 8px; }
+.worldmap .tools button { width: 40px; height: 40px; font-size: 19px; }
+.worldmap .tools button:disabled { opacity: .45; pointer-events: none; }
+@media (max-height: 520px) { .worldmap .tools { gap: 5px; bottom: 8px; inset-inline-end: 8px; } .worldmap .tools button { width: 32px; height: 32px; font-size: 15px; } }
+.worldmap .sub small { display: block; margin-top: 2px; font-size: 12px; opacity: .75; }
 .worldmap .stage::after { content: ''; position: absolute; inset: 0; pointer-events: none; border-radius: inherit; z-index: 5;
   box-shadow: inset 0 0 0 4px rgba(15, 42, 51, .55), inset 0 0 0 5px rgba(244, 199, 102, .35), inset 0 0 50px rgba(30, 14, 0, .4); }
 .worldmap .pin { position: absolute; width: 0; height: 0; z-index: 2; pointer-events: none; }
@@ -335,6 +353,7 @@ html[lang="en"] #title .tagline2 { font-family: 'Tajawal', sans-serif; letter-sp
   #objective { max-width: calc(100vw - 160px); padding: 7px 14px 7px 7px; } html[dir="rtl"] #objective { padding: 7px 7px 7px 14px; }
   #objective b { font-size: 14px; } #objective small { font-size: 12px; } #objective .ico { width: 28px; height: 28px; font-size: 15px; }
   #scene { top: 4vh; } #dock button { width: 48px; height: 48px; font-size: 24px; }
+  #zoom button { width: 42px; height: 42px; font-size: 20px; } #zoom { gap: 8px; }
   #dialogue .box { padding: 34px 18px 20px; } #dialogue .portrait { width: 50px; height: 50px; }
   #title { justify-content: flex-start; padding: 8vh 16px 0; align-items: center; }
   #title .lockup { width: 100%; }

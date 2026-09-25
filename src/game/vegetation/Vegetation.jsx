@@ -15,6 +15,17 @@ import { toonMaterial, outlineMaterial, WIND } from '../shaders/toon.js';
 import { TOON } from '../shaders/toonPalette.js';
 import { usePreset, useDetail } from '../systems/store.js';
 import { LAYER_NO_REFLECT } from '../systems/layers.js';
+import { refs } from '../systems/refs.js';
+
+// Chunk density: full inside 55 % of the draw distance, thinning to 20 % at its edge, then
+// gone — instances are shuffled per chunk, so drawing the first N is an even thinning.
+const density = (d, lim) => (d < 0.55 * lim ? 1 : d > lim ? 0 : 1 - 0.8 * (d - 0.55 * lim) / (0.45 * lim));
+function shuffle(m, c, r) {
+  for (let i = m.length - 1; i > 0; i--) {
+    const j = Math.floor(r() * (i + 1));
+    [m[i], m[j]] = [m[j], m[i]]; if (c.length) [c[i], c[j]] = [c[j], c[i]];
+  }
+}
 
 const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _s = new THREE.Vector3(), _p = new THREE.Vector3();
 const M = (x, y, z, ry, s, sy = s, tilt = 0) => new THREE.Matrix4().compose(_p.set(x, y, z), _q.setFromEuler(_e.set(tilt, ry, tilt * 0.7)), _s.set(s, sy, s));
@@ -39,7 +50,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
   const chunks = useRef([]), trees = useRef([]);
 
   const group = useMemo(() => {
-    const r = rng(7), g = new THREE.Group();
+    const r = rng(7), rs = rng(99), g = new THREE.Group();   // rs: shuffles only, so placement stays as before
     const add = (...o) => o.forEach(x => x && g.add(x));
     colliders.length = colliders.baseLength ??= colliders.length;   // rebuilds (quality change) replace, not append, tree colliders
     const blocked = (x, z, pad) => colliders.some(b => x > b.x0 - pad && x < b.x1 + pad && z > b.z0 - pad && z < b.z1 + pad)
@@ -55,15 +66,16 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
       if (!map.has(k)) map.set(k, { m: [], c: [] });
       map.get(k).m.push(m); if (c) map.get(k).c.push(c);
     };
-    const flush = (map, kind, { wind, shadow = false, outline = true } = {}) => {
+    const flush = (map, kind, { wind, shadow = false, outline = true, geo, mat } = {}) => {
       for (const [k, v] of map) {
-        const [model, cell] = k.split('|'), [cx, cz] = cell.split(',').map(Number), p = mergedPlant(assets, model);
+        const [model, cell] = k.split('|'), [cx, cz] = cell.split(',').map(Number), p = geo ? { body: geo, outline: null } : mergedPlant(assets, model);
         const center = new THREE.Vector3((cx + 0.5) * CH, 0, (cz + 0.5) * CH);
-        const body = inst(p.body, plantMat(model, wind), v.m, { colors: v.c.length ? v.c : null, shadow, layer: LAYER_NO_REFLECT });
-        body.userData.center = center; body.userData.kind = kind; g.add(body); list.push(body);
+        shuffle(v.m, v.c, rs);
+        const body = inst(p.body, mat ?? plantMat(model, wind), v.m, { colors: v.c.length ? v.c : null, shadow, layer: LAYER_NO_REFLECT });
+        body.userData.center = center; body.userData.kind = kind; body.userData.full = v.m.length; g.add(body); list.push(body);
         if (outline && p.outline && detail.outlines) {
           const hull = inst(p.outline, outlineMaterial('env', wind), v.m, { receive: false, layer: LAYER_NO_REFLECT });
-          hull.userData.center = center; hull.userData.kind = 'outline'; g.add(hull); list.push(hull);
+          hull.userData.center = center; hull.userData.kind = 'outline'; hull.userData.full = v.m.length; g.add(hull); list.push(hull);
         }
       }
     };
@@ -116,20 +128,19 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
         put(bunds, 'field_bund', x + 2, bz, M(x + 2, height(x + 2, bz) - 0.1, bz, 0, 1));
     }
     flush(bunds, 'crop', {});
-    chunks.current = list;
 
     // ---- reeds on wet banks ---------------------------------------------------------
-    const reeds = [];
-    for (let i = 0; i < 16000 && reeds.length < 1500; i++) {
+    const reeds = bucket(); let nReeds = 0;
+    for (let i = 0; i < 16000 && nReeds < 1500; i++) {
       let x, z;
       if (r() < 0.5) { x = (r() - 0.5) * 320; z = riverZ(x) + (r() - 0.5) * 22; }
       else { const seg = ROAD_CANALS[(r() * ROAD_CANALS.length) | 0], k = (r() * (seg.length - 1)) | 0, t = r();
         x = seg[k][0] + (seg[k + 1][0] - seg[k][0]) * t + (r() - 0.5) * 6; z = seg[k][1] + (seg[k + 1][1] - seg[k][1]) * t + (r() - 0.5) * 6; }
       const h = height(x, z), wd = waterDist(x, z);
       if (h < WATER_Y - 0.25 || h > WATER_Y + 1.6 || wd > 2.5 || blocked(x, z, 0.3)) continue;
-      reeds.push(M(x, h - 0.05, z, r() * 6.3, 0.8 + r() * 0.5, 0.8 + r() * 0.5));
+      put(reeds, 'reeds', x, z, M(x, h - 0.05, z, r() * 6.3, 0.8 + r() * 0.5, 0.8 + r() * 0.5)); nReeds++;
     }
-    add(inst(mergedPlant(assets, 'reeds').body, plantMat('reeds', WIND.reed), reeds, { shadow: !lowDetail }));
+    flush(reeds, 'crop', { wind: WIND.reed, shadow: !lowDetail, outline: false });
 
     // ---- date palms (three variants) ------------------------------------------------------
     const spots = [];
@@ -183,14 +194,13 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
     add(trees.current.group); trees.current.update(camera.position);
 
     // ---- bushes ----------------------------------------------------------------------------
-    const bushM = [], bushC = [], dryTint = new THREE.Color(1.3, 1.02, 0.55);
-    for (let i = 0; i < 4000 && bushM.length < 500 * k; i++) {
+    const bushes = bucket(), dryTint = new THREE.Color(1.3, 1.02, 0.55); let nBush = 0;
+    for (let i = 0; i < 4000 && nBush < 500 * k; i++) {
       const x = (r() - 0.5) * 380, z = (r() - 0.5) * 320 - 10, h = height(x, z), dry = smooth(8, 20, h) * 0.6;
       if (h < WATER_Y + 0.5 || h > 11 || pathDist(x, z) < 2 || fieldPlot(x, z) >= 0 || blocked(x, z, 0.8) || Math.hypot(x, z) < 18) continue;
-      bushM.push(M(x, h - 0.05, z, r() * 6.3, 0.7 + r() * 0.9, 0.6 + r() * 0.6));
-      bushC.push(tint(r, 0.2).lerp(dryTint, dry));
+      put(bushes, 'bush', x, z, M(x, h - 0.05, z, r() * 6.3, 0.7 + r() * 0.9, 0.6 + r() * 0.6), tint(r, 0.2).lerp(dryTint, dry)); nBush++;
     }
-    add(inst(bush(31), plantMat('bush', WIND.shrub), bushM, { colors: bushC, shadow: !lowDetail }));
+    flush(bushes, 'bush', { geo: bush(31), mat: plantMat('bush', WIND.shrub), shadow: !lowDetail, outline: false });
 
     // ---- rocks: along banks, mountain feet and ruins ----------------------------------------------
     const rockM = [], rockC = [], stone = [new THREE.Color(TOON.toon_stone[0]), new THREE.Color(TOON.toon_stone_dark[0])];
@@ -205,34 +215,51 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
     add(inst(lump(5), toonMaterial('rock', { vertexColors: true }), rockM, { colors: rockC, shadow: true }));
 
     // ---- fallen fronds/leaves under trees; wild flowers near homes and the oasis ------------------
-    const litter = [], litterC = [], litterPal = ['toon_frond_dry', 'toon_bark', 'toon_dates_gold', 'toon_leaf_dark'].map(n => new THREE.Color(TOON[n][0]));
+    const litter = bucket(), litterPal = ['toon_frond_dry', 'toon_bark', 'toon_dates_gold', 'toon_leaf_dark'].map(n => new THREE.Color(TOON[n][0]));
     for (const [x, z] of [...spots, ...treeSpots]) for (let j = 0; j < 10; j++) {
       const a = r() * 6.3, d = 0.4 + r() * 2.2, lx = x + Math.cos(a) * d, lz = z + Math.sin(a) * d;
-      litter.push(M(lx, height(lx, lz) + 0.02, lz, r() * 6.3, 0.09 + r() * 0.06, 1, Math.PI / 2 - 0.1));
-      litterC.push(litterPal[(r() * litterPal.length) | 0]);
+      put(litter, 'litter', lx, lz, M(lx, height(lx, lz) + 0.02, lz, r() * 6.3, 0.09 + r() * 0.06, 1, Math.PI / 2 - 0.1), litterPal[(r() * litterPal.length) | 0]);
     }
-    add(inst(new THREE.CircleGeometry(1, 5), toonMaterial('litter', { side: THREE.DoubleSide, rim: 0 }), litter, { colors: litterC }));
-    const fl = [];
-    for (let i = 0; i < 14000 && fl.length < 1000 * k; i++) {
+    flush(litter, 'grass', { geo: new THREE.CircleGeometry(1, 5), mat: toonMaterial('litter', { side: THREE.DoubleSide, rim: 0 }), outline: false });
+    const fl = bucket(); let nFl = 0;
+    for (let i = 0; i < 14000 && nFl < 1000 * k; i++) {
       const [ox, oz] = r() < 0.5 ? [0, 0] : [OASIS.x, OASIS.z], a = r() * 6.3, d = 14 + r() * 50;
       const x = ox + Math.cos(a) * d, z = oz + Math.sin(a) * d, h = height(x, z);
       if (!lush(x, z, h) || blocked(x, z, 0.3) || fbm(x * 0.07, z * 0.07) < 0.1) continue;
-      fl.push(M(x, h - 0.02, z, r() * 6.3, 0.9 + r() * 0.4));
+      put(fl, 'wildflowers', x, z, M(x, h - 0.02, z, r() * 6.3, 0.9 + r() * 0.4)); nFl++;
     }
-    add(inst(mergedPlant(assets, 'wildflowers').body, plantMat('wildflowers', WIND.shrub), fl, { layer: LAYER_NO_REFLECT }));
+    flush(fl, 'grass', { wind: WIND.shrub, outline: false });
+    chunks.current = list;
     return g;
   }, [detail]); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => () => group.traverse(o => {   // free GPU buffers when Settings rebuilds
     if (!o.isMesh) return; o.dispose?.(); if (o.userData.shared) return; o.geometry.dispose(); o.material.dispose();
   }), [group]);
 
-  let acc = 0;
+  // Draw distances are measured from what the camera frames (the child, or the camera itself
+  // in cinematics). Zooming out keeps grass, crops, reeds and bushes out to the edges of the
+  // view but thinner (from 60 m a third of the tufts reads the same as all of them), and
+  // drops the crop ink hulls.
+  const acc = useRef(0), focus = useRef(new THREE.Vector3());
   useFrame((_, dt) => {
-    if ((acc += dt) < 0.25) return; acc = 0;
+    if ((acc.current += dt) < 0.25) return; acc.current = 0;
     trees.current?.update(camera.position);
-    const lim = { grass: preset.grassDist ** 2, crop: preset.cropDist ** 2, outline: preset.outlineDist ** 2 };
-    _p.set(camera.position.x, 0, camera.position.z);
-    for (const m of chunks.current) m.visible = m.userData.center.distanceToSquared(_p) < lim[m.userData.kind];
+    const v = refs.view, z = v.zoom, f = focus.current;
+    f.set(THREE.MathUtils.lerp(camera.position.x, v.x, z), 0, THREE.MathUtils.lerp(camera.position.z, v.z, z));
+    const lim = { grass: preset.grassDist * (1 - 0.25 * z), crop: preset.cropDist + z * 60, bush: preset.bushDist + z * 50 };
+    const thin = { grass: 1 - 0.6 * z, crop: 1 - 0.55 * z, bush: 1 - 0.3 * z }, camY2 = Math.max(0, camera.position.y) ** 2;
+    for (const m of chunks.current) {
+      const kind = m.userData.kind, c = m.userData.center;
+      let k;
+      if (kind === 'outline') {                                 // ink hulls: true distance to the lens
+        const d2 = (c.x - camera.position.x) ** 2 + (c.z - camera.position.z) ** 2 + camY2;
+        k = d2 < preset.outlineDist ** 2 ? 1 : 0;
+      } else {
+        k = density(Math.hypot(c.x - f.x, c.z - f.z), lim[kind]) * thin[kind];
+      }
+      const n = Math.ceil(m.userData.full * k);
+      m.visible = n > 0; m.count = n;
+    }
   });
 
   return <primitive object={group} />;

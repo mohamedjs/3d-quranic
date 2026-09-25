@@ -39,9 +39,9 @@ export const STR = {
     talk: 'تحدّث', journal: 'دفتر المعرفة', map: 'خريطة العالم', mapSub: 'اكتشف المزيد من قصص القرآن', unlocked: 'فتحتَ كنزًا من المعرفة!', unlockedAlt: 'Knowledge Unlocked', lesson: 'ماذا نتعلّم؟', here: 'أنت هنا',
     points: 'نقطة معرفة', continue: 'متابعة', nextStory: 'قصة جديدة متاحة', discovered: 'مكان جديد', explore: 'استكشف العالم',
     exploreSub: 'قصص جديدة قريبًا إن شاء الله', soon: 'قريبًا', empty: 'لم تفتح أي قصة بعد. تجوّل وتحدّث مع أهل القرية!',
-    listenAgain: 'استمع مرة أخرى', lang: 'اللغة', reciter: 'القارئ', voice: 'صوت الشخصيات (قراءة آلية)', meaning: 'إظهار المعنى تحت الآية',
+    listenAgain: 'استمع مرة أخرى', lang: 'اللغة', reciter: 'القارئ', voice: 'صوت الشخصيات (قراءة آلية)', meaning: 'إظهار المعنى تحت الآية', auto: 'الحوار يتقدّم تلقائيًا',
     volume: 'صوت الطبيعة', music: 'نغمة هادئة (بدون موسيقى افتراضيًا)', reset: 'مسح التقدّم', resetQ: 'هل تريد مسح كل التقدّم؟',
-    controls: 'امشِ بالأسهم أو WASD · اسحب لتدير الكاميرا · اضغط على الأرض لتمشي إليها', loading: 'جارٍ تحميل الآيات من Quran.com…',
+    controls: 'امشِ بالأسهم أو WASD · اسحب لتدير الكاميرا · اضغط على الأرض لتمشي إليها · العجلة أو + / − أو إصبعان للتقريب والارتفاع', zoomIn: 'تقريب', zoomOut: 'ابتعاد (منظر من أعلى)', centerMe: 'مكاني', mapZoom: 'اسحب لتحريك الخريطة · العجلة أو إصبعان للتكبير', loading: 'جارٍ تحميل الآيات من Quran.com…',
     offline: 'تعذّر الاتصال بموقع Quran.com. تأكّد من الاتصال بالإنترنت ثم أعد المحاولة.', noAudio: 'لا يتوفّر تسجيل لهذا القارئ لهذه الآيات. جرّب قارئًا آخر من الإعدادات.',
     audioErr: 'تعذّر تشغيل التلاوة.', tapToPlay: 'اضغط «إعادة المحاولة» لتشغيل التلاوة.', retry: 'إعادة المحاولة', skip: 'تخطٍّ', reciting: 'القارئ',
     verse: 'الآية', of: 'من', tafsir: 'التفسير الميسّر', translation: 'Saheeh International', sources: 'المصادر', building: 'نبني العالم…', you: 'أنت',
@@ -52,9 +52,9 @@ export const STR = {
     talk: 'Talk', journal: 'Knowledge Book', map: 'Explore the World', mapSub: 'Discover more Quranic stories', unlocked: 'Knowledge Unlocked!', unlockedAlt: 'فتحتَ كنزًا من المعرفة', lesson: 'What do we learn?', here: 'You are here',
     points: 'Knowledge Points', continue: 'Continue', nextStory: 'Next story available', discovered: 'Discovered', explore: 'Explore the world',
     exploreSub: 'More stories coming soon, in sha Allah', soon: 'Coming soon', empty: 'No stories unlocked yet. Walk around and talk to the villagers!',
-    listenAgain: 'Listen again', lang: 'Language', reciter: 'Reciter', voice: 'Character voices (speech synthesis)', meaning: 'Show meaning under the verse',
+    listenAgain: 'Listen again', lang: 'Language', reciter: 'Reciter', voice: 'Character voices (speech synthesis)', meaning: 'Show meaning under the verse', auto: 'Auto-advance dialogue',
     volume: 'Nature sounds', music: 'Soft pad (off by default)', reset: 'Reset progress', resetQ: 'Erase all progress?',
-    controls: 'Walk with WASD / arrows · drag to look · tap the ground to walk there', loading: 'Loading verses from Quran.com…',
+    controls: 'Walk with WASD / arrows · drag to look · tap the ground to walk there · wheel, + / − or pinch to zoom out and fly up', zoomIn: 'Zoom in', zoomOut: 'Zoom out (bird\'s-eye)', centerMe: 'Center on me', mapZoom: 'Drag to move the map · wheel or pinch to zoom', loading: 'Loading verses from Quran.com…',
     offline: 'Could not reach Quran.com. Check your internet connection and try again.', noAudio: 'This reciter has no recording for these verses. Try another reciter in Settings.',
     audioErr: 'The recitation could not be played.', tapToPlay: 'Press “Try again” to start the recitation.', retry: 'Try again', skip: 'Skip', reciting: 'Reciting',
     verse: 'Verse', of: 'of', tafsir: 'Tafsir al-Muyassar', translation: 'Saheeh International', sources: 'Sources', building: 'Building the world…', you: 'You',
@@ -86,6 +86,7 @@ export class UI {
     $('btn-continue').textContent = S.cont; $('btn-new').textContent = S.newGame; $('btn-settings').textContent = S.settings;
     $('talk').querySelector('span').textContent = S.talk;
     for (const b of $('dock').children) b.title = S[b.dataset.open === 'settings' ? 'settings' : b.dataset.open];
+    for (const b of document.querySelectorAll('#zoom button')) { b.title = S[b.dataset.zoom === 'in' ? 'zoomIn' : 'zoomOut']; b.setAttribute('aria-label', b.title); }
     this.setPoints();
   }
 
@@ -168,15 +169,18 @@ export class UI {
   worldMap(player, npcs) {
     const S = this.S, lang = this.save.settings.lang, wrap = document.createElement('div'); wrap.className = 'worldmap';
     const stage = document.createElement('div'); stage.className = 'stage'; wrap.append(stage);
-    const img = new Image(); img.alt = ''; img.decoding = 'async'; img.src = asset('ui/world-map.webp');
+    const img = new Image(); img.alt = ''; img.decoding = 'async'; img.draggable = false; img.src = asset('ui/world-map.webp');
     img.onerror = () => {                             // fallback: crop the live terrain map to the same rectangle
       const cv = document.createElement('canvas'); cv.width = 1400; cv.height = 1000;
       const n = this.mapCanvas.width, [sx, sy] = toMap(MAP_X0, MAP_Z1, n), [ex, ey] = toMap(MAP_X1, MAP_Z0, n);
       const ctx = cv.getContext('2d'); ctx.fillStyle = '#6f8a3c'; ctx.fillRect(0, 0, 1400, 1000);
       ctx.drawImage(this.mapCanvas, sx, sy, ex - sx, ey - sy, 0, 0, 1400, 1000); img.replaceWith(cv);
     };
-    stage.append(img);
-    const place = (el, x, z, clampY = 0) => { const [l, t] = mapPct(x, z); el.style.left = `${Math.min(97, Math.max(3, l))}%`; el.style.top = `${Math.min(92, Math.max(clampY, t))}%`; return el; };
+    // zoom + pan: the painting sits in a scaled layer; markers stay in the unscaled stage
+    // (so pins and labels keep their size) and are re-positioned from their map percentages
+    const layer = document.createElement('div'); layer.className = 'layer'; layer.append(img); stage.append(layer);
+    const marks = [];
+    const place = (el, x, z, clampY = 0) => { const [l, t] = mapPct(x, z); el._p = [Math.min(97, Math.max(3, l)), Math.min(92, Math.max(clampY, t))]; marks.push(el); return el; };
     const here = this.data.areas.find(a => Math.hypot(a.x - player.pos.x, a.z - player.pos.z) < a.r);
     for (const a of this.data.areas) {
       const known = this.save.discovered.includes(a.id), R = REGIONS[a.id], hasStory = this.data.encounters.some(e => e.area === a.id);
@@ -197,7 +201,60 @@ export class UI {
     const heading = Math.atan2(-Math.cos(player.facing), Math.sin(player.facing)) + Math.PI / 2;
     me.innerHTML = `<svg viewBox="-20 -20 40 40" style="transform:rotate(${heading}rad)"><circle r="17" fill="#0f2a33" fill-opacity=".55" stroke="#f4c766" stroke-width="2"/><path d="M0-13L10 10 0 5-10 10z" fill="#fff" stroke="#1e4f73" stroke-width="2.5" stroke-linejoin="round"/></svg>`;
     stage.append(place(me, player.pos.x, player.pos.z));
-    const sub = document.createElement('p'); sub.className = 'sub'; sub.textContent = S.mapSub; wrap.prepend(sub);
+
+    const view = { s: 1, x: 0, y: 0 }, MAXS = 5;             // scale, offset (in % of the stage)
+    const layout = (ease = false) => {
+      view.s = Math.min(MAXS, Math.max(1, view.s));
+      view.x = Math.min(0, Math.max(100 * (1 - view.s), view.x)); view.y = Math.min(0, Math.max(100 * (1 - view.s), view.y));
+      stage.classList.toggle('ease', ease); stage.classList.toggle('zoomed', view.s > 1.01);
+      layer.style.transform = `translate(${view.x}%, ${view.y}%) scale(${view.s})`;
+      for (const el of marks) { el.style.left = `${view.x + el._p[0] * view.s}%`; el.style.top = `${view.y + el._p[1] * view.s}%`; }
+      tools.querySelector('[data-z="out"]').disabled = view.s <= 1.01; tools.querySelector('[data-z="in"]').disabled = view.s >= MAXS - 0.01;
+    };
+    const zoomAt = (k, cx = 50, cy = 50, ease = false) => {     // keep the map point under (cx, cy) fixed
+      const s1 = Math.min(MAXS, Math.max(1, view.s * k)), r = s1 / view.s;
+      view.x = cx - (cx - view.x) * r; view.y = cy - (cy - view.y) * r; view.s = s1; layout(ease);
+    };
+    const centerOnMe = () => { view.s = Math.max(view.s, 2.5); view.x = 50 - me._p[0] * view.s; view.y = 50 - me._p[1] * view.s; layout(true); };
+    const pct = (cx, cy) => { const r = stage.getBoundingClientRect(); return [(cx - r.left) / r.width * 100, (cy - r.top) / r.height * 100, r]; };
+    const tools = document.createElement('div'); tools.className = 'tools';
+    tools.innerHTML = `<button type="button" data-z="in" title="${esc(S.zoomIn)}" aria-label="${esc(S.zoomIn)}">${icon('zoom-in')}</button>
+      <button type="button" data-z="out" title="${esc(S.zoomOut)}" aria-label="${esc(S.zoomOut)}">${icon('zoom-out')}</button>
+      <button type="button" data-z="me" title="${esc(S.centerMe)}" aria-label="${esc(S.centerMe)}">${icon('locate')}</button>`;
+    tools.onclick = e => { const b = e.target.closest('button'); if (!b) return; const z = b.dataset.z;
+      if (z === 'me') centerOnMe(); else zoomAt(z === 'in' ? 1.6 : 1 / 1.6, 50, 50, true); };
+    tools.addEventListener('pointerdown', e => e.stopPropagation());
+    tools.addEventListener('dblclick', e => e.stopPropagation());
+    stage.append(tools);
+    stage.addEventListener('wheel', e => {
+      e.preventDefault();
+      const [cx, cy] = pct(e.clientX, e.clientY), d = e.deltaY * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 400 : 1);
+      zoomAt(Math.exp(-Math.max(-300, Math.min(300, d)) * (e.ctrlKey ? 0.012 : 0.0022)), cx, cy);
+    }, { passive: false });
+    stage.addEventListener('dblclick', e => { const [cx, cy] = pct(e.clientX, e.clientY); if (view.s >= MAXS - 0.01) { view.s = 1; layout(true); } else zoomAt(2, cx, cy, true); });
+    const pts = new Map(); let pinch = null;
+    const mid = () => { const [a, b] = [...pts.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 }; };
+    stage.addEventListener('pointerdown', e => {
+      pts.set(e.pointerId, { x: e.clientX, y: e.clientY }); try { stage.setPointerCapture(e.pointerId); } catch { /* ignore */ }
+      if (pts.size === 2) pinch = mid();
+      stage.classList.add('drag'); stage.classList.remove('ease');
+    });
+    stage.addEventListener('pointermove', e => {
+      const p = pts.get(e.pointerId); if (!p) return;
+      const r = stage.getBoundingClientRect();
+      if (pts.size >= 2 && pinch) {
+        p.x = e.clientX; p.y = e.clientY;
+        const m = mid(), [cx, cy] = pct(m.x, m.y);
+        view.x += (m.x - pinch.x) / r.width * 100; view.y += (m.y - pinch.y) / r.height * 100;
+        zoomAt(m.d / pinch.d, cx, cy); pinch = m; return;
+      }
+      view.x += (e.clientX - p.x) / r.width * 100; view.y += (e.clientY - p.y) / r.height * 100;
+      p.x = e.clientX; p.y = e.clientY; layout();
+    });
+    const lift = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) stage.classList.remove('drag'); };
+    stage.addEventListener('pointerup', lift); stage.addEventListener('pointercancel', lift);
+    layout();
+    const sub = document.createElement('p'); sub.className = 'sub'; sub.innerHTML = `${esc(S.mapSub)}<small>${esc(S.mapZoom)}</small>`; wrap.prepend(sub);
     return this.openPanel(S.map, wrap);
   }
 
@@ -224,16 +281,17 @@ export class UI {
       <label>${esc(S.quality)}<select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>
       <label class="row"><input type="checkbox" name="voice"> ${esc(S.voice)}</label>
       <label class="row"><input type="checkbox" name="meaning"> ${esc(S.meaning)}</label>
+      <label class="row"><input type="checkbox" name="auto"> ${esc(S.auto)}</label>
       <label>${esc(S.volume)}<input type="range" name="volume" min="0" max="1" step="0.05"></label>
       <label class="row"><input type="checkbox" name="music"> ${esc(S.music)}</label>
       <button type="button" class="danger">${esc(S.reset)}</button>`;
-    f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.volume.value = st.volume; f.music.checked = st.music;
+    f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.auto.checked = st.auto !== false; f.volume.value = st.volume; f.music.checked = st.music;
     QuranService.getReciters().then(rs => {
       f.reciter.innerHTML = rs.map(r => `<option value="${r.id}">${esc(r.name)}${r.style ? ' — ' + esc(r.style) : ''}</option>`).join('');
       f.reciter.value = st.reciter;
     }).catch(e => { f.reciter.innerHTML = `<option value="${st.reciter}">${esc(e.message)}</option>`; });
     f.onchange = () => {
-      Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value });
+      Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, auto: f.auto.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value });
       this.persist(); this.onSettings();
     };
     f.querySelector('.danger').onclick = () => { if (confirm(S.resetQ)) onReset(); };

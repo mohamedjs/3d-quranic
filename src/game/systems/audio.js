@@ -98,29 +98,52 @@ export const Voice = {
       piperState = 'failed'; console.error('Piper TTS:', e); this.onStatus?.('failed', 0, e.message);
     }
   },
+  // Recorded voice lines (public/audio/manifest.json: { "<exact text>": "audio/<file>" }),
+  // made offline with tools/voice_lines.py + Habibi-TTS. Played first; TTS is the fallback.
+  manifest: null,
+  async recorded(text) {
+    if (!this.manifest) this.manifest = fetch('./audio/manifest.json').then(r => (r.ok ? r.json() : {})).catch(() => ({}));
+    const m = await this.manifest; return m[text] || null;
+  },
+  // Resolves when the line has been spoken: true = a voice played to the end,
+  // false = nothing was voiced (disabled, still downloading, blocked, or interrupted).
   async speak(text, lang) {
     this.cancel();
-    if (!this.enabled) return;
+    if (!this.enabled) return false;
+    const my0 = token, file = lang === 'ar' ? await this.recorded(text) : null;
+    if (my0 !== token) return false;                             // a newer line started meanwhile
+    if (file) {
+      voiceAudio.src = './' + file; voiceAudio.playbackRate = 1;
+      try {
+        await voiceAudio.play();
+        return await new Promise(r => { voiceAudio.onended = () => r(my0 === token); voiceAudio.onpause = () => r(false); });
+      } catch (e) { /* autoplay blocked / missing → fall back */ }
+    }
     const clean = text.replace(/ﷺ/g, lang === 'ar' ? 'صلى الله عليه وسلم' : 'peace be upon him');
     const v = this.system(lang);
     if (v && window.speechSynthesis) {
       const u = new SpeechSynthesisUtterance(clean); u.voice = v; u.lang = v.lang; u.rate = 0.92;
-      speechSynthesis.speak(u); return;
+      const my = token;
+      return new Promise(r => {
+        u.onend = () => r(my === token); u.onerror = () => r(false);
+        speechSynthesis.speak(u);
+      });
     }
-    if (piperState !== 'ready' || !PIPER_VOICE[lang]) return;   // still downloading: text only
+    if (piperState !== 'ready' || !PIPER_VOICE[lang]) return false;   // still downloading: text only
     // synthesise sentence by sentence; the next one renders while the current one plays
     const my = ++token, parts = sentences(clean);
     let next = piper.predict(parts[0]);
     for (let i = 0; i < parts.length; i++) {
-      let wav; try { wav = await next; } catch (e) { console.error('Piper TTS:', e); return; }
-      if (my !== token) return;
+      let wav; try { wav = await next; } catch (e) { console.error('Piper TTS:', e); return false; }
+      if (my !== token) return false;
       if (i + 1 < parts.length) next = piper.predict(parts[i + 1]);
       const url = URL.createObjectURL(wav);
       voiceAudio.src = url; voiceAudio.playbackRate = 0.95;
       await voiceAudio.play().then(() => new Promise(r => { voiceAudio.onended = voiceAudio.onpause = r; })).catch(() => {});
       URL.revokeObjectURL(url);
-      if (my !== token) return;
+      if (my !== token) return false;
     }
+    return true;
   },
   cancel() { token++; window.speechSynthesis?.cancel(); voiceAudio.pause(); },
 };

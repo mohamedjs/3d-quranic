@@ -1,6 +1,7 @@
 // The scene graph. Suspends until the Blender models and story data are loaded, then
 // builds everything once; the game loop starts when it mounts.
-import { use, useMemo, useEffect, useRef } from 'react';
+import { use, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
+import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Lighting } from '../lighting/Lighting.jsx';
 import { loadEnvironment } from '../lighting/environmentMap.js';
@@ -17,12 +18,22 @@ import { Environment } from '../environment/Environment.jsx';
 import { Player } from '../characters/Player.jsx';
 import { NPC } from '../npc/NPC.jsx';
 import { DialogueSystem } from '../components/DialogueSystem.jsx';
-import { Effects } from '../effects/Effects.jsx';
+import { usePreset, useGame } from '../systems/store.js';
 import { createGame } from '../systems/game.js';
 import { refs } from '../systems/refs.js';
 import { normalizeEncounters } from '../systems/cast.js';
 import { height } from '../terrain/heightfield.js';
 import { makeLantern } from './lantern.js';
+import { PRESETS } from '../systems/quality.js';
+
+// Post-processing is its own chunk, fetched only on levels that use it. Without it (LOW) the
+// renderer does the neutral tone mapping itself, so colours stay the same.
+const Effects = lazy(() => import('../effects/Effects.jsx').then(m => ({ default: m.Effects })));
+function PostFX() {
+  const post = usePreset().post, gl = useThree(s => s.gl);
+  useEffect(() => { gl.toneMapping = post ? THREE.NoToneMapping : THREE.NeutralToneMapping; }, [gl, post]);
+  return post ? <Suspense fallback={null}><Effects /></Suspense> : null;
+}
 
 let dataPromise;
 const loadData = () => (dataPromise ??= fetch('./data/encounters.json').then(r => {
@@ -37,7 +48,7 @@ export function World() {
   refs.sunDir = env.sunDir;
 
   const world = useMemo(() => {
-    const terrain = buildTerrainGeometry();
+    const terrain = buildTerrainGeometry(PRESETS[useGame.getState().detail].terrainSeg);
     const village = buildVillage();
     const first = data.encounters[0], farmer = (first.characters.find(c => c.pose !== 'sit') ?? first.character).position;
     const canal = buildCanalScene(farmer, first.characters.some(c => c.pose === 'sit') ? village.home : null);
@@ -88,7 +99,7 @@ export function World() {
       <DialogueSystem />
       <GameSystem world={world} data={data} />
       <Water clock={refs.clock} />
-      <Effects />
+      <PostFX />
     </>
   );
 }

@@ -1,5 +1,5 @@
 {
-  "_note": "Story encounters. Verses are referenced by key only; their text and audio are always fetched from Quran.com at runtime. Narration is a simplified retelling of what the listed tafsir sources state — have it reviewed by a qualified teacher before release.",
+  "_note": "Story encounters. Verses are referenced by key only; their text and audio are always fetched from Quran.com at runtime. Narration is a simplified retelling of what the listed sources state — have it reviewed by a qualified teacher before release. The six asbab al-nuzul encounters follow «الصحيح المسند من أسباب النزول» (al-Wadi'i); reviewer sheet: docs/asbab-stories-script.md. A verses step may play part of one verse: words:[first,last] (1-based word positions) plus a simple meaning:{ar,en}.",
   "encounters": [
     {
       "id": "people-of-the-elephant",
@@ -755,6 +755,2120 @@
         "points": 50,
         "ar": "تعلّمت قصة رؤيا يوسف.",
         "en": "You learned about the Dream of Yusuf."
+      }
+    },
+    {
+      "id": "threads-of-dawn",
+      "area": "village",
+      "requires": [
+        "people-of-the-elephant"
+      ],
+      "title": {
+        "ar": "الخيط الأبيض والخيط الأسود",
+        "en": "The White Thread and the Black Thread"
+      },
+      "host": "amina",
+      "characters": [
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            -27.2,
+            18.2
+          ],
+          "facing": 1.5708,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر الجدّة آمنة عند نافذة بيتها",
+          "في غرب القرية"
+        ],
+        "en": [
+          "Visit Grandma Amina by her window",
+          "On the west side of the village"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا حبيبي! تعالَ، عندي لك حكاية عن خيطين عجيبين.",
+        "en": "Hello, my darling! Come — I have a story for you about two wonderful threads."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «أصحاب الفيل» عند بيت الجدّة زينب، ثم تعالَ إليّ.",
+        "en": "Hello, my darling! First hear “The People of the Elephant” at Grandma Zainab's house, then come back to me."
+      },
+      "after": {
+        "ar": "إذا لم تفهم شيئًا، فاسأل مَن يعلم — هكذا نتعلّم.",
+        "en": "If you don't understand something, ask someone who knows — that is how we learn."
+      },
+      "sources": [
+        "الصحيح المسند من أسباب النزول — الشيخ مقبل بن هادي الوادعي، ص26 (https://shamela.ws/book/11547/21) — سبب نزول {من الفجر}",
+        "صحيح البخاري (كتاب الصوم، وأعاده في التفسير) — حديث سهل بن سعد رضي الله عنه",
+        "صحيح مسلم (ج7 ص220)",
+        "Qur'an 2:187"
+      ],
+      "_note": "Sahl ibn Sa'd's narration exactly as the book gives it (Bukhari 5/35; Muslim 7/220). The book narrates it from Sahl, not 'Adi ibn Hatim — do not attribute it to 'Adi. Only the part of 2:187 from «وكلوا واشربوا» to «إلى الليل» (words 31–47) is shown and played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "amina",
+          "scene": "threads_dawn",
+          "ar": "أهلًا يا حبيبي! كنتُ أنظر من هذه النافذة إلى السماء قبل الفجر. هل تعلم أنّ في القرآن آيةً فيها خيطٌ أبيض وخيطٌ أسود؟",
+          "en": "Hello, my darling! I was looking out of this window at the sky before dawn. Did you know there is a verse in the Quran about a white thread and a black thread?"
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "هل تحبّ أن تسمع قصتهما؟",
+          "en": "Would you like to hear their story?",
+          "options": [
+            {
+              "ar": "نعم يا جدّتي، احكي لي!",
+              "en": "Yes, Grandma, tell me!",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "اسمع إذن، وكلّما خطر لك سؤالٌ فاسأل.",
+                  "en": "Listen, then — and whenever a question comes to you, ask."
+                }
+              ]
+            },
+            {
+              "ar": "خيوط؟ مثل خيوط الخياطة؟",
+              "en": "Threads? Like sewing threads?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "سؤالٌ جميل! وهذا بالضبط ما ظنّه بعض الناس أوّل مرة. اسمع القصة.",
+                  "en": "A lovely question! That is exactly what some people thought the first time. Listen to the story."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "scene": "threads_dawn",
+          "ar": "في رمضان نصوم من الفجر إلى المغرب. وقد حكى الصحابيّ سهل بن سعد رضي الله عنه أنّه لمّا نزل قول الله تعالى: «وكلوا واشربوا حتى يتبيّن لكم الخيطُ الأبيض من الخيطِ الأسود»، لم تكن قد نزلت بعدُ كلمة «من الفجر».",
+          "en": "In Ramadan we fast from dawn until sunset. The Companion Sahl ibn Sa'd, may Allah be pleased with him, told that when Allah's words “eat and drink until the white thread becomes distinct to you from the black thread” were revealed, the words “of dawn” had not yet been revealed."
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعل الناس لمّا سمعوا هذه الآية؟",
+              "en": "So what did people do when they heard that verse?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "threads_dawn",
+                  "ar": "قال سهل رضي الله عنه: كان رجالٌ إذا أرادوا الصوم ربط أحدُهم في رِجله الخيطَ الأبيض والخيطَ الأسود.",
+                  "en": "Sahl said: when some men wanted to fast, one of them would tie a white thread and a black thread to his leg."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "threads_dawn",
+                  "ar": "ولم يزل يأكل حتى يتبيّن له الخيطان ويستطيع أن يراهما.",
+                  "en": "And he would keep on eating until the two threads became clear enough for him to see."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "خيطٌ حقيقي في رِجله؟ وهل كان يراه في الظلام؟",
+              "en": "A real thread on his leg? Could he see it in the dark?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "threads_dawn",
+                  "ar": "في ظلام الليل لا تكاد تفرّق بين الخيطين. فكان ينتظر حتى يصير الضوء كافيًا ليرى الأبيض من الأسود. هكذا فهموا الآية أوّل مرة.",
+                  "en": "In the dark of night you can hardly tell the two threads apart. So he waited until there was enough light to tell the white from the black. That is how they understood the verse at first."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف عرفوا المعنى الصحيح؟",
+              "en": "And how did they learn the right meaning?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "threads_dawn",
+                  "ar": "أنزل الله بعد ذلك كلمة «مِنَ الفجر». قال سهل رضي الله عنه: فعلموا أنّه يعني الليل والنهار.",
+                  "en": "Afterwards Allah revealed the words “of dawn”. Sahl said: then they knew that He meant the night and the day."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "threads_dawn",
+                  "ar": "فالخيط الأبيض هو بياض النهار الذي يظهر في الأفق عند الفجر، والخيط الأسود هو سواد الليل. خطٌّ رفيعٌ من نور، يرسمه الله في السماء كلّ صباح!",
+                  "en": "So the white thread is the whiteness of day that appears on the horizon at dawn, and the black thread is the blackness of night — a thin line of light that Allah draws across the sky every morning!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "ما المقصود بالخيط الأبيض والخيط الأسود في الآية؟",
+          "en": "What do the white thread and the black thread in the verse mean?",
+          "options": [
+            {
+              "ar": "بياض النهار وسواد الليل عند الفجر",
+              "en": "The white of day and the black of night at dawn",
+              "correct": true
+            },
+            {
+              "ar": "خيطان نربطهما في أرجلنا",
+              "en": "Two threads we tie to our legs"
+            },
+            {
+              "ar": "خيوط ثوبٍ جديد",
+              "en": "The threads of a new robe"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر الكلمة التي نزلت بعد ذلك: «من الفجر»…",
+            "en": "Remember the words that came afterwards: “of dawn”…"
+          },
+          "praise": {
+            "ar": "أحسنت يا حبيبي! هما ضوء الفجر وظلمة الليل.",
+            "en": "Well done, my darling! They are the light of dawn and the darkness of night."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "إذن متى نتوقّف عن السحور؟",
+              "en": "So when do we stop eating suhoor?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "suhoor_table",
+                  "ar": "نتسحّر في الليل — تمرًا وماءً ولبنًا — فإذا طلع الفجر وظهر ذلك الخيط الأبيض في الأفق، أمسكنا عن الطعام والشراب حتى المغرب.",
+                  "en": "We eat suhoor at night — dates, water and milk — and when dawn breaks and that white thread shows on the horizon, we stop eating and drinking until sunset."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "تعالَ نسمع هذا الجزء من الآية بصوت الشيخ. انتبه لكلمة «مِنَ الفجر»!",
+          "en": "Come, let's listen to this part of the verse in the sheikh's voice. Listen for the words “of dawn”!"
+        },
+        {
+          "type": "verses",
+          "from": "2:187",
+          "to": "2:187",
+          "words": [
+            31,
+            47
+          ],
+          "meaning": {
+            "ar": "كُلوا واشربوا في ليالي رمضان حتى يظهر لكم بياضُ النهار من سوادِ الليل عند طلوع الفجر، ثم أتمّوا الصيام إلى الليل (غروب الشمس).",
+            "en": "Eat and drink in the nights of Ramadan until the white of day shows clearly from the black of night at dawn; then complete the fast until nightfall (sunset)."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "رأيتَ؟ الصحابة رضي الله عنهم أرادوا أن يطيعوا الله تمامًا، ولمّا لم يتّضح لهم المعنى، بيّنه الله لهم برحمته.",
+          "en": "You see? The Companions, may Allah be pleased with them, wanted to obey Allah exactly — and when the meaning wasn't clear to them, Allah in His mercy made it clear."
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "إذا لم أفهم شيئًا من القرآن، أسأل وأتعلّم معناه الصحيح",
+              "en": "If I don't understand something in the Quran, I ask and learn its true meaning",
+              "correct": true
+            },
+            {
+              "ar": "أفهم كل كلمة وحدي كما أظنّ",
+              "en": "I work out every word on my own, however I guess"
+            },
+            {
+              "ar": "لا يهمّ أن أفهم",
+              "en": "It doesn't matter whether I understand"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: لمّا لم يتّضح المعنى للصحابة… ماذا حدث؟",
+            "en": "Remember: when the meaning wasn't clear to the Companions… what happened?"
+          },
+          "praise": {
+            "ar": "ممتاز! نسأل أهل العلم ونتعلّم، والله يبيّن لنا.",
+            "en": "Excellent! We ask people of knowledge and we learn — and Allah makes things clear for us."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأنظر إلى الأفق عند الفجر لأرى الخيط الأبيض!",
+          "en": "I'll look at the horizon at dawn to see the white thread!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة الخيط الأبيض والخيط الأسود.",
+        "en": "You learned the story of the white thread and the black thread."
+      }
+    },
+    {
+      "id": "qays-the-fasting-farmer",
+      "area": "fields",
+      "requires": [
+        "threads-of-dawn"
+      ],
+      "title": {
+        "ar": "قيس بن صِرمة: الفلاح الصائم",
+        "en": "Qays ibn Sirma, the Fasting Farmer"
+      },
+      "host": "farmer",
+      "characters": [
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            48.0,
+            19.5
+          ],
+          "facing": 3.1416,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "props": [
+        {
+          "model": "hoe",
+          "position": [
+            49.3,
+            19.9
+          ],
+          "rot": 0.4,
+          "tilt": -0.3
+        },
+        {
+          "model": "basket",
+          "position": [
+            48.9,
+            20.6
+          ],
+          "rot": 0.8
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الجدّ سالم في الغيط عند الترعة",
+          "شرق القرية، قرب طريق الحقول"
+        ],
+        "en": [
+          "Find Grandpa Salim in his field by the canal",
+          "East of the village, by the field road"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا بُنيّ! تعبتُ اليوم في الغيط… تعالَ، أحكي لك عن فلاحٍ صائمٍ مثلي.",
+        "en": "Hello, my son! A long day in the field… come, I'll tell you about a fasting farmer like me."
+      },
+      "locked": {
+        "ar": "أهلًا يا بُنيّ! اسمع أولًا قصة «الخيط الأبيض والخيط الأسود» عند الجدّة آمنة، ثم تعالَ إليّ.",
+        "en": "Hello, my son! First hear “The White Thread and the Black Thread” from Grandma Amina, then come back to me."
+      },
+      "after": {
+        "ar": "الله رحيمٌ بنا يا بُنيّ، يحبّ لنا اليُسر.",
+        "en": "Allah is merciful to us, my son — He wants ease for us."
+      },
+      "sources": [
+        "الصحيح المسند من أسباب النزول — الشيخ مقبل بن هادي الوادعي، ص25 (https://shamela.ws/book/11547/20) — سبب نزول {وكلوا واشربوا حتى يتبين لكم الخيط الأبيض…}",
+        "صحيح البخاري (ج5 ص31، كتاب الصوم) — حديث البراء بن عازب رضي الله عنه",
+        "وذكر المؤلف أيضًا: أبو داود، النسائي، أحمد، الدارمي",
+        "Qur'an 2:187"
+      ],
+      "_note": "Al-Bara's narration (Bukhari 5/31) as in the book. Left out for children: the wife's words «خيبة لك» and the first part of 2:187 (about spouses), which the book says was revealed in the same event. The book's text (as on Shamela) reads «فغلبته عيناه فقالت: خيبة لك» without «فجاءته امرأته فلما رأته» found in printed Bukhari — the retelling does not depend on it. Only 2:187 words 31–47 are shown/played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "scene": "qays_field",
+          "ar": "أهلًا يا بُنيّ! انظر، الشمس تميل إلى الغروب، وهذا وقتٌ يرجع فيه الفلاحون إلى بيوتهم. أتعرف أنّ فلاحًا صائمًا كان سببًا في نزول آيةٍ من القرآن؟",
+          "en": "Hello, my son! Look, the sun is going down — the time when farmers go home. Did you know that a fasting farmer was the reason a verse of the Quran was revealed?"
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "هل تريد أن تسمع قصته؟",
+          "en": "Would you like to hear his story?",
+          "options": [
+            {
+              "ar": "نعم يا جدّي، احكِ لي!",
+              "en": "Yes, Grandpa, tell me!",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "اسمع يا بُنيّ، واسأل عمّا تريد.",
+                  "en": "Listen, my son, and ask whatever you like."
+                }
+              ]
+            },
+            {
+              "ar": "فلاحٌ صائم؟ مثلك يا جدّي؟",
+              "en": "A fasting farmer? Like you, Grandpa?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "نعم، كان يعمل في أرضه مثلي تمامًا! اسمع القصة.",
+                  "en": "Yes — he worked his land just like me! Listen to the story."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "scene": "qays_field",
+          "ar": "حكى البراء بن عازب رضي الله عنه أنّ أصحاب النبيّ ﷺ كان لهم في الصيام أوّلَ الأمر حكمٌ غير الذي نعرفه اليوم.",
+          "en": "Al-Bara' ibn 'Azib, may Allah be pleased with him, told that at first the Companions of the Prophet ﷺ had a fasting rule different from the one we know today."
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ما هو ذلك الحكم يا جدّي؟",
+              "en": "What was that rule, Grandpa?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "قال البراء رضي الله عنه: كان الرجل إذا كان صائمًا فحضر الإفطار، فنام قبل أن يُفطر، لم يأكل ليلته ولا يومه حتى يُمسي.",
+                  "en": "Al-Bara' said: if a man was fasting and the time to break the fast came, and he fell asleep before eating, he could not eat that night or the next day until evening."
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "يعني: إذا غلبه النوم بعد المغرب قبل أن يأكل، بقي صائمًا تلك الليلة واليومَ الذي بعدها، حتى المساء!",
+                  "en": "That means: if sleep overcame him after sunset before he had eaten, he stayed fasting that night and the whole next day, until evening!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ومَن هو الفلاح الصائم؟",
+              "en": "And who was the fasting farmer?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "qays_field",
+                  "ar": "رجلٌ من الأنصار اسمه قيس بن صِرمة رضي الله عنه. كان صائمًا، وكان يعمل في أرضه طولَ النهار.",
+                  "en": "A man of the Ansar called Qays ibn Sirma, may Allah be pleased with him. He was fasting, and he worked on his land all day long."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث لمّا جاء وقت الإفطار؟",
+              "en": "What happened when it was time to break the fast?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "night_house",
+                  "ar": "أتى امرأته فقال لها: أعندكِ طعام؟ قالت: لا، ولكن أنطلق فأطلب لك.",
+                  "en": "He came to his wife and asked her: “Do you have any food?” She said: “No — but I will go and look for some for you.”"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "night_house",
+                  "ar": "وكان يومَه يعمل، فغلبته عيناه، فنام قبل أن يأكل شيئًا.",
+                  "en": "He had been working all day, and his eyes overcame him — he fell asleep before he had eaten anything."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "يا مسكين! وهل بقي صائمًا إلى اليوم التالي؟",
+              "en": "Poor man! Did he have to keep fasting the next day?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "qays_field",
+                  "ar": "نعم. فلمّا انتصف النهار غُشِيَ عليه من شدّة التعب، فذُكر ذلك للنبيّ ﷺ.",
+                  "en": "Yes. By midday he fainted from exhaustion — and this was told to the Prophet ﷺ."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "ماذا تظنّ أنّ الله أنزل، رحمةً بالناس؟",
+          "en": "What do you think Allah revealed, out of mercy for people?",
+          "options": [
+            {
+              "ar": "آيةً تسمح لهم بالأكل والشرب في الليل كلّه حتى الفجر",
+              "en": "A verse letting them eat and drink all night, until dawn",
+              "correct": true
+            },
+            {
+              "ar": "أمرًا بألّا يناموا أبدًا",
+              "en": "An order never to sleep"
+            },
+            {
+              "ar": "أمرًا بترك العمل في الأرض",
+              "en": "An order to stop working the land"
+            }
+          ],
+          "hint": {
+            "ar": "الله رحيمٌ بعباده، ويحبّ لهم اليُسر…",
+            "en": "Allah is merciful to His servants and wants ease for them…"
+          },
+          "praise": {
+            "ar": "أحسنت! فنزلت: «وكلوا واشربوا حتى يتبيّن لكم الخيطُ الأبيض من الخيطِ الأسود».",
+            "en": "Well done! And so it was revealed: “And eat and drink until the white thread becomes distinct to you from the black thread.”"
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "scene": "suhoor_table",
+          "ar": "قال البراء رضي الله عنه: ففرحوا بها فرحًا شديدًا. فصار الصائم يأكل ويشرب في الليل كلّه — حتى لو نام ثم استيقظ — إلى أن يطلع الفجر.",
+          "en": "Al-Bara' said: they were overjoyed. From then on a fasting person could eat and drink the whole night — even if he slept and woke up again — until dawn."
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "هذه هي الآية نفسها التي حكت لك عنها الجدّة آمنة. اسمعها مرة أخرى بصوت الشيخ، وتذكّر قيسًا الفلاح الصائم.",
+          "en": "This is the very verse Grandma Amina told you about. Listen to it again in the sheikh's voice, and remember Qays, the fasting farmer."
+        },
+        {
+          "type": "verses",
+          "from": "2:187",
+          "to": "2:187",
+          "words": [
+            31,
+            47
+          ],
+          "meaning": {
+            "ar": "كُلوا واشربوا في ليالي رمضان حتى يظهر لكم بياضُ النهار من سوادِ الليل عند طلوع الفجر، ثم أتمّوا الصيام إلى الليل (غروب الشمس).",
+            "en": "Eat and drink in the nights of Ramadan until the white of day shows clearly from the black of night at dawn; then complete the fast until nightfall (sunset)."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "الصيام عبادةٌ عظيمة، والله جعله سهلًا علينا. هو رحيمٌ بعباده، يحبّ لهم اليُسر ولا يريد أن يشقّ عليهم.",
+          "en": "Fasting is a great act of worship, and Allah made it easy for us. He is merciful to His servants — He wants ease for them, not hardship."
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "فماذا نتعلّم من قصة قيسٍ رضي الله عنه؟",
+          "en": "So what do we learn from the story of Qays, may Allah be pleased with him?",
+          "options": [
+            {
+              "ar": "الله رحيمٌ بنا، جعل الصيام سهلًا ويحبّ لنا اليُسر",
+              "en": "Allah is merciful to us: He made fasting easy and wants ease for us",
+              "correct": true
+            },
+            {
+              "ar": "الصيام يجب أن يكون متعبًا جدًّا",
+              "en": "Fasting has to be very exhausting"
+            },
+            {
+              "ar": "النوم بعد المغرب ممنوع",
+              "en": "Sleeping after sunset is forbidden"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: كيف فرح الصحابة لمّا نزلت الآية؟",
+            "en": "Remember how happy the Companions were when the verse came…"
+          },
+          "praise": {
+            "ar": "ممتاز! ونشكر الله على رحمته، ونقدّر تعب الفلاحين وكل من يعمل بجدّ.",
+            "en": "Excellent! We thank Allah for His mercy — and we value the hard work of farmers and everyone who works hard."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "الحمد لله أنّ الله رحيمٌ بنا!",
+          "en": "Alhamdulillah that Allah is so merciful to us!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة قيس بن صِرمة الفلاح الصائم.",
+        "en": "You learned the story of Qays ibn Sirma, the fasting farmer."
+      }
+    },
+    {
+      "id": "best-dates",
+      "area": "oasis",
+      "requires": [
+        "qays-the-fasting-farmer"
+      ],
+      "title": {
+        "ar": "أقناء التمر: أعطِ أطيب ما عندك",
+        "en": "The Date Clusters: Give Your Best"
+      },
+      "host": "hamdan",
+      "characters": [
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "صاحب البستان",
+            "en": "The Orchard Keeper"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            -127.3,
+            -38.6
+          ],
+          "facing": 0.6,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            -129.1,
+            -37.0
+          ],
+          "facing": 1.0,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "props": [
+        {
+          "model": "basket",
+          "position": [
+            -126.4,
+            -37.2
+          ],
+          "rot": 0.3
+        },
+        {
+          "model": "basket",
+          "position": [
+            -128.6,
+            -39.8
+          ],
+          "rot": 1.9,
+          "scale": 0.9
+        },
+        {
+          "model": "jar",
+          "position": [
+            -130.0,
+            -38.7
+          ],
+          "rot": 0.5
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى بستان النخيل جنوب الواحة",
+          "العمّ حمدان والجدّ سالم عند سلال التمر"
+        ],
+        "en": [
+          "Go to the palm grove south of the oasis",
+          "Uncle Hamdan and Grandpa Salim are by the date baskets"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا صغيري! تعالَ إلى ظلّ النخيل، التمر نضج!",
+        "en": "Hello, little one! Come into the palms' shade — the dates are ripe!"
+      },
+      "locked": {
+        "ar": "أهلًا يا صغيري! اسمع أولًا قصة «الفلاح الصائم» في الغيط شرق القرية، ثم تعالَ إلينا.",
+        "en": "Hello, little one! First hear “The Fasting Farmer” in the field east of the village, then come to us."
+      },
+      "after": {
+        "ar": "أعطِ غيرك ما تحبّ أن تُعطى.",
+        "en": "Give others what you would love to be given."
+      },
+      "sources": [
+        "الصحيح المسند من أسباب النزول — الشيخ مقبل بن هادي الوادعي، ص40–41 (https://shamela.ws/book/11547/35 وhttps://shamela.ws/book/11547/36) — سبب نزول {ولا تيمموا الخبيث منه تنفقون}",
+        "سنن الترمذي (ج4 ص77) — حديث البراء رضي الله عنه، وقال: حسن صحيح غريب",
+        "ابن ماجه (1822)، ابن جرير، الحاكم (صحيح على شرط مسلم، وأقرّه الذهبي)",
+        "Qur'an 2:267"
+      ],
+      "_note": "Al-Bara's narration (Tirmidhi 4/77) as in the book. The people who hung poor clusters are not shown or named — only the poor cluster as an object. Whole verse 2:267 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "scene": "date_clusters",
+          "ar": "أهلًا يا صغيري! انظر إلى هذه العذوق، ما أجمل التمر إذا نضج! كنتُ أنا والجدّ سالم نتذكّر قصةً عن التمر نزلت فيها آيةٌ من القرآن.",
+          "en": "Hello, little one! Look at these clusters — how lovely dates are when they ripen! Grandpa Salim and I were remembering a story about dates, and a verse of the Quran that came down about it."
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "هل تعرف ما هو «القِنو» يا بُنيّ؟",
+          "en": "Do you know what a “qinw” is, my son?",
+          "options": [
+            {
+              "ar": "لا، ما هو؟",
+              "en": "No, what is it?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "date_clusters",
+                  "ar": "القِنو هو العِذق: عنقود التمر الكبير كما هو على النخلة، بعيدانه وحبّاته.",
+                  "en": "A qinw is a date cluster: the big bunch of dates as it grows on the palm, stalks and all."
+                }
+              ]
+            },
+            {
+              "ar": "عنقود التمر!",
+              "en": "A bunch of dates!",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "date_clusters",
+                  "ar": "أحسنت! القِنو هو العِذق: عنقود التمر الكبير كما يُقطف من النخلة.",
+                  "en": "Well done! A qinw is a date cluster — the big bunch of dates, just as it is cut from the palm."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "حكى البراء بن عازب رضي الله عنه فقال: نزلت فينا معشرَ الأنصار، كنّا أصحابَ نخل.",
+          "en": "Al-Bara' ibn 'Azib, may Allah be pleased with him, said: “It was revealed about us, the Ansar. We were people of palm groves.”"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا كانوا يفعلون بتمرهم؟",
+              "en": "What did they do with their dates?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "date_clusters",
+                  "ar": "قال البراء: كان الرجل يأتي من نخله على قدر كثرته وقلّته. يأتي بالقِنو والقِنوين، فيعلّقه في المسجد.",
+                  "en": "Al-Bara' said: each man brought from his palms as much as he had, a lot or a little. He would bring a cluster or two and hang it up in the mosque."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "date_clusters",
+                  "ar": "وكان في المسجد فقراء ليس لهم طعام، هم «أهل الصُّفّة». فإذا جاع أحدهم أتى القِنو فضربه بعصاه، فيسقط البُسر والتمر فيأكل.",
+                  "en": "In the mosque there were poor people who had no food — “the people of the Suffah”. When one of them was hungry he went to a cluster and tapped it with his stick, and the dates fell down for him to eat."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ما أجمل هذا! وهل كانت كلّ العذوق طيّبة؟",
+              "en": "How lovely! Were all the clusters good?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "لا يا بُنيّ. قال البراء: وكان ناسٌ ممّن لا يرغب في الخير، يأتي الرجل بالقِنو فيه الشِّيص والحَشَف، وبالقِنو قد انكسر، فيعلّقه.",
+                  "en": "No, my son. Al-Bara' said: some people who did not care for doing good would bring a cluster full of shees and hashaf, or a broken cluster, and hang it up."
+                },
+                {
+                  "speaker": "hamdan",
+                  "ar": "الشِّيص تمرٌ ضامرٌ لم يكتمل، والحَشَف تمرٌ يابسٌ رديء. يعني: كانوا يعطون أسوأ ما عندهم!",
+                  "en": "Shees are shrivelled dates that never filled out, and hashaf are dry, poor dates. In other words: they gave the worst they had!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا أنزل الله في ذلك؟",
+              "en": "What did Allah reveal about that?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "best_dates",
+                  "ar": "أنزل الله آيةً يأمر فيها المؤمنين أن يُنفقوا من الطيّبات — من أطيب ما يكسبون وممّا يُخرج لهم من الأرض — وألّا يقصدوا الرديء الخبيث فيُعطوه.",
+                  "en": "Allah revealed a verse telling the believers to give from the good things — the best of what they earn and of what He brings out of the earth for them — and not to pick out the bad to give away."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "best_dates",
+                  "ar": "وهم أنفسهم لو أُعطوا ذلك الرديء ما أخذوه إلا وهم يُغمضون أعينهم عنه.",
+                  "en": "And they themselves would never take such poor stuff unless they closed their eyes to it."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال البراء بعد ذلك؟",
+              "en": "What did al-Bara' say after that?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "قال: لو أنّ أحدكم أُهدي إليه مثلُ ما أعطى، لم يأخذه إلا على إغماضٍ أو حياء.",
+                  "en": "He said: “If one of you were given the same as what he gave, he would only take it with his eyes shut, or out of shyness.”"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "best_dates",
+                  "ar": "قال البراء رضي الله عنه: فكنّا بعد ذلك يأتي الرجل بصالح ما عنده. أي: صار كلّ واحدٍ يأتي بأحسن تمره!",
+                  "en": "Al-Bara' said: “After that, each man brought the best of what he had.” Everyone brought his finest dates!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "لو أهداك أحدٌ تمرًا يابسًا مكسورًا، هل كنتَ ستفرح به؟",
+          "en": "If someone gave you dry, broken dates as a gift, would you be happy with them?",
+          "options": [
+            {
+              "ar": "لا… كنتُ سآخذه وأنا مستحٍ فقط",
+              "en": "No… I'd only take them out of politeness",
+              "correct": true
+            },
+            {
+              "ar": "نعم، أفرح به كثيرًا",
+              "en": "Yes, I'd be very happy"
+            },
+            {
+              "ar": "لا يهمّني ما يُهدى إليّ",
+              "en": "I don't care what I'm given"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر كلام البراء: «لم يأخذه إلا على إغماضٍ أو حياء»…",
+            "en": "Remember al-Bara's words: “only with his eyes shut, or out of shyness”…"
+          },
+          "praise": {
+            "ar": "صحيح! فلا نُعطي غيرنا ما لا نرضاه لأنفسنا.",
+            "en": "Right! So we never give others what we wouldn't accept for ourselves."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "تعالَ نسمع الآية بصوت الشيخ.",
+          "en": "Come, let's listen to the verse in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "2:267",
+          "to": "2:267"
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "scene": "best_dates",
+          "ar": "ولهذا يا صغيري، إذا تصدّقتَ أو أهديت، فاختر الأطيب: التمرة اللامعة الممتلئة، لا اليابسة المكسورة.",
+          "en": "So, little one, whenever you give charity or a gift, choose the best: the shiny, plump date — not the dry, broken one."
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "أن أُعطي غيري من أطيب ما عندي، كما أحبّ أن أُعطى",
+              "en": "To give others the best I have, as I'd love to be given",
+              "correct": true
+            },
+            {
+              "ar": "أن أُعطي الأشياء الرديئة التي لا أحتاجها",
+              "en": "To give away the poor things I don't need"
+            },
+            {
+              "ar": "ألّا أُعطي أحدًا شيئًا",
+              "en": "Never to give anyone anything"
+            }
+          ],
+          "hint": {
+            "ar": "فكّر: ماذا صار الأنصار يأتون به بعد نزول الآية؟",
+            "en": "Think: what did the Ansar bring after the verse came down?"
+          },
+          "praise": {
+            "ar": "ممتاز! الكرم الحقيقي أن تُهدي الأطيب.",
+            "en": "Excellent! True generosity is giving your best."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأختار أجمل عِذقٍ وأُعطيه لمن يحتاج!",
+          "en": "I'll pick the finest cluster and give it to someone in need!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة أقناء التمر: أعطِ أطيب ما عندك.",
+        "en": "You learned the story of the date clusters: give your best."
+      }
+    },
+    {
+      "id": "houses-by-their-doors",
+      "area": "village",
+      "requires": [
+        "best-dates"
+      ],
+      "title": {
+        "ar": "وأْتوا البيوت من أبوابها",
+        "en": "Enter Houses by Their Doors"
+      },
+      "host": "hamdan",
+      "characters": [
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "جارك",
+            "en": "Your Neighbour"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            20.4,
+            24.6
+          ],
+          "facing": -1.5708,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر العمّ حمدان عند باب بيته",
+          "شمال شرق القرية، قرب الترعة"
+        ],
+        "en": [
+          "Visit Uncle Hamdan at his front door",
+          "North-east of the village, near the canal"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا صغيري! من أين تدخل بيتكم: من الباب أم من الجدار؟",
+        "en": "Hello, little one! How do you get into your house — through the door, or over the wall?"
+      },
+      "locked": {
+        "ar": "أهلًا يا صغيري! اسمع أولًا قصة «أقناء التمر» في بستان النخيل، ثم تعالَ إليّ.",
+        "en": "Hello, little one! First hear “The Date Clusters” in the palm grove, then come back to me."
+      },
+      "after": {
+        "ar": "الخير في قلبك وعملك الصالح، لا في العادات الغريبة.",
+        "en": "Goodness is in your heart and your good deeds — not in strange customs."
+      },
+      "sources": [
+        "الصحيح المسند من أسباب النزول — الشيخ مقبل بن هادي الوادعي، ص26–27 (https://shamela.ws/book/11547/21 وhttps://shamela.ws/book/11547/22) — سبب نزول {وأتوا البيوت من أبوابها}",
+        "صحيح البخاري (ج4 ص370، وأعاده في التفسير) — حديث البراء رضي الله عنه",
+        "صحيح مسلم، الطيالسي؛ والحاكم من حديث جابر رضي الله عنه",
+        "Qur'an 2:189"
+      ],
+      "_note": "Al-Bara's narration (Bukhari 4/370) as in the book. The man is left unnamed as in al-Bara's narration (al-Hakim names him Qutbah ibn 'Amir). The explanation that it was a pre-Islamic custom thought to be righteousness is from mainstream tafsir (Ibn Kathir). Whole verse 2:189 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "scene": "house_door",
+          "ar": "أهلًا يا صغيري! انظر إلى هذا الباب الخشبي الجميل.",
+          "en": "Hello, little one! Look at this beautiful wooden door."
+        },
+        {
+          "type": "choice",
+          "speaker": "hamdan",
+          "ar": "سؤالٌ سريع: من أين يدخل الناس بيوتهم؟",
+          "en": "A quick question: how do people go into their houses?",
+          "options": [
+            {
+              "ar": "من الباب طبعًا!",
+              "en": "Through the door, of course!",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "house_door",
+                  "ar": "أحسنت! لكن هل تصدّق أنّ ناسًا في الماضي كانوا في وقتٍ من الأوقات لا يدخلون من الباب؟",
+                  "en": "Well done! But would you believe that, long ago, at certain times some people would not go in through the door?"
+                }
+              ]
+            },
+            {
+              "ar": "من الشبّاك!",
+              "en": "Through the window!",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "house_door",
+                  "ar": "لا يا صغيري! لكن اسمع: كان ناسٌ في الماضي، في وقتٍ من الأوقات، لا يدخلون من الباب!",
+                  "en": "No, little one! But listen: long ago, at certain times, some people would not go in through the door!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "لا يدخلون من الباب؟ ومتى كان ذلك؟",
+              "en": "Not through the door? When was that?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "house_back",
+                  "ar": "حكى البراء بن عازب رضي الله عنه فقال: نزلت هذه الآية فينا. كانت الأنصار إذا حجّوا فجاؤوا، لم يدخلوا من قِبَل أبواب بيوتهم، ولكن من ظهورها.",
+                  "en": "Al-Bara' ibn 'Azib, may Allah be pleased with him, said: “This verse was revealed about us. When the Ansar went on Hajj and came back, they would not enter their houses by the doors, but from the back.”"
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "house_back",
+                  "ar": "كانت هذه عادةً قديمة من أيام الجاهلية، يظنّون أنها من البِرّ — أي من الخير.",
+                  "en": "It was an old custom from before Islam, and they thought it was “birr” — righteousness."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث بعد ذلك؟",
+              "en": "And then what happened?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "house_door",
+                  "ar": "قال البراء رضي الله عنه: فجاء رجلٌ من الأنصار فدخل من قِبَل بابه، فكأنّه عُيِّر بذلك.",
+                  "en": "Al-Bara' said: “Then a man of the Ansar came and went in through his door — and it was as if he was blamed for it.”"
+                },
+                {
+                  "speaker": "hamdan",
+                  "ar": "يعني: عابه بعض الناس لأنّه دخل من الباب، كما يدخل الناس عادةً!",
+                  "en": "In other words: some people found fault with him for using the door, the normal way!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "في رأيك، هل كان الرجل الذي دخل من الباب مخطئًا؟",
+          "en": "What do you think — was the man who used his door wrong?",
+          "options": [
+            {
+              "ar": "لا، دخل من الباب وهذا هو الصواب",
+              "en": "No — he used the door, and that was right",
+              "correct": true
+            },
+            {
+              "ar": "نعم، كان عليه أن يتسلّق الجدار",
+              "en": "Yes, he should have climbed the wall"
+            },
+            {
+              "ar": "نعم، لأنّ الناس لاموه",
+              "en": "Yes, because people blamed him"
+            }
+          ],
+          "hint": {
+            "ar": "هل يجعلنا الدخول من خلف البيت أقرب إلى الله؟ فكّر…",
+            "en": "Does going in the back way bring us closer to Allah? Think…"
+          },
+          "praise": {
+            "ar": "أحسنت! وهذا ما بيّنه الله في القرآن.",
+            "en": "Well done! And that is exactly what Allah made clear in the Quran."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا أنزل الله؟",
+              "en": "What did Allah reveal?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "house_door",
+                  "ar": "فنزلت الآية تقول: ليس البِرّ أن تأتوا البيوت من ظهورها، ولكنّ البِرّ مَن اتّقى، وأْتوا البيوت من أبوابها.",
+                  "en": "The verse came down: righteousness is not entering houses from the back — righteousness is being mindful of Allah; so enter houses by their doors."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "إذن ما هو البِرّ الحقيقي؟",
+              "en": "So what is real righteousness?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "البِرّ هو التقوى: أن تطيع الله وتراقبه وتعمل الخير. أمّا العادات الغريبة التي لم يأمر الله بها فليست من البِرّ.",
+                  "en": "Righteousness is taqwa: obeying Allah, being mindful of Him and doing good. Strange customs that Allah never commanded are not righteousness."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "تعالَ نسمع الآية بصوت الشيخ. انتبه لقوله: «وأْتوا البيوت من أبوابها».",
+          "en": "Come, let's hear the verse in the sheikh's voice. Listen for “so enter houses by their doors”."
+        },
+        {
+          "type": "verses",
+          "from": "2:189",
+          "to": "2:189"
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "وفي أوّل الآية ذكر الله الأهلّة — الهلال الذي نراه في أوّل كل شهر — وأنّها مواقيت للناس وللحجّ.",
+          "en": "At the start of the verse Allah mentions the new moons — the crescent we see at the start of every month — as a way for people to tell the times, and the time of Hajj."
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "الخير الحقيقي في التقوى والعمل الصالح، لا في العادات الغريبة",
+              "en": "Real goodness is in taqwa and good deeds, not in strange customs",
+              "correct": true
+            },
+            {
+              "ar": "كلّما كانت العادة أغرب كانت أفضل",
+              "en": "The stranger the custom, the better"
+            },
+            {
+              "ar": "أفعل ما يفعله الناس حتى لو كان خطأ",
+              "en": "I do what everyone does, even if it's wrong"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ما هو البِرّ الذي ذكرته الآية؟",
+            "en": "Remember: what does the verse say righteousness is?"
+          },
+          "praise": {
+            "ar": "ممتاز! ولا نخجل من فعل الصواب، حتى لو لامنا بعض الناس.",
+            "en": "Excellent! And we are never ashamed of doing what is right, even if some people blame us."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "من اليوم سأدخل من الباب، وأقول: بسم الله!",
+          "en": "From today I'll always use the door — and say Bismillah!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة «وأْتوا البيوت من أبوابها».",
+        "en": "You learned the story of “enter houses by their doors”."
+      }
+    },
+    {
+      "id": "the-new-qibla",
+      "area": "ruins",
+      "requires": [
+        "houses-by-their-doors"
+      ],
+      "title": {
+        "ar": "القِبلة الجديدة",
+        "en": "The New Qibla"
+      },
+      "host": "farmer",
+      "characters": [
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            163.0,
+            -139.4
+          ],
+          "facing": 0.25,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "التاجر",
+            "en": "The Trader"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            165.0,
+            -139.9
+          ],
+          "facing": -0.25,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8,
+        "clear": 6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الساحة الواسعة في الدار القديمة",
+          "الجدّ سالم والعمّ حمدان ينتظرانك هناك"
+        ],
+        "en": [
+          "Go to the wide courtyard at the Old Homestead",
+          "Grandpa Salim and Uncle Hamdan are waiting there"
+        ]
+      },
+      "greeting": {
+        "ar": "السلام عليكم يا بُنيّ! ساحةٌ واسعة… مكانٌ جميلٌ للصلاة.",
+        "en": "Peace be upon you, my son! A wide courtyard… a lovely place to pray."
+      },
+      "locked": {
+        "ar": "أهلًا يا بُنيّ! اسمع أولًا قصة «وأْتوا البيوت من أبوابها» في القرية، ثم تعالَ إلينا.",
+        "en": "Hello, my son! First hear “Enter Houses by Their Doors” in the village, then come to us."
+      },
+      "after": {
+        "ar": "سارِع إلى طاعة الله، فالله لا يُضيع عملك.",
+        "en": "Hurry to obey Allah — He never lets your good deeds go to waste."
+      },
+      "sources": [
+        "الصحيح المسند من أسباب النزول — الشيخ مقبل بن هادي الوادعي، ص21–23 (https://shamela.ws/book/11547/16، https://shamela.ws/book/11547/17، https://shamela.ws/book/11547/18) — سبب نزول {قد نرى تقلب وجهك في السماء} و{وما كان الله ليضيع إيمانكم}",
+        "صحيح البخاري (ج2 ص48؛ وفي التفسير ج9 ص237) — حديث البراء بن عازب رضي الله عنه",
+        "الترمذي (حسن صحيح)، ابن ماجه، أحمد، الدارقطني؛ ومسلم من حديث أنس رضي الله عنه",
+        "Qur'an 2:143–144"
+      ],
+      "_note": "Al-Bara's narration (Bukhari 2/48) as in the book. Left out for children, as the research asks: «وقال السفهاء من الناس وهم اليهود…». For 2:143 the book's narration says the men who had died before the change «رجال قتلوا»; the retelling only says people had died. The mosque is not named (the book's text does not name it). Only 2:144 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "scene": "qibla_ground",
+          "ar": "السلام عليكم يا بُنيّ! نحن في ساحةٍ واسعة، مكانٍ جميلٍ للصلاة.",
+          "en": "Peace be upon you, my son! Here we are in a wide courtyard — a lovely place to pray."
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "قل لي: إلى أيّ جهةٍ نتّجه حين نصلّي؟",
+          "en": "Tell me: which way do we face when we pray?",
+          "options": [
+            {
+              "ar": "نحو الكعبة في مكة!",
+              "en": "Toward the Kaaba in Makkah!",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "kaaba",
+                  "ar": "أحسنت! الكعبة قِبلتنا. لكن هل تعلم أنّ المسلمين صلّوا مدّةً نحو جهةٍ أخرى؟",
+                  "en": "Well done! The Kaaba is our qibla. But did you know the Muslims once prayed toward somewhere else for a while?"
+                }
+              ]
+            },
+            {
+              "ar": "لا أعرف…",
+              "en": "I don't know…",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "kaaba",
+                  "ar": "نتّجه نحو الكعبة في مكة، وهي قِبلتنا. لكن هل تعلم أنّ المسلمين صلّوا مدّةً نحو جهةٍ أخرى؟",
+                  "en": "We face the Kaaba in Makkah — it is our qibla. But did you know the Muslims once prayed toward somewhere else for a while?"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "نحو أيّ جهةٍ كانوا يصلّون؟",
+              "en": "Which way did they pray?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "qibla_ground",
+                  "ar": "حكى البراء بن عازب رضي الله عنه أنّ رسول الله ﷺ صلّى نحو بيت المقدس ستة عشر شهرًا أو سبعة عشر شهرًا.",
+                  "en": "Al-Bara' ibn 'Azib, may Allah be pleased with him, told that the Messenger of Allah ﷺ prayed toward Bayt al-Maqdis (Jerusalem) for sixteen or seventeen months."
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "وبيت المقدس فيه المسجد الأقصى المبارك، وكان ذلك بعد أن هاجر النبيّ ﷺ إلى المدينة.",
+                  "en": "Bayt al-Maqdis is where the blessed al-Aqsa Mosque is — and this was after the Prophet ﷺ had moved to Madinah."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وأيّ قبلةٍ كان يحبّ النبيّ ﷺ؟",
+              "en": "Which qibla did the Prophet ﷺ love?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "kaaba",
+                  "ar": "قال البراء رضي الله عنه: وكان رسول الله ﷺ يحبّ أن يُوجَّه إلى الكعبة.",
+                  "en": "Al-Bara' said: the Messenger of Allah ﷺ loved to be turned toward the Kaaba."
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "kaaba",
+                  "ar": "فأنزل الله: «قد نرى تقلّب وجهك في السماء» — أي أنّ الله يرى نبيّه ﷺ يرفع وجهه إلى السماء ينتظر أمر ربّه — فأمره أن يتّجه في صلاته نحو المسجد الحرام، فتوجّه نحو الكعبة.",
+                  "en": "So Allah revealed: “We have seen the turning of your face toward the heaven” — Allah saw His Prophet ﷺ lifting his face to the sky, waiting for his Lord's command — and He told him to face the Sacred Mosque in prayer. So he turned toward the Kaaba."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف عرف الناس أنّ القِبلة تغيّرت؟",
+              "en": "How did people find out the qibla had changed?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "qibla_ground",
+                  "ar": "قال البراء رضي الله عنه: فصلّى مع النبيّ ﷺ رجلٌ، ثم خرج بعدما صلّى، فمرّ على قومٍ من الأنصار في صلاة العصر نحو بيت المقدس.",
+                  "en": "Al-Bara' said: a man prayed with the Prophet ﷺ, then went out after the prayer and passed by some of the Ansar who were praying 'Asr, facing Bayt al-Maqdis."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "qibla_ground",
+                  "ar": "فقال: هو يشهد أنّه صلّى مع رسول الله ﷺ، وأنّه توجّه نحو الكعبة.",
+                  "en": "He told them he bore witness that he had prayed with the Messenger of Allah ﷺ, and that he had turned toward the Kaaba."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعلوا وهم في صلاتهم؟",
+              "en": "What did they do, in the middle of their prayer?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "qibla_ground",
+                  "ar": "قال البراء رضي الله عنه: فتحرّف القوم حتى توجّهوا نحو الكعبة. استداروا وهم في صلاتهم، ولم ينتظروا حتى يُنهوها!",
+                  "en": "Al-Bara' said: the people turned round until they were facing the Kaaba. They turned while still praying — they didn't even wait to finish!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "لماذا استدار الصحابة رضي الله عنهم فورًا وهم يصلّون؟",
+          "en": "Why did the Companions, may Allah be pleased with them, turn at once, right in the middle of the prayer?",
+          "options": [
+            {
+              "ar": "لأنهم يحبّون طاعة الله ويسارعون إليها",
+              "en": "Because they loved obeying Allah and hurried to do it",
+              "correct": true
+            },
+            {
+              "ar": "لأنهم تعبوا من الوقوف",
+              "en": "Because they were tired of standing"
+            },
+            {
+              "ar": "لأنّ الشمس كانت في عيونهم",
+              "en": "Because the sun was in their eyes"
+            }
+          ],
+          "hint": {
+            "ar": "فكّر: جاء أمر الله… فماذا يفعل المؤمن؟",
+            "en": "Think: Allah's command came… what does a believer do?"
+          },
+          "praise": {
+            "ar": "أحسنت! سارعوا إلى طاعة الله فورًا.",
+            "en": "Well done! They hurried to obey Allah straight away."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا عن صلاة الذين ماتوا قبل أن تتغيّر القِبلة؟",
+              "en": "And what about the prayers of people who died before the qibla changed?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "سأل الناس عن ذلك فعلًا! فأنزل الله: «وما كان الله ليُضيع إيمانكم» — أي صلاتكم التي صلّيتموها نحو بيت المقدس لن تضيع. فالله لا يُضيع عمل أحد.",
+                  "en": "People really did ask that! And Allah revealed: “Allah would never let your faith go to waste” — meaning the prayers they had prayed toward Bayt al-Maqdis were not lost. Allah never lets anyone's good deeds go to waste."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "تعالَ نسمع الآية التي تحوّلت بها القِبلة، بصوت الشيخ.",
+          "en": "Come, let's hear the verse that changed the qibla, in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "2:144",
+          "to": "2:144"
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "scene": "kaaba",
+          "ar": "ومن يومها يتّجه المسلمون في كلّ مكانٍ من العالم نحو الكعبة، في كلّ صلاة. ونحن هنا في هذه الساحة نتّجه نحوها أيضًا.",
+          "en": "Ever since, Muslims all over the world face the Kaaba in every prayer — and here in this courtyard, we face it too."
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "أن نسارع إلى طاعة الله، وأنّ الله لا يُضيع عملنا",
+              "en": "To hurry to obey Allah — and that Allah never wastes our good deeds",
+              "correct": true
+            },
+            {
+              "ar": "أن نتأخّر كثيرًا قبل أن نطيع",
+              "en": "To wait a long time before obeying"
+            },
+            {
+              "ar": "أنّ القِبلة لا تهمّ",
+              "en": "That the qibla doesn't matter"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر ماذا فعل الأنصار في صلاة العصر…",
+            "en": "Remember what the Ansar did during 'Asr prayer…"
+          },
+          "praise": {
+            "ar": "ممتاز! نطيع الله بحبّ وبسرعة، ونثق أنّه لا يُضيع عملنا.",
+            "en": "Excellent! We obey Allah with love and without delay, trusting that He never wastes our deeds."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "إذا صلّيتُ سأتّجه نحو الكعبة، وأسارع إلى طاعة الله!",
+          "en": "When I pray I'll face the Kaaba — and I'll hurry to obey Allah!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة القِبلة الجديدة.",
+        "en": "You learned the story of the new qibla."
+      }
+    },
+    {
+      "id": "the-guest-and-the-lamp",
+      "area": "village",
+      "requires": [
+        "the-new-qibla"
+      ],
+      "title": {
+        "ar": "الضيف والسراج",
+        "en": "The Guest and the Lamp"
+      },
+      "host": "amina",
+      "characters": [
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            4.5,
+            -40.9
+          ],
+          "facing": -1.82,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            4.4,
+            -44.1
+          ],
+          "facing": -1.32,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "props": [
+        {
+          "model": "lantern",
+          "position": [
+            5.55,
+            -41.7
+          ],
+          "rot": -1.5708,
+          "y": 1.9
+        },
+        {
+          "model": "jar",
+          "position": [
+            5.1,
+            -44.9
+          ],
+          "rot": 0.7
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر الجدّة آمنة والجدّ سالم عند البيت ذي السراج",
+          "في شارع القرية الجنوبي"
+        ],
+        "en": [
+          "Visit Grandma Amina and Grandpa Salim at the house with the lamp",
+          "On the village street, to the south"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا حبيبي! انظر إلى السراج عند الباب… يُذكّرني بقصةٍ عن ضيفٍ كريم.",
+        "en": "Hello, my darling! Look at the lamp by the door… it reminds me of a story about a guest."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «القِبلة الجديدة» في ساحة الدار القديمة، ثم تعالَ إلينا.",
+        "en": "Hello, my darling! First hear “The New Qibla” in the Old Homestead's courtyard, then come to us."
+      },
+      "after": {
+        "ar": "أكرِم ضيفك يا حبيبي، وقدّم غيرك على نفسك.",
+        "en": "Honour your guests, my darling, and put others before yourself."
+      },
+      "sources": [
+        "الصحيح المسند من أسباب النزول — الشيخ مقبل بن هادي الوادعي، ص208 (https://shamela.ws/book/11547/203) — سبب نزول {ويؤثرون على أنفسهم ولو كان بهم خصاصة}",
+        "صحيح البخاري (ج8 ص120، وأعاده في التفسير) — حديث أبي هريرة رضي الله عنه",
+        "صحيح مسلم (ج4 ص12–13)، الترمذي، ابن جرير، الأدب المفرد، الحاكم",
+        "Qur'an 59:9"
+      ],
+      "_note": "Abu Hurayrah's narration (Bukhari 8/120) as in the book. The children being put to sleep is told gently without dwelling on their hunger. The Prophet's ﷺ words in the morning are quoted exactly, without explanation. Whole verse 59:9 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "أهلًا يا حبيبي! تعالَ، اقترب. انظر إلى هذا السراج المضيء عند الباب. عندنا لك قصةٌ عن سراجٍ أُطفئ عن قصد!",
+          "en": "Hello, my darling! Come closer. Look at this lamp glowing by the door. We have a story for you about a lamp that was put out on purpose!"
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "هل تعرف لماذا يُطفئ أحدٌ سراجه وعنده ضيف؟",
+          "en": "Do you know why someone would put out their lamp while they had a guest?",
+          "options": [
+            {
+              "ar": "لا! لماذا؟",
+              "en": "No! Why?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "اسمع القصة، وستعرف السرّ.",
+                  "en": "Listen to the story and you'll find out the secret."
+                }
+              ]
+            },
+            {
+              "ar": "لكي يناموا؟",
+              "en": "So they could sleep?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "لا يا بُنيّ! كان هناك سرٌّ جميل. اسمع القصة.",
+                  "en": "No, my son! There was a beautiful secret. Listen to the story."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "حكى أبو هريرة رضي الله عنه أنّ رجلًا أتى النبيّ ﷺ يحتاج إلى طعام، فبعث النبيّ ﷺ إلى بيوت نسائه، فقُلن: ما معنا إلا الماء.",
+          "en": "Abu Hurayrah, may Allah be pleased with him, told that a man came to the Prophet ﷺ in need of food. The Prophet ﷺ sent word to his wives' homes, and they said: “We have nothing but water.”"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ما معهم إلا الماء؟! فماذا فعل النبيّ ﷺ؟",
+              "en": "Nothing but water?! So what did the Prophet ﷺ do?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "قال رسول الله ﷺ: «مَن يضمّ — أو يُضيف — هذا؟» فقال رجلٌ من الأنصار: أنا.",
+                  "en": "The Messenger of Allah ﷺ said: “Who will take in — or host — this man?” A man of the Ansar said: “I will.”"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "guest_meal",
+                  "ar": "فانطلق به إلى امرأته، فقال: أكرمي ضيفَ رسول الله ﷺ.",
+                  "en": "He took him home to his wife and said: “Honour the guest of the Messenger of Allah ﷺ.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل كان عندهم طعامٌ كثير؟",
+              "en": "Did they have lots of food?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "لا يا حبيبي. قالت امرأته: ما عندنا إلا قوتُ صبياني — يعني طعامًا قليلًا يكفي أولادهما الصغار فقط.",
+                  "en": "No, my darling. His wife said: “We have nothing but my children's food” — just a little, enough only for their young children."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "يا الله! وماذا فعلا؟",
+              "en": "Oh my! So what did they do?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "قال لها: هيّئي طعامك، وأصبحي سراجك — أي أشعليه — ونوّمي صبيانك إذا أرادوا عَشاءً.",
+                  "en": "He said to her: “Get your food ready, light your lamp, and put the children to bed if they ask for supper.”"
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "guest_meal",
+                  "ar": "فهيّأت طعامها، وأشعلت سراجها، ونوّمت صغارها، وقدّما الطعام للضيف.",
+                  "en": "So she got the food ready, lit the lamp, put the little ones to bed, and they set the food before the guest."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا أُطفئ السراج؟",
+              "en": "And why was the lamp put out?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "lamp_out",
+                  "ar": "ثم قامت كأنها تُصلح سراجها، فأطفأته! فجعلا يُريان الضيف كأنهما يأكلان معه.",
+                  "en": "Then she stood up as if to fix the lamp — and put it out! And the two of them made the guest think they were eating with him."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "lamp_out",
+                  "ar": "هذا هو السرّ! في الظلام لا يرى الضيف أنّهما لا يأكلان، فيأكل هو مطمئنًّا ولا يستحيي.",
+                  "en": "That was the secret! In the dark the guest couldn't see that they weren't eating — so he could eat without feeling shy."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهما… ماذا أكلا؟",
+              "en": "And them… what did they eat?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "قال أبو هريرة رضي الله عنه: فباتا طاويين — أي ناما تلك الليلة جائعين. قدّما ضيفهما على أنفسهما، وهذا هو «الإيثار».",
+                  "en": "Abu Hurayrah said: they spent the night hungry. They put their guest before themselves — and that is called “ithar”, preferring others."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "لماذا أطفأت المرأة السراج؟",
+          "en": "Why did the woman put out the lamp?",
+          "options": [
+            {
+              "ar": "حتى يأكل الضيف ولا يرى أنّهما لا يأكلان",
+              "en": "So the guest could eat without seeing they weren't eating",
+              "correct": true
+            },
+            {
+              "ar": "لأنّ الزيت انتهى",
+              "en": "Because the oil ran out"
+            },
+            {
+              "ar": "لأنها أرادت أن تنام",
+              "en": "Because she wanted to sleep"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: كان الطعام قليلًا، وأرادا أن يأكل الضيف مرتاحًا…",
+            "en": "Remember: there was only a little food, and they wanted the guest to eat comfortably…"
+          },
+          "praise": {
+            "ar": "أحسنت! أرادا أن يُكرما الضيف دون أن يُحرجاه.",
+            "en": "Well done! They wanted to honour their guest without embarrassing him."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث في الصباح؟",
+              "en": "What happened in the morning?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "guest_meal",
+                  "ar": "فلمّا أصبح غدا الرجل إلى رسول الله ﷺ، فقال النبيّ ﷺ: «ضحِك الله الليلةَ — أو عجِب — من فَعالكما».",
+                  "en": "In the morning the man went to the Messenger of Allah ﷺ, and the Prophet ﷺ said: “Allah laughed tonight — or marvelled — at what you two did.”"
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "وأنزل الله آيةً في القرآن يمدح فيها الأنصار: «ويُؤثِرون على أنفسهم ولو كان بهم خصاصة» — أي يقدّمون غيرهم على أنفسهم ولو كانوا هم محتاجين.",
+                  "en": "And Allah revealed a verse praising the Ansar: “they prefer others over themselves, even when they are in need.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "تعالَ نسمع الآية بصوت الشيخ.",
+          "en": "Come, let's hear the verse in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "59:9",
+          "to": "59:9"
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "أن أُكرم الضيف وأُقدّم غيري على نفسي، ولو كنتُ محتاجًا",
+              "en": "To honour guests and put others before myself, even when I need something too",
+              "correct": true
+            },
+            {
+              "ar": "أن آكل الطعام وحدي",
+              "en": "To eat my food by myself"
+            },
+            {
+              "ar": "أن أُطفئ السراج دائمًا",
+              "en": "To always put out the lamp"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا فعل الرجل وامرأته بطعامهما القليل؟",
+            "en": "Remember what the man and his wife did with their little food…"
+          },
+          "praise": {
+            "ar": "ممتاز! وهذا هو الإيثار، وقد قال الله عن أهله: «فأولئك هم المفلحون».",
+            "en": "Excellent! That is ithar — and Allah says of such people: “it is they who are successful.”"
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأشارك طعامي مع ضيوفنا وأصدقائي!",
+          "en": "I'll share my food with our guests and my friends!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة الضيف والسراج.",
+        "en": "You learned the story of the guest and the lamp."
       }
     }
   ],

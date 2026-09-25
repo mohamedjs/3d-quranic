@@ -45,7 +45,7 @@ export const STR = {
     offline: 'تعذّر الاتصال بموقع Quran.com. تأكّد من الاتصال بالإنترنت ثم أعد المحاولة.', noAudio: 'لا يتوفّر تسجيل لهذا القارئ لهذه الآيات. جرّب قارئًا آخر من الإعدادات.',
     audioErr: 'تعذّر تشغيل التلاوة.', tapToPlay: 'اضغط «إعادة المحاولة» لتشغيل التلاوة.', retry: 'إعادة المحاولة', skip: 'تخطٍّ', reciting: 'القارئ',
     verse: 'الآية', of: 'من', tafsir: 'التفسير الميسّر', translation: 'Saheeh International', sources: 'المصادر', building: 'نبني العالم…', you: 'أنت',
-    voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', close: 'إغلاق', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.',
+    voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.',
   },
   en: {
     title: 'Quran Journey', alt: 'رحلة القرآن', tagline: 'Explore · Listen · Learn · Grow', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Continue', newGame: 'New Journey', settings: 'Settings',
@@ -58,7 +58,7 @@ export const STR = {
     offline: 'Could not reach Quran.com. Check your internet connection and try again.', noAudio: 'This reciter has no recording for these verses. Try another reciter in Settings.',
     audioErr: 'The recitation could not be played.', tapToPlay: 'Press “Try again” to start the recitation.', retry: 'Try again', skip: 'Skip', reciting: 'Reciting',
     verse: 'Verse', of: 'of', tafsir: 'Tafsir al-Muyassar', translation: 'Saheeh International', sources: 'Sources', building: 'Building the world…', you: 'You',
-    voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', close: 'Close', noVoice: 'No English voice installed — lines will show as text.',
+    voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.',
   },
 };
 
@@ -208,7 +208,7 @@ export class UI {
     for (const e of done) {
       const v = e.steps.find(s => s.type === 'verses'), card = document.createElement('article');
       card.innerHTML = `<div class="medal sm">${medalSVG()}</div><div><h3>${esc(this.t(e.title))}</h3>
-        <p>${esc(this.t(e.character.name))} · ${esc(v.from)}–${esc(v.to.split(':')[1])}</p>
+        <p>${esc(this.t(e.character.name))} · ${esc(v.from === v.to ? v.from : `${v.from}–${v.to.split(':')[1]}`)}${v.words ? ` (${esc(S.partOf)})` : ''}</p>
         <small>${esc(S.sources)}: ${e.sources.map(esc).join(' · ')}</small></div><button>${icon('speaker')}${esc(S.listenAgain)}</button>`;
       card.querySelector('button').onclick = () => { this.closePanel?.(); onReplay(v); };
       list.append(card);

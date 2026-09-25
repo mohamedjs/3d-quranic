@@ -56,8 +56,10 @@ export class Story {
     const el = document.getElementById('scene');
     if (!name) { el.classList.remove('show'); el.dataset.name = ''; return; }
     if (el.dataset.name === name) return;
+    const html = sceneSVG(name, this.lang());
+    if (!html) { el.classList.remove('show'); el.dataset.name = ''; return; }   // no painting/SVG for this scene (yet)
     el.dataset.name = name; el.hidden = false;
-    el.innerHTML = sceneSVG(name, this.lang());
+    el.innerHTML = html;
     el.classList.remove('show'); void el.offsetWidth; el.classList.add('show');
   }
 

@@ -21,6 +21,8 @@ import { Effects } from '../effects/Effects.jsx';
 import { createGame } from '../systems/game.js';
 import { refs } from '../systems/refs.js';
 import { normalizeEncounters } from '../systems/cast.js';
+import { height } from '../terrain/heightfield.js';
+import { makeLantern } from './lantern.js';
 
 let dataPromise;
 const loadData = () => (dataPromise ??= fetch('./data/encounters.json').then(r => {
@@ -48,7 +50,22 @@ export function World() {
       if (c.camel) { const [cx, cz] = c.camel; colliders.push({ x0: cx - 1.1, x1: cx + 1.1, z0: cz - 1.1, z1: cz + 1.1 }); clearings.push([cx, cz, 2]); }
     }
     clearings.push([village.home.x + 2.5, village.home.z, 5.5]);   // grandma's yard: no bushes on the stage
-    return { terrain, village, canal, colliders, clearings };
+    // encounter set dressing: `props: [{ model, position:[x,z], rot, scale, tilt, dy, collide }]`,
+    // `model` is an env GLB (models/env) or "lantern" (procedural, hung at `y` m above ground)
+    const props = [], lanterns = [];
+    for (const e of data.encounters) {                              // stage.clear: an open patch (no bushes/grass) round the cast
+      const r = e.stage?.clear; if (!r) continue;
+      const cx = e.characters.reduce((a, c) => a + c.position[0], 0) / e.characters.length, cz = e.characters.reduce((a, c) => a + c.position[1], 0) / e.characters.length;
+      clearings.push([cx, cz, r]);
+    }
+    for (const e of data.encounters) for (const p of e.props ?? []) {
+      const [x, z] = p.position, s = p.scale ?? 1;
+      if (p.model === 'lantern') { lanterns.push(makeLantern({ x, z, y: height(x, z) + (p.y ?? 1.9), rot: p.rot ?? 0 })); continue; }
+      props.push({ model: p.model, x, y: height(x, z) + (p.dy ?? -0.03), z, rot: p.rot ?? 0, tilt: p.tilt, sx: s, sy: s, sz: s });
+      if (p.collide) colliders.push({ x0: x - p.collide, x1: x + p.collide, z0: z - p.collide, z1: z + p.collide });
+      clearings.push([x, z, 0.8]);
+    }
+    return { terrain, village, canal, colliders, clearings, props, lanterns };
   }, [data]);
 
   // order matters: meshes the player needs (terrain, walls) mount first; <Player/> updates
@@ -63,6 +80,8 @@ export function World() {
       <Built geometries={world.canal.geometries} />
       <Props assets={assets} placements={world.canal.placements} lodDistance={40} />
       <primitive object={world.canal.overlays} />
+      {world.props.length > 0 && <Props assets={assets} placements={world.props} lodDistance={40} />}
+      {world.lanterns.map((l, i) => <primitive key={'lantern' + i} object={l} />)}
       <Vegetation colliders={world.colliders} clearings={world.clearings} assets={assets} gardens={world.village.gardens} />
       <Player colliders={world.colliders} />
       {data.encounters.map(e => <NPC key={e.id} encounter={e} />)}

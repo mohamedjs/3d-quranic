@@ -12,7 +12,12 @@ const fmt = s => (isFinite(s) ? `${Math.floor(s / 60)}:${String(Math.floor(s % 6
 const PLAY = '<svg class="ic" aria-hidden="true"><use href="#i-play"/></svg>';
 const PAUSE = '<svg class="ic" aria-hidden="true"><use href="#i-pause"/></svg>';
 
-export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
+// A step may ask for part of one verse: `words: [first, last]` (1-based word positions,
+// inclusive). Only those words are shown, and — when the reciter has word timings — only
+// that stretch of the recording is played; without timings the whole verse is played.
+// A partial verse shows the step's own `meaning` ({ar, en}) instead of the whole verse's
+// tafsir/translation, which would explain the parts that were left out.
+export function playRecitation({ from, to, words: part, meaning: note }, { reciter, lang, meaning, S }) {
   const R = document.getElementById('quran'), $ = s => R.querySelector(s);
   const text = $('.q-text'), msg = $('.q-msg'), toggle = $('.q-toggle');
   R.hidden = false; R.dir = lang === 'ar' ? 'rtl' : 'ltr';
@@ -21,7 +26,7 @@ export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
   $('.q-meaning').textContent = ''; $('.q-src').textContent = ''; $('.q-dots').innerHTML = ''; $('.q-progress i').style.width = '0';
   $('.q-retry').textContent = S.retry; $('.q-giveup').textContent = S.skip; $('.q-skip').title = S.skip;
 
-  let verses = [], i = 0, raf = 0, done = false, spans = [], lastWord = -1;
+  let verses = [], i = 0, raf = 0, done = false, spans = [], lastWord = -1, clip = null;
   const preloader = new Audio(); preloader.preload = 'auto';
 
   return new Promise(resolve => {
@@ -38,6 +43,7 @@ export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
     audio.onplay = () => { toggle.innerHTML = PAUSE; }; audio.onpause = () => { toggle.innerHTML = PLAY; };
     audio.onended = () => {
       if (done) return;
+      clip && (clip.over = true);
       if (i + 1 < verses.length) setTimeout(() => !done && playVerse(i + 1), 450);
       else { spans.forEach(s => s.classList.add('read')); setTimeout(finish, 1600); }
     };
@@ -50,6 +56,12 @@ export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
           QuranService.getSurah(surahNo), QuranService.getVerses(from, to, reciter), QuranService.getReciters().catch(() => []),
         ]);
         verses = vs;
+        clip = null;
+        if (Array.isArray(part) && verses.length === 1) {
+          const v = verses[0], a = Math.max(0, part[0] - 1), b = Math.min(v.words.length - 1, part[1] - 1);
+          const t0 = v.timing.find(t => t.word === a), t1 = [...v.timing].reverse().find(t => t.word === b);
+          clip = { a, b, from: t0?.from, to: t1?.to, timed: !!(t0 && t1 && t1.to > t0.from) };
+        }
         $('.q-surah').textContent = `سورة ${surah.nameArabic}`;
         $('.q-sub').textContent = `Surah ${surah.nameSimple} · ${surah.nameTranslated}`;
         const rc = reciters.find(r => r.id === reciter);
@@ -63,20 +75,23 @@ export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
     function render(k) {
       const v = verses[k];
       text.classList.remove('loading'); text.textContent = '';
-      spans = v.words.map((w, n) => {
+      const a = clip?.a ?? 0, b = clip?.b ?? v.words.length - 1;
+      if (a > 0) text.append('… ');
+      spans = v.words.slice(a, b + 1).map((w, n) => {
         const s = document.createElement('span'); s.className = 'w'; s.textContent = w;
-        text.append(s); if (n < v.words.length - 1) text.append(' ');
+        text.append(s); if (a + n < b) text.append(' ');
         return s;
       });
-      const end = document.createElement('span'); end.className = 'ayah-end'; end.textContent = v.end;
-      text.append(' ', end);
+      if (b < v.words.length - 1) text.append(' …');
+      else { const end = document.createElement('span'); end.className = 'ayah-end'; end.textContent = v.end; text.append(' ', end); }
       text.classList.toggle('whole', !v.timing.length);
       text.classList.remove('enter'); void text.offsetWidth; text.classList.add('enter');
-      $('.q-vno').textContent = `${S.verse} ${v.verse} · ${k + 1} ${S.of} ${verses.length}`;
+      $('.q-vno').textContent = clip ? `${S.partOf} ${v.verse}` : `${S.verse} ${v.verse} · ${k + 1} ${S.of} ${verses.length}`;
       [...$('.q-dots').children].forEach((d, n) => { d.className = n < k ? 'done' : n === k ? 'on' : ''; });
       const m = $('.q-meaning'), src = $('.q-src');
       m.textContent = ''; src.textContent = '';
       if (!meaning) return;
+      if (clip) { const t = note?.[lang] ?? note?.ar; if (t) { m.textContent = t; src.textContent = `${S.simple} · ${v.key}`; } lastWord = -1; return; }
       if (lang === 'en') { m.textContent = `“${v.translation}”`; src.textContent = `${S.translation} · ${v.key}`; }
       else QuranService.getTafsir(v.key).then(t => { if (verses[i] === v) { m.textContent = t.text; src.textContent = `${S.tafsir} · ${v.key}`; } }).catch(() => {});
       lastWord = -1;
@@ -85,6 +100,11 @@ export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
     function playVerse(k) {
       i = k; render(k); msg.hidden = true;
       audio.src = verses[k].audioUrl; audio.currentTime = 0;
+      if (clip?.timed) {
+        clip.over = false;
+        const seek = () => { audio.currentTime = clip.from / 1000; };
+        if (audio.readyState >= 1) seek(); else audio.addEventListener('loadedmetadata', seek, { once: true });
+      }
       audio.play().catch(e => fail(e.name === 'NotAllowedError' ? S.tapToPlay : `${S.audioErr} (${e.message})`));
       const next = verses[k + 1]; if (next) preloader.src = next.audioUrl;
     }
@@ -94,12 +114,16 @@ export function playRecitation({ from, to }, { reciter, lang, meaning, S }) {
       const v = verses[i]; if (!v) return;
       const t = audio.currentTime * 1000, dur = audio.duration;
       text.classList.toggle('playing', !audio.paused);
+      if (clip?.timed && !clip.over && !audio.paused && t >= clip.to) {   // end of the chosen words
+        clip.over = true; audio.pause(); audio.onended?.();
+      }
       if (v.timing.length) {
         let w = lastWord;
-        for (const seg of v.timing) if (t >= seg.from && t < seg.to) { w = seg.word; break; }
+        for (const seg of v.timing) if (t >= seg.from && t < seg.to) { w = seg.word - (clip?.a ?? 0); break; }
         if (w !== lastWord) { spans.forEach((s, n) => { s.classList.toggle('on', n === w); s.classList.toggle('read', n < w); }); lastWord = w; }
       }
-      const f = isFinite(dur) && dur > 0 ? audio.currentTime / dur : 0;
+      const f = clip?.timed ? Math.min(1, Math.max(0, (t - clip.from) / (clip.to - clip.from)))
+        : isFinite(dur) && dur > 0 ? audio.currentTime / dur : 0;
       $('.q-progress i').style.width = `${((i + f) / verses.length) * 100}%`;
       $('.q-time').textContent = `${fmt(audio.currentTime)} / ${fmt(dur)}`;
     }

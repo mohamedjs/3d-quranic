@@ -11,10 +11,13 @@ import { useGame } from './store.js';
 import { refs } from './refs.js';
 import { wind } from '../shaders/wind.js';
 import { ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX } from '../camera/CameraRig.js';
+import { createGuide } from './guide.js';
+import { createCoins } from '../world/coins.js';
+import { PRESETS } from './quality.js';
 
 const SAVE_KEY = 'quran-journey-v1';
-const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false,
-  settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT } });
+const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, coins: [],
+  settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT, path: true } });
 function loadSave() {
   const f = fresh();
   try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s) return { ...f, ...s, settings: { ...f.settings, ...s.settings } }; } catch { /* private mode */ }
@@ -22,7 +25,7 @@ function loadSave() {
 }
 const $ = id => document.getElementById(id);
 
-export function createGame({ camera, mapCanvas, data }) {
+export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   let save = loadSave();
   const persist = () => { try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); } catch { /* not fatal */ } };
   useGame.getState().setQualitySetting(save.settings.quality);   // no-op unless it differs
@@ -49,14 +52,39 @@ export function createGame({ camera, mapCanvas, data }) {
     if (mode !== 'title') prepareVoice();
   }
   const S = () => STR[save.settings.lang];
+  // guided path + collectibles
+  const guide = createGuide({ scene, colliders });
+  const coins = createCoins({ scene, camera, grid: guide.grid, ui, npcs, getSave: () => save, persist, S, detailLow: useGame.getState().detail === 'low' });
+  coins.load();
   const t = o => o?.[save.settings.lang] ?? o?.ar ?? '';
   let timeScale = 1, timeTarget = 1;
 
-  function updateObjective() {
-    const open = npcs.filter(n => n.state === 'open');
-    if (!open.length) { ui.objective([S().explore, S().exploreSub]); return; }
+  // Narrator: tells the child where to go (voiced lines in public/audio, text from encounters.json)
+  let narrating = 0;
+  async function narrate(parts) {
+    if (!Voice.enabled) return;
+    const my = ++narrating;
+    for (const p of parts.filter(Boolean)) {
+      if (my !== narrating || mode !== 'explore') return;
+      await Voice.speak(t(p), save.settings.lang);
+      await new Promise(r => setTimeout(r, 350));
+    }
+  }
+  // The story the objective (and the guided path) points at: the one the narrator just announced,
+  // else the nearest open one — kept unless another is clearly (15 m) closer, so it doesn't flicker.
+  let target = null, preferred = null;
+  const nearestOpen = () => {
+    const open = npcs.filter(n => n.state === 'open'); if (!open.length) return null;
+    if (preferred && open.includes(preferred)) return preferred;
     const d = n => Math.hypot(n.x - player.pos.x, n.z - player.pos.z);
-    ui.objective(t(open.reduce((a, b) => (d(a) < d(b) ? a : b)).enc.objective));
+    const best = open.reduce((a, b) => (d(a) < d(b) ? a : b));
+    return target && open.includes(target) && d(target) < d(best) + 15 ? target : best;
+  };
+
+  function updateObjective() {
+    target = nearestOpen();
+    if (!target) { ui.objective([S().explore, S().exploreSub]); return; }
+    ui.objective(t(target.enc.objective));
   }
 
   // ---- cinematic shots --------------------------------------------------------------------
@@ -136,7 +164,11 @@ export function createGame({ camera, mapCanvas, data }) {
     const before = npcs.filter(n => n.state === 'open').map(n => n.enc.id);
     refreshNpcs();
     const next = npcs.filter(n => n.state === 'open' && !before.includes(n.enc.id));
+    preferred = next[0] ?? null;                                   // the path re-targets to the story just announced
+    coins.prune(data.encounters.map((e, i) => (save.done.includes(e.id) ? i : -1)).filter(i => i >= 0));
+    updateObjective();
     if (next.length) setTimeout(() => ui.toast(`${S().nextStory}: ${next.map(n => t(n.enc.title)).join(' · ')}`, 5000), 900);
+    if (next.length) setTimeout(() => narrate([data.narrator?.next, next[0].enc.narration]), 1600);
   }
 
   async function startEncounter(npc) {
@@ -181,7 +213,7 @@ export function createGame({ camera, mapCanvas, data }) {
     if (mode !== 'explore') return;
     setMode('panel'); player.enabled = false; player.target = null;
     let replay = null;
-    if (kind === 'map') await ui.worldMap(player, npcs);
+    if (kind === 'map') await ui.worldMap(player, npcs, guide.mapRoute, guide.progress);
     if (kind === 'journal') await ui.journal(v => { replay = v; });
     if (kind === 'settings') await ui.settings(resetProgress);
     setMode('explore'); player.enabled = true;
@@ -221,7 +253,8 @@ export function createGame({ camera, mapCanvas, data }) {
 
   // ---- title ------------------------------------------------------------------------------------
   function begin(newGame) {
-    if (newGame) { const st = save.settings; save = fresh(); save.settings = st; ui.save = save; persist(); }
+    if (newGame) { const st = save.settings; save = fresh(); save.settings = st; ui.save = save; persist(); preferred = null; target = null; }
+    coins.load();
     player.place(...(save.pos ?? [SPAWN.x, SPAWN.z, 0]));
     player.dist = THREE.MathUtils.clamp(+save.settings.zoom || ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX);
     Sound.start(save.settings); primeAudio(); window.speechSynthesis?.getVoices();
@@ -231,6 +264,7 @@ export function createGame({ camera, mapCanvas, data }) {
     ui.showHud(true); ui.setPoints();
     if (!save.seenHint) { setTimeout(() => ui.toast(S().controls, 6500), 1500); save.seenHint = true; persist(); }
     prepareVoice();
+    setTimeout(() => narrate([data.narrator?.intro, nearestOpen()?.enc.narration]), 1400);
   }
   $('btn-continue').onclick = () => begin(false);
   $('btn-new').onclick = () => begin(true);
@@ -280,6 +314,10 @@ export function createGame({ camera, mapCanvas, data }) {
       } else if (d > 16) n.greeted = 0;
     }
     if (mode === 'title') rig.shot = titleShot();
+    const preset = PRESETS[useGame.getState().quality], explore = mode === 'explore';
+    if (explore && target && target.state !== 'open') updateObjective();
+    guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines });
+    coins.update(dt, now, { explore, player, route: guide.route, version: guide.version, tIdx: guide.target ? data.encounters.indexOf(guide.target.enc) : -1, preset });
     if (mode === 'explore') {
       ui.talk(!!nearNpc);
       if (bubble) {
@@ -293,13 +331,13 @@ export function createGame({ camera, mapCanvas, data }) {
         ui.banner(first ? S().discovered : '', t(area));
       }
       lastArea = area ?? lastArea;
-      if ((miniTimer += dt) > 0.05) { miniTimer = 0; ui.minimap(player, npcs); }
+      if ((miniTimer += dt) > 0.05) { miniTimer = 0; ui.minimap(player, npcs, guide.mapRoute, guide.progress); }
       if ((saveTimer += dt) > 4) { saveTimer = 0; save.pos = [+player.pos.x.toFixed(1), +player.pos.z.toFixed(1), +player.facing.toFixed(2)]; rememberZoom(); persist(); updateObjective(); }
       Sound.setWater(waterDist(player.pos.x, player.pos.z));
     }
   }
 
   refs.game = { recite, grant, speaker: id => cine.speaker(id), lang: () => save.settings.lang };
-  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, get state() { return mode; }, save: () => save };
+  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, guide, coins, get target() { return target; }, get state() { return mode; }, save: () => save };
   return { tick };
 }

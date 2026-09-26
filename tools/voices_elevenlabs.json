@@ -35,8 +35,9 @@
       "settings": {
         "stability": 0.45,
         "similarity_boost": 0.75,
-        "speed": 1.0
-      }
+        "speed": 0.8
+      },
+      "post": "atempo=0.75 applied to the existing files (no regeneration)"
     },
     "hamdan": {
       "voice_id": "nPczCjzI2devNBz1zQrb",
@@ -45,6 +46,15 @@
         "stability": 0.5,
         "similarity_boost": 0.75,
         "speed": 1.0
+      }
+    },
+    "narrator": {
+      "voice_id": "JBFqnCBsd6RMkjVDRZzb",
+      "name": "George",
+      "settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.75,
+        "speed": 0.95
       }
     }
   }

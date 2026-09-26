@@ -393,6 +393,10 @@
         "points": 50,
         "ar": "تعلّمت قصة أصحاب الفيل.",
         "en": "You learned the story of the People of the Elephant."
+      },
+      "narration": {
+        "ar": "روح لبيت الجدّة زينب عند الترعة، هي والجدّ سالم قاعدين على المصطبة ومستنيينك.",
+        "en": "Go to Grandma Zainab's house by the canal — she and Grandpa Salim are waiting on the mastaba."
       }
     },
     {
@@ -581,6 +585,10 @@
         "points": 50,
         "ar": "تعلّمت قصة رحلة الشتاء والصيف.",
         "en": "You learned about the Winter and Summer Journeys."
+      },
+      "narration": {
+        "ar": "روح للعمّ حمدان في الغيطان الشرقية، صاحب القافلة مستنيك.",
+        "en": "Go to Uncle Hamdan in the eastern fields — the caravan master is waiting for you."
       }
     },
     {
@@ -755,6 +763,10 @@
         "points": 50,
         "ar": "تعلّمت قصة رؤيا يوسف.",
         "en": "You learned about the Dream of Yusuf."
+      },
+      "narration": {
+        "ar": "زور الجدّة آمنة في واحة النخيل، عندها حكاية عن حلم عجيب.",
+        "en": "Visit Grandma Amina in the palm oasis — she has a story about a wonderful dream."
       }
     },
     {
@@ -1076,6 +1088,10 @@
         "points": 50,
         "ar": "تعلّمت قصة الخيط الأبيض والخيط الأسود.",
         "en": "You learned the story of the white thread and the black thread."
+      },
+      "narration": {
+        "ar": "روح للجدّة آمنة عند شبّاك بيتها في غرب القرية.",
+        "en": "Go to Grandma Amina at her window in the west of the village."
       }
     },
     {
@@ -1420,6 +1436,10 @@
         "points": 50,
         "ar": "تعلّمت قصة قيس بن صِرمة الفلاح الصائم.",
         "en": "You learned the story of Qays ibn Sirma, the fasting farmer."
+      },
+      "narration": {
+        "ar": "روح للجدّ سالم في الغيط جنب الترعة، شرق القرية.",
+        "en": "Go to Grandpa Salim in the field by the canal, east of the village."
       }
     },
     {
@@ -1800,6 +1820,10 @@
         "points": 50,
         "ar": "تعلّمت قصة أقناء التمر: أعطِ أطيب ما عندك.",
         "en": "You learned the story of the date clusters: give your best."
+      },
+      "narration": {
+        "ar": "روح لبستان النخيل جنوب الواحة، العمّ حمدان والجدّ سالم عند سلال التمر.",
+        "en": "Go to the palm orchard south of the oasis — Uncle Hamdan and Grandpa Salim are by the date baskets."
       }
     },
     {
@@ -2107,6 +2131,10 @@
         "points": 50,
         "ar": "تعلّمت قصة «وأْتوا البيوت من أبوابها».",
         "en": "You learned the story of “enter houses by their doors”."
+      },
+      "narration": {
+        "ar": "زور العمّ حمدان عند باب بيته، شمال شرق القرية.",
+        "en": "Visit Uncle Hamdan at his front door, north-east of the village."
       }
     },
     {
@@ -2470,6 +2498,10 @@
         "points": 50,
         "ar": "تعلّمت قصة القِبلة الجديدة.",
         "en": "You learned the story of the new qibla."
+      },
+      "narration": {
+        "ar": "روح للساحة الواسعة في الدار القديمة، الجدّ سالم والعمّ حمدان مستنيينك هناك.",
+        "en": "Go to the wide courtyard of the old house — Grandpa Salim and Uncle Hamdan are waiting there."
       }
     },
     {
@@ -2869,6 +2901,10 @@
         "points": 50,
         "ar": "تعلّمت قصة الضيف والسراج.",
         "en": "You learned the story of the guest and the lamp."
+      },
+      "narration": {
+        "ar": "زور الجدّة آمنة والجدّ سالم عند البيت اللي فيه السراج، في شارع القرية الجنوبي.",
+        "en": "Visit Grandma Amina and Grandpa Salim at the house with the lamp, on the south street of the village."
       }
     }
   ],
@@ -2921,5 +2957,15 @@
       "ar": "التلال",
       "en": "The Hills"
     }
-  ]
+  ],
+  "narrator": {
+    "intro": {
+      "ar": "يلا بينا نبدأ مغامرة جديدة!",
+      "en": "Let's start a new adventure!"
+    },
+    "next": {
+      "ar": "قصة جديدة مستنياك!",
+      "en": "A new story is waiting for you!"
+    }
+  }
 }

@@ -1456,5 +1456,71 @@
 "enc": "the-guest-and-the-lamp",
 "speaker": "player",
 "text": "سأشارك طعامي مع ضيوفنا وأصدقائي!"
+},
+{
+"id": "narrator/narrator-f02a8f2242",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "يلا بينا نبدأ مغامرة جديدة!"
+},
+{
+"id": "narrator/narrator-1e1caedd13",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "قصة جديدة مستنياك!"
+},
+{
+"id": "narrator/narrator-a5ce185b0c",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "روح لبيت الجدّة زينب عند الترعة، هي والجدّ سالم قاعدين على المصطبة ومستنيينك."
+},
+{
+"id": "narrator/narrator-9c7c525666",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "روح للعمّ حمدان في الغيطان الشرقية، صاحب القافلة مستنيك."
+},
+{
+"id": "narrator/narrator-bada156a17",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "زور الجدّة آمنة في واحة النخيل، عندها حكاية عن حلم عجيب."
+},
+{
+"id": "narrator/narrator-815367a3ed",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "روح للجدّة آمنة عند شبّاك بيتها في غرب القرية."
+},
+{
+"id": "narrator/narrator-5627d2879c",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "روح للجدّ سالم في الغيط جنب الترعة، شرق القرية."
+},
+{
+"id": "narrator/narrator-6aff5f0092",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "روح لبستان النخيل جنوب الواحة، العمّ حمدان والجدّ سالم عند سلال التمر."
+},
+{
+"id": "narrator/narrator-6c60cf25ba",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "زور العمّ حمدان عند باب بيته، شمال شرق القرية."
+},
+{
+"id": "narrator/narrator-614f3175d3",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "روح للساحة الواسعة في الدار القديمة، الجدّ سالم والعمّ حمدان مستنيينك هناك."
+},
+{
+"id": "narrator/narrator-cef35d41c5",
+"enc": "narrator",
+"speaker": "narrator",
+"text": "زور الجدّة آمنة والجدّ سالم عند البيت اللي فيه السراج، في شارع القرية الجنوبي."
 }
 ]

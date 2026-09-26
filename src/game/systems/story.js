@@ -68,7 +68,7 @@ export class Story {
     const el = $('.text'), next = $('.next');
     this.stopLine?.();  // a hint may still be typing when the next line starts
     this.talk(true);
-    const t0 = performance.now(), spoken = Voice.speak(text, this.lang());
+    const t0 = performance.now(), spoken = Voice.speak(text, this.lang()); this.lastSpoken = spoken;
     el.textContent = ''; next.hidden = true;
     let n = 0, full = false, finished = false, autoTimer = 0;
     return new Promise(resolve => {
@@ -96,19 +96,21 @@ export class Story {
     });
   }
 
-  options(opts, onPick) {
+  options(opts, onPick, auto = null) {
     const c = $('.choices'); c.innerHTML = '';
     return new Promise(resolve => {
+      let settled = false; const finish = o => { settled = true; resolve(o); };
       const buttons = opts.map((o, k) => {
         const b = document.createElement('button');
         b.innerHTML = `<i>${k + 1}</i><span></span>`; b.querySelector('span').textContent = this.t(o);
-        b.onclick = async () => { if (b.disabled) return; if (await onPick(o, b)) { off(); c.classList.remove('show'); setTimeout(() => { c.innerHTML = ''; }, 250); resolve(o); } };
+        b.onclick = async () => { if (b.disabled) return; if (settled) return; if (await onPick(o, b)) { off(); c.classList.remove('show'); setTimeout(() => { c.innerHTML = ''; }, 250); finish(o); } };
         c.append(b); return b;
       });
       const key = e => { const k = +e.key - 1; if (buttons[k]) buttons[k].click(); };
       const off = () => removeEventListener('keydown', key);
       addEventListener('keydown', key);
       requestAnimationFrame(() => c.classList.add('show'));
+      auto?.then(() => { if (!settled && buttons[0]) { buttons[0].classList.add('picked'); buttons[0].click(); } });
     });
   }
 
@@ -122,7 +124,12 @@ export class Story {
     const asking = step.speaker === 'player', prompt = this.t(step);
     if (prompt && !asking) await this.line(prompt, { wait: false });
     else { this.stopLine?.(); $('.text').textContent = prompt; $('.next').hidden = true; }
-    const picked = await this.options(step.options, async () => true);
+    // Auto-advance: after the prompt has been said, the child picks the first option himself,
+    // so the conversation flows like a dialogue (quiz questions stay interactive).
+    const auto = this.autoAdvance !== false
+      ? (async () => { if (prompt && !asking) await this.lastSpoken; await new Promise(r => setTimeout(r, asking ? 600 : 900)); })()
+      : null;
+    const picked = await this.options(step.options, async () => true, auto);
     this.talk(false);
     if (asking) { await this.line(this.t(picked), { wait: false }); await new Promise(r => setTimeout(r, 1100)); this.talk(false); }
     for (const r of [].concat(picked.reply ?? [])) {

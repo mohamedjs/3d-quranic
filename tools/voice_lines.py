@@ -41,6 +41,10 @@ for e in data['encounters']:
             for f in ('hint', 'praise', 'wrong', 'right'):
                 v = s.get(f)
                 if isinstance(v, dict): add(e['id'], sp if sp != 'player' else host, v.get('ar'))
+for k in ('intro', 'next'):
+    add('narrator', 'narrator', data.get('narrator', {}).get(k, {}).get('ar'))
+for e in data['encounters']:
+    add('narrator', 'narrator', e.get('narration', {}).get('ar'))
 json.dump(out, open(os.path.join(ROOT, 'tools/voice_lines.json'), 'w'), ensure_ascii=False, indent=0)
 from collections import Counter
 print(len(out), Counter(x['speaker'] for x in out), sum(len(x['text']) for x in out), 'chars')

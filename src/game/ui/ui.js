@@ -1,5 +1,5 @@
 // HUD, minimap, world map, journal, settings, title, reward card, toasts.
-import { toMap } from '../terrain/heightfield.js';
+import { toMap, HALF, SIZE } from '../terrain/heightfield.js';
 import { QuranService } from '../systems/quran.js';
 
 // ---- UI kit assets (public/ui) -------------------------------------------------------------
@@ -45,7 +45,7 @@ export const STR = {
     offline: 'تعذّر الاتصال بموقع Quran.com. تأكّد من الاتصال بالإنترنت ثم أعد المحاولة.', noAudio: 'لا يتوفّر تسجيل لهذا القارئ لهذه الآيات. جرّب قارئًا آخر من الإعدادات.',
     audioErr: 'تعذّر تشغيل التلاوة.', tapToPlay: 'اضغط «إعادة المحاولة» لتشغيل التلاوة.', retry: 'إعادة المحاولة', skip: 'تخطٍّ', reciting: 'القارئ',
     verse: 'الآية', of: 'من', tafsir: 'التفسير الميسّر', translation: 'Saheeh International', sources: 'المصادر', building: 'نبني العالم…', you: 'أنت',
-    voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.',
+    voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.', showPath: 'إظهار الطريق إلى القصة التالية', combo: 'رائع!',
   },
   en: {
     title: 'Quran Journey', alt: 'رحلة القرآن', tagline: 'Explore · Listen · Learn · Grow', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Continue', newGame: 'New Journey', settings: 'Settings',
@@ -58,7 +58,7 @@ export const STR = {
     offline: 'Could not reach Quran.com. Check your internet connection and try again.', noAudio: 'This reciter has no recording for these verses. Try another reciter in Settings.',
     audioErr: 'The recitation could not be played.', tapToPlay: 'Press “Try again” to start the recitation.', retry: 'Try again', skip: 'Skip', reciting: 'Reciting',
     verse: 'Verse', of: 'of', tafsir: 'Tafsir al-Muyassar', translation: 'Saheeh International', sources: 'Sources', building: 'Building the world…', you: 'You',
-    voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.',
+    voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.', showPath: 'Show the path to the next story', combo: 'Great!',
   },
 };
 
@@ -98,6 +98,28 @@ export class UI {
   }
   setPoints() { $('points').querySelector('b').textContent = this.save.points; $('points').title = this.S.points; }
   talk(show) { $('talk').hidden = !show; }
+  // ---- coin pickups: a coin flies in an arc to the points pill, "+1" floats up ----------------
+  fxHost() { return (this._fx ??= document.body.appendChild(Object.assign(document.createElement('div'), { id: 'fx' }))); }
+  bumpPoints() { const p = $('points'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
+  coinFly(sx, sy, big = false) {
+    const host = this.fxHost(), el = (this._pool ??= []).pop() ?? document.createElement('i');
+    el.className = big ? 'fly big' : 'fly'; host.append(el);
+    const r = $('points').querySelector('.ico').getBoundingClientRect(), tx = r.left + r.width / 2, ty = r.top + r.height / 2;
+    const cx = (sx + tx) / 2, cy = Math.min(sy, ty) - 90, frames = [];
+    for (let k = 0; k <= 8; k++) {
+      const t = k / 8, u = 1 - t, x = u * u * sx + 2 * u * t * cx + t * t * tx, y = u * u * sy + 2 * u * t * cy + t * t * ty;
+      frames.push({ transform: `translate(${x.toFixed(1)}px, ${y.toFixed(1)}px) scale(${(1.15 - 0.6 * t).toFixed(2)}) rotateY(${Math.round(t * 720)}deg)`, opacity: t > 0.92 ? 0.6 : 1 });
+    }
+    const a = el.animate(frames, { duration: big ? 800 : 620, easing: 'cubic-bezier(.4,.1,.8,.7)' });
+    a.onfinish = () => { el.remove(); this._pool.push(el); this.setPoints(); this.bumpPoints(); };
+  }
+  floatText(sx, sy, text, big = false) {
+    const el = document.createElement('b'); el.className = big ? 'plus big' : 'plus'; el.textContent = text; el.dir = 'auto';
+    this.fxHost().append(el);
+    const at = (dy, s) => `translate(${sx.toFixed(1)}px, ${(sy + dy).toFixed(1)}px) translate(-50%, -50%) scale(${s})`;
+    el.animate([{ transform: at(0, 0.5), opacity: 0 }, { transform: at(-14, 1.15), opacity: 1, offset: 0.2 }, { transform: at(-56, 1), opacity: 0 }],
+      { duration: big ? 1300 : 900, easing: 'ease-out' }).onfinish = () => el.remove();
+  }
   toast(text, ms = 3200) {
     const t = $('toast'); t.textContent = text; t.classList.add('show');
     clearTimeout(this.toastTimer); this.toastTimer = setTimeout(() => t.classList.remove('show'), ms);
@@ -117,7 +139,7 @@ export class UI {
   deep(on) { document.body.classList.toggle('deep', on); }
 
   // Compass-style minimap: rotates with the camera, north marker on the ring.
-  minimap(player, npcs) {
+  minimap(player, npcs, route = null, from = 0) {
     const ctx = this.mini, size = ctx.canvas.width, c = size / 2, map = this.mapCanvas, n = map.width;
     const k = 2.4 * (size / 180) / (n / 520);      // ~2.4 px per metre
     const [px, py] = toMap(player.pos.x, player.pos.z, n);
@@ -127,6 +149,16 @@ export class UI {
     ctx.fillStyle = '#c9a877'; ctx.fillRect(0, 0, size, size);
     ctx.translate(c, c); ctx.rotate(rot); ctx.scale(k, k); ctx.translate(-px, -py);
     ctx.imageSmoothingEnabled = true; ctx.drawImage(map, 0, 0);
+    if (route && from < route.n - 2) {                // the guided path: a dashed gold line flowing toward the story
+      const m = n / SIZE;
+      ctx.beginPath(); ctx.moveTo((route.x[from] + HALF) * m, (HALF - route.z[from]) * m);
+      for (let i = from + 3; i < route.n; i += 3) ctx.lineTo((route.x[i] + HALF) * m, (HALF - route.z[i]) * m);
+      ctx.lineTo((route.x[route.n - 1] + HALF) * m, (HALF - route.z[route.n - 1]) * m);
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      ctx.setLineDash([]); ctx.strokeStyle = 'rgba(43, 26, 16, .8)'; ctx.lineWidth = 7 / k; ctx.stroke();
+      ctx.setLineDash([7 / k, 5 / k]); ctx.lineDashOffset = -(performance.now() / 1000) * 14 / k;
+      ctx.strokeStyle = '#ffd23f'; ctx.lineWidth = 4 / k; ctx.stroke(); ctx.setLineDash([]);
+    }
     for (const npc of npcs) {
       if (npc.state === 'locked') continue;
       const [x, y] = toMap(npc.x, npc.z, n);
@@ -166,7 +198,7 @@ export class UI {
 
   // Painted world map (public/ui/world-map.webp) with region pins, story markers and the live
   // player arrow on top. Falls back to the terrain colour map if the painting can't load.
-  worldMap(player, npcs) {
+  worldMap(player, npcs, route = null, from = 0) {
     const S = this.S, lang = this.save.settings.lang, wrap = document.createElement('div'); wrap.className = 'worldmap';
     const stage = document.createElement('div'); stage.className = 'stage'; wrap.append(stage);
     const img = new Image(); img.alt = ''; img.decoding = 'async'; img.draggable = false; img.src = asset('ui/world-map.webp');
@@ -179,6 +211,17 @@ export class UI {
     // zoom + pan: the painting sits in a scaled layer; markers stay in the unscaled stage
     // (so pins and labels keep their size) and are re-positioned from their map percentages
     const layer = document.createElement('div'); layer.className = 'layer'; layer.append(img); stage.append(layer);
+    let routeG = null;                                // the guided path, dashed gold (same transform as the painting)
+    if (route && from < route.n - 2) {
+      const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
+      svg.setAttribute('class', 'route'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
+      let d = '';
+      for (let i = from; i < route.n; i += 4) { const [l, t] = mapPct(route.x[i], route.z[i]); d += `${d ? 'L' : 'M'}${l.toFixed(2)} ${t.toFixed(2)}`; }
+      const [el, et] = mapPct(route.x[route.n - 1], route.z[route.n - 1]); d += `L${el.toFixed(2)} ${et.toFixed(2)}`;
+      routeG = document.createElementNS(NS, 'g');
+      routeG.innerHTML = `<path class="ink" d="${d}" vector-effect="non-scaling-stroke"/><path class="dash" d="${d}" vector-effect="non-scaling-stroke"/>`;
+      svg.append(routeG); stage.append(svg);
+    }
     const marks = [];
     const place = (el, x, z, clampY = 0) => { const [l, t] = mapPct(x, z); el._p = [Math.min(97, Math.max(3, l)), Math.min(92, Math.max(clampY, t))]; marks.push(el); return el; };
     const here = this.data.areas.find(a => Math.hypot(a.x - player.pos.x, a.z - player.pos.z) < a.r);
@@ -208,6 +251,7 @@ export class UI {
       view.x = Math.min(0, Math.max(100 * (1 - view.s), view.x)); view.y = Math.min(0, Math.max(100 * (1 - view.s), view.y));
       stage.classList.toggle('ease', ease); stage.classList.toggle('zoomed', view.s > 1.01);
       layer.style.transform = `translate(${view.x}%, ${view.y}%) scale(${view.s})`;
+      if (routeG) routeG.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.s})`;
       for (const el of marks) { el.style.left = `${view.x + el._p[0] * view.s}%`; el.style.top = `${view.y + el._p[1] * view.s}%`; }
       tools.querySelector('[data-z="out"]').disabled = view.s <= 1.01; tools.querySelector('[data-z="in"]').disabled = view.s >= MAXS - 0.01;
     };
@@ -282,16 +326,17 @@ export class UI {
       <label class="row"><input type="checkbox" name="voice"> ${esc(S.voice)}</label>
       <label class="row"><input type="checkbox" name="meaning"> ${esc(S.meaning)}</label>
       <label class="row"><input type="checkbox" name="auto"> ${esc(S.auto)}</label>
+      <label class="row"><input type="checkbox" name="path"> ${esc(S.showPath)}</label>
       <label>${esc(S.volume)}<input type="range" name="volume" min="0" max="1" step="0.05"></label>
       <label class="row"><input type="checkbox" name="music"> ${esc(S.music)}</label>
       <button type="button" class="danger">${esc(S.reset)}</button>`;
-    f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.auto.checked = st.auto !== false; f.volume.value = st.volume; f.music.checked = st.music;
+    f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.auto.checked = st.auto !== false; f.path.checked = st.path !== false; f.volume.value = st.volume; f.music.checked = st.music;
     QuranService.getReciters().then(rs => {
       f.reciter.innerHTML = rs.map(r => `<option value="${r.id}">${esc(r.name)}${r.style ? ' — ' + esc(r.style) : ''}</option>`).join('');
       f.reciter.value = st.reciter;
     }).catch(e => { f.reciter.innerHTML = `<option value="${st.reciter}">${esc(e.message)}</option>`; });
     f.onchange = () => {
-      Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, auto: f.auto.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value });
+      Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, auto: f.auto.checked, path: f.path.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value });
       this.persist(); this.onSettings();
     };
     f.querySelector('.danger').onclick = () => { if (confirm(S.resetQ)) onReset(); };

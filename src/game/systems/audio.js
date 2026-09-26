@@ -51,6 +51,33 @@ export const Sound = {
     g.gain.setValueAtTime(0.25, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
     s.connect(f).connect(g).connect(amb); s.start(t, Math.random() * 2, 0.1);
   },
+  // coin pickup: a bright two-note "ding"; `step` climbs a pentatonic scale for quick pickups
+  coin(step = 0, big = false) {
+    if (!ctx) return;
+    const PENTA = [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24], t = ctx.currentTime;
+    const f = (big ? 660 : 988) * Math.pow(2, PENTA[Math.min(step, PENTA.length - 1)] / 12);
+    const out = ctx.createGain(); out.gain.value = big ? 0.2 : 0.14; out.connect(master);
+    [[f, 0, 0.16], [f * 1.5, 0.07, 0.34]].forEach(([fr, d, len]) => {
+      for (const [type, mul, v] of [['sine', 1, 1], ['triangle', 2, 0.25]]) {
+        const o = ctx.createOscillator(), g = ctx.createGain();
+        o.type = type; o.frequency.value = fr * mul;
+        g.gain.setValueAtTime(0, t + d); g.gain.linearRampToValueAtTime(v, t + d + 0.006); g.gain.exponentialRampToValueAtTime(0.001, t + d + len);
+        o.connect(g).connect(out); o.start(t + d); o.stop(t + d + len + 0.02);
+      }
+    });
+    if (big) setTimeout(() => this.combo(0.6), 90);
+  },
+  // ten in a row: a soft rising arpeggio
+  combo(vol = 1) {
+    if (!ctx) return;
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.12 * vol; out.connect(master);
+    [1046.5, 1318.5, 1568, 2093].forEach((fr, i) => {
+      const o = ctx.createOscillator(), g = ctx.createGain(), s = t + i * 0.075;
+      o.type = 'triangle'; o.frequency.value = fr;
+      g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(1, s + 0.01); g.gain.exponentialRampToValueAtTime(0.001, s + 0.45);
+      o.connect(g).connect(out); o.start(s); o.stop(s + 0.5);
+    });
+  },
   setWater(dist) { if (ctx) water.gain.setTargetAtTime(0.35 * (1 - smooth(3, 28, dist)), ctx.currentTime, 0.5); },
   // explore: full ambience · dialogue: softened · quran: silence so only the recitation is heard
   mode(m) {

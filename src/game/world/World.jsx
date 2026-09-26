@@ -106,10 +106,10 @@ export function World() {
 
 // Starts the imperative game (player, NPCs, story, UI) once the scene exists.
 function GameSystem({ world, data }) {
-  const camera = useThree(s => s.camera), gl = useThree(s => s.gl);
+  const camera = useThree(s => s.camera), gl = useThree(s => s.gl), scene = useThree(s => s.scene);
   const game = useRef(null);
   useEffect(() => {
-    game.current = createGame({ camera, mapCanvas: world.terrain.mapCanvas, data });
+    game.current = createGame({ camera, mapCanvas: world.terrain.mapCanvas, data, scene, colliders: world.colliders });
     if (window.__game) window.__game.renderer = gl;   // debug/perf probes (renderer.info)
     const l = document.getElementById('loading');
     l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);

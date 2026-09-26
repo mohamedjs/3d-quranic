@@ -53,16 +53,48 @@ public/
 
 | | |
 |---|---|
-| Walk | WASD / arrows, or tap/click the ground |
-| Look | drag (mouse or one finger) |
+| Walk | WASD / arrows (`Shift` runs), or tap/click the ground · touch: floating joystick in the left half |
+| Look | drag (mouse) · touch: one-finger drag in the right half (a flick coasts) |
+| Walk to the story | 👣 HUD button or `F`: walks along the golden path to the next storyteller |
 | Zoom / fly up | mouse wheel · trackpad pinch · two-finger pinch · `+` / `−` · `PageDown` / `PageUp` · `Z` (in) / `Q` (out) · the ＋/－ HUD buttons (hold to keep zooming) |
-| Talk · Map · Journal | `E` · `M` · `J` |
+| Talk · Map · Journal · Stories | `E` · `M` · `J` · `K` |
 
 The camera eases from a close follow (2.6 m, default 5.2 m) out to a bird's-eye view (60 m);
 on the way out the pitch leans to ~68° so it looks down over the village. The zoom is saved
 (`settings.zoom`); dialogue and Quran shots use their own framing and hand the player's zoom
 back afterwards. The world map (`M`) zooms with the wheel / pinch / buttons, pans by dragging,
 double-click zooms in, and ◎ centres on the child.
+
+**Phones and tablets.** Touch devices (`pointer: coarse` / `maxTouchPoints`; the first touch also
+switches over) get a split screen: a finger landing in the **left half** spawns a translucent
+teal-glass joystick under the thumb (gold ring + knob, 60 px travel, 12 % dead-zone, eased).
+Up is away from the camera; a small push strolls, most of the travel walks, the outer ring runs.
+It feeds the same movement path as the keys (collisions, slopes, coin pickups) and cancels any
+tap-to-walk target. The **right half** orbits the camera with one finger (yaw + limited pitch,
+with a little inertia); two fingers pinch-zoom anywhere; a short tap anywhere still walks to that
+spot. Joystick and camera fingers work at the same time (tracked per `pointerId`). All buttons
+sit on the physical right in both languages (dock bottom-right, then 👣 / ＋ / － above it, or in
+one row on landscape phones; «تحدّث» next to them), clear of the joystick, inside the
+safe-area insets. The page never scrolls, zooms or opens a long-press menu. A one-time hint
+(«اسحب يسار لتمشي · اسحب يمين لتلفّ الكاميرا») explains it.
+
+**Stories (`K`, the book-with-pin button in the dock).** A sheet lists every story in
+`encounters.json` as a card: its first painted illustration (else a gold emblem), title in both
+languages, the storytellers' portraits and names, the place, the verse reference and the distance,
+with a ✓ done / ! open / 🔒 not-yet badge. Tapping a card (or a story marker on the world map)
+makes it the target: trail, beacon, minimap/world-map route, objective chip and 👣 switch to it and
+the narrator says where to go. Any story can be picked: a locked one is unlocked for good
+(`save.unlocked`), a done one reopens for a replay (no double points, no new breadcrumb coins).
+The pick is saved (`save.chosen`) until that story is finished; then the default order (nearest
+open / newly unlocked story) takes over again. Without a pick nothing changes.
+
+**Walk to the story (👣 / `F`).** Shown in explore mode while a guided route exists. The child
+walks the guide's A* route (`systems/autowalk.js` aims ~2.5 m ahead on the polyline) at walking
+pace, collecting the breadcrumb coins; the camera follows and slowly swings behind. It stops
+~2 m short of the storyteller so the Talk prompt appears (the dialogue never starts by itself).
+Tapping 👣 again, the joystick, a movement key or tap-to-walk cancels. Re-routes are followed
+as they arrive; if progress stalls for 2 s it aims further along the route, and after a couple
+of tries it stops with a gentle message.
 
 ## Quality levels
 

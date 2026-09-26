@@ -227,7 +227,7 @@ const ELEPHANT_STORY = ['kaaba', 'army', 'elephant', 'birds', 'straw', 'year']; 
 // 2:267 (dates), 2:189 (doors), 2:144 (qibla), 59:9 (the guest and the lamp)
 const ASBAB_STORY = ['story_book', 'threads_dawn', 'suhoor_table', 'qays_field', 'night_house', 'date_clusters', 'best_dates',
   'house_door', 'house_back', 'qibla_ground', 'guest_meal', 'lamp_out'];
-const PAINTED = [...ELEPHANT_STORY, 'title', ...ASBAB_STORY];
+export const PAINTED = [...ELEPHANT_STORY, 'title', ...ASBAB_STORY];
 const SEQUENCES = [ELEPHANT_STORY, ASBAB_STORY];
 export const illustrationURL = name => new URL(`${import.meta.env.BASE_URL}illustrations/${name}.webp`, document.baseURI).href;
 

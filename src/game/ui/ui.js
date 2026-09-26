@@ -1,6 +1,7 @@
 // HUD, minimap, world map, journal, settings, title, reward card, toasts.
 import { toMap, HALF, SIZE } from '../terrain/heightfield.js';
 import { QuranService } from '../systems/quran.js';
+import { PAINTED, illustrationURL } from './scenes.js';
 
 // ---- UI kit assets (public/ui) -------------------------------------------------------------
 // The icon + ornament sprites are injected inline so <use href="#i-…"> works everywhere and
@@ -41,11 +42,12 @@ export const STR = {
     exploreSub: 'قصص جديدة قريبًا إن شاء الله', soon: 'قريبًا', empty: 'لم تفتح أي قصة بعد. تجوّل وتحدّث مع أهل القرية!',
     listenAgain: 'استمع مرة أخرى', lang: 'اللغة', reciter: 'القارئ', voice: 'صوت الشخصيات (قراءة آلية)', meaning: 'إظهار المعنى تحت الآية', auto: 'الحوار يتقدّم تلقائيًا',
     volume: 'صوت الطبيعة', music: 'نغمة هادئة (بدون موسيقى افتراضيًا)', reset: 'مسح التقدّم', resetQ: 'هل تريد مسح كل التقدّم؟',
-    controls: 'امشِ بالأسهم أو WASD · اسحب لتدير الكاميرا · اضغط على الأرض لتمشي إليها · العجلة أو + / − أو إصبعان للتقريب والارتفاع', zoomIn: 'تقريب', zoomOut: 'ابتعاد (منظر من أعلى)', centerMe: 'مكاني', mapZoom: 'اسحب لتحريك الخريطة · العجلة أو إصبعان للتكبير', loading: 'جارٍ تحميل الآيات من Quran.com…',
+    controls: 'امشِ بالأسهم أو WASD · F يمشي بك إلى القصة · اسحب لتدير الكاميرا · اضغط على الأرض لتمشي إليها · العجلة أو + / − أو إصبعان للتقريب والارتفاع', zoomIn: 'تقريب', zoomOut: 'ابتعاد (منظر من أعلى)', centerMe: 'مكاني', mapZoom: 'اسحب لتحريك الخريطة · العجلة أو إصبعان للتكبير', loading: 'جارٍ تحميل الآيات من Quran.com…',
     offline: 'تعذّر الاتصال بموقع Quran.com. تأكّد من الاتصال بالإنترنت ثم أعد المحاولة.', noAudio: 'لا يتوفّر تسجيل لهذا القارئ لهذه الآيات. جرّب قارئًا آخر من الإعدادات.',
     audioErr: 'تعذّر تشغيل التلاوة.', tapToPlay: 'اضغط «إعادة المحاولة» لتشغيل التلاوة.', retry: 'إعادة المحاولة', skip: 'تخطٍّ', reciting: 'القارئ',
     verse: 'الآية', of: 'من', tafsir: 'التفسير الميسّر', translation: 'Saheeh International', sources: 'المصادر', building: 'نبني العالم…', you: 'أنت',
     voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.', showPath: 'إظهار الطريق إلى القصة التالية', combo: 'رائع!',
+    walk: 'امشِ إلى القصة', stories: 'القصص', storiesSub: 'اختر القصة التي تريد أن تذهب إليها — أي قصة تحبّ!', stDone: 'أنهيتها', stOpen: 'متاحة', stLocked: 'لم تُفتح بعد', stCurrent: 'وجهتك الآن', headingTo: 'وجهتك', surah: 'سورة', meters: 'م', mapPick: 'اضغط على علامة قصة لتذهب إليها', walkStuck: 'تعذّر إكمال الطريق — امشِ قليلًا ثم جرّب مرة أخرى', controlsTouch: 'اسحب يسار لتمشي · اسحب يمين لتلفّ الكاميرا · 👣 يمشي بك إلى القصة',
   },
   en: {
     title: 'Quran Journey', alt: 'رحلة القرآن', tagline: 'Explore · Listen · Learn · Grow', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Continue', newGame: 'New Journey', settings: 'Settings',
@@ -54,15 +56,22 @@ export const STR = {
     exploreSub: 'More stories coming soon, in sha Allah', soon: 'Coming soon', empty: 'No stories unlocked yet. Walk around and talk to the villagers!',
     listenAgain: 'Listen again', lang: 'Language', reciter: 'Reciter', voice: 'Character voices (speech synthesis)', meaning: 'Show meaning under the verse', auto: 'Auto-advance dialogue',
     volume: 'Nature sounds', music: 'Soft pad (off by default)', reset: 'Reset progress', resetQ: 'Erase all progress?',
-    controls: 'Walk with WASD / arrows · drag to look · tap the ground to walk there · wheel, + / − or pinch to zoom out and fly up', zoomIn: 'Zoom in', zoomOut: 'Zoom out (bird\'s-eye)', centerMe: 'Center on me', mapZoom: 'Drag to move the map · wheel or pinch to zoom', loading: 'Loading verses from Quran.com…',
+    controls: 'Walk with WASD / arrows · F walks you to the story · drag to look · tap the ground to walk there · wheel, + / − or pinch to zoom out and fly up', zoomIn: 'Zoom in', zoomOut: 'Zoom out (bird\'s-eye)', centerMe: 'Center on me', mapZoom: 'Drag to move the map · wheel or pinch to zoom', loading: 'Loading verses from Quran.com…',
     offline: 'Could not reach Quran.com. Check your internet connection and try again.', noAudio: 'This reciter has no recording for these verses. Try another reciter in Settings.',
     audioErr: 'The recitation could not be played.', tapToPlay: 'Press “Try again” to start the recitation.', retry: 'Try again', skip: 'Skip', reciting: 'Reciting',
     verse: 'Verse', of: 'of', tafsir: 'Tafsir al-Muyassar', translation: 'Saheeh International', sources: 'Sources', building: 'Building the world…', you: 'You',
     voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.', showPath: 'Show the path to the next story', combo: 'Great!',
+    walk: 'Walk to the story', stories: 'Stories', storiesSub: 'Choose the story you want to go to — any one you like!', stDone: 'Done', stOpen: 'Open', stLocked: 'Not yet', stCurrent: 'Heading here', headingTo: 'Heading to', surah: 'Surah', meters: 'm', mapPick: 'Tap a story marker to go there', walkStuck: 'Couldn’t finish the walk — move a little and try again', controlsTouch: 'Drag on the left to walk · drag on the right to turn the camera · 👣 walks you to the story',
   },
 };
 
 const $ = id => document.getElementById(id);
+// surah names for the verse references on the story cards (fallback: the number)
+const SURAHS = { 2: ['البقرة', 'Al-Baqarah'], 12: ['يوسف', 'Yusuf'], 59: ['الحشر', 'Al-Hashr'], 105: ['الفيل', 'Al-Fil'], 106: ['قريش', 'Quraysh'] };
+const arDigits = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+// the painted illustration that stands for a story on its card: its first painted scene, else a stand-in
+const THUMBS = { 'people-of-the-elephant': 'elephant', 'the-guest-and-the-lamp': 'guest_meal' };   // a painting that reads better small
+const storyThumb = e => THUMBS[e.id] ?? e.steps.map(s => s.scene).find(n => PAINTED.includes(n)) ?? null;
 const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
 export class UI {
@@ -86,7 +95,8 @@ export class UI {
     $('btn-continue').textContent = S.cont; $('btn-new').textContent = S.newGame; $('btn-settings').textContent = S.settings;
     $('talk').querySelector('span').textContent = S.talk;
     for (const b of $('dock').children) b.title = S[b.dataset.open === 'settings' ? 'settings' : b.dataset.open];
-    for (const b of document.querySelectorAll('#zoom button')) { b.title = S[b.dataset.zoom === 'in' ? 'zoomIn' : 'zoomOut']; b.setAttribute('aria-label', b.title); }
+    $('walk').title = S.walk; $('walk').setAttribute('aria-label', S.walk);
+    for (const b of document.querySelectorAll('#zoom button[data-zoom]')) { b.title = S[b.dataset.zoom === 'in' ? 'zoomIn' : 'zoomOut']; b.setAttribute('aria-label', b.title); }
     this.setPoints();
   }
 
@@ -98,6 +108,12 @@ export class UI {
   }
   setPoints() { $('points').querySelector('b').textContent = this.save.points; $('points').title = this.S.points; }
   talk(show) { $('talk').hidden = !show; }
+  // walk-to-the-story button: shown while a guided route exists, gold while walking
+  walkButton(show, on) {
+    const b = $('walk');
+    if (b.hidden === show) b.hidden = !show;
+    if (b.classList.contains('on') !== on) { b.classList.toggle('on', on); b.setAttribute('aria-pressed', on); }
+  }
   // ---- coin pickups: a coin flies in an arc to the points pill, "+1" floats up ----------------
   fxHost() { return (this._fx ??= document.body.appendChild(Object.assign(document.createElement('div'), { id: 'fx' }))); }
   bumpPoints() { const p = $('points'); p.classList.remove('bump'); void p.offsetWidth; p.classList.add('bump'); }
@@ -133,7 +149,11 @@ export class UI {
     const b = $('bubble');
     if (!text || !screen) { b.hidden = true; return; }
     if (b.textContent !== text) b.textContent = text;
-    b.hidden = false; b.style.transform = `translate(${screen.x}px, ${screen.y}px) translate(-50%, -100%)`;
+    b.hidden = false;
+    // keep the whole bubble on screen (phones): slide it in and point the tail at the speaker
+    const half = Math.min(b.offsetWidth, innerWidth - 16) / 2 + 8, x = Math.min(Math.max(screen.x, half), innerWidth - half);
+    b.style.setProperty('--ax', `${Math.max(-half + 22, Math.min(half - 22, screen.x - x)).toFixed(0)}px`);
+    b.style.transform = `translate(${x}px, ${screen.y}px) translate(-50%, -100%)`;
   }
   letterbox(on) { document.body.classList.toggle('cinema', on); }
   deep(on) { document.body.classList.toggle('deep', on); }
@@ -193,12 +213,13 @@ export class UI {
     const p = $('panel'); p.hidden = false; p.querySelector('h2').textContent = title;
     const b = p.querySelector('.body'); b.innerHTML = ''; b.append(body);
     requestAnimationFrame(() => p.classList.add('show'));
+    p.onclick = e => { if (e.target === p) this.closePanel?.(); };                // tap outside the sheet closes it
     return new Promise(res => { this.closePanel = () => { p.classList.remove('show'); setTimeout(() => { p.hidden = true; }, 250); this.closePanel = null; res(); }; p.querySelector('.x').onclick = () => this.closePanel(); });
   }
 
   // Painted world map (public/ui/world-map.webp) with region pins, story markers and the live
   // player arrow on top. Falls back to the terrain colour map if the painting can't load.
-  worldMap(player, npcs, route = null, from = 0) {
+  worldMap(player, npcs, route = null, from = 0, onPick = null) {
     const S = this.S, lang = this.save.settings.lang, wrap = document.createElement('div'); wrap.className = 'worldmap';
     const stage = document.createElement('div'); stage.className = 'stage'; wrap.append(stage);
     const img = new Image(); img.alt = ''; img.decoding = 'async'; img.draggable = false; img.src = asset('ui/world-map.webp');
@@ -236,8 +257,13 @@ export class UI {
       stage.append(place(pin, a.x, a.z, 11));
     }
     for (const npc of npcs) {
-      const m = document.createElement('div'); m.className = `npc badge ${npc.state}`;
+      const m = document.createElement(onPick ? 'button' : 'div'); m.className = `npc badge ${npc.state}`;
       m.innerHTML = icon(npc.state === 'open' ? 'alert' : npc.state === 'done' ? 'check' : 'lock');
+      if (onPick) {                                   // tap a story marker: go there (like the story picker)
+        m.type = 'button'; m.title = this.t(npc.enc.title); m.setAttribute('aria-label', m.title);
+        m.addEventListener('pointerdown', e => e.stopPropagation());   // not a map drag
+        m.onclick = () => { onPick(npc.enc.id); this.closePanel?.(); };
+      }
       stage.append(place(m, npc.x, npc.z));
     }
     const me = document.createElement('div'); me.className = 'me'; me.title = S.here;
@@ -298,8 +324,49 @@ export class UI {
     const lift = e => { pts.delete(e.pointerId); if (pts.size < 2) pinch = null; if (!pts.size) stage.classList.remove('drag'); };
     stage.addEventListener('pointerup', lift); stage.addEventListener('pointercancel', lift);
     layout();
-    const sub = document.createElement('p'); sub.className = 'sub'; sub.innerHTML = `${esc(S.mapSub)}<small>${esc(S.mapZoom)}</small>`; wrap.prepend(sub);
+    const sub = document.createElement('p'); sub.className = 'sub'; sub.innerHTML = `${esc(S.mapSub)}<small>${esc(S.mapZoom)}${onPick ? ` · ${esc(S.mapPick)}` : ''}</small>`; wrap.prepend(sub);
     return this.openPanel(S.map, wrap);
+  }
+
+  // Story picker: every story as a card (painting, title, storytellers, place, verses, status,
+  // distance). Tapping one hands its id to onPick and closes the sheet.
+  stories(player, npcs, current, onPick) {
+    const S = this.S, lang = this.save.settings.lang, ar = lang === 'ar', wrap = document.createElement('div'); wrap.className = 'stories';
+    const sub = document.createElement('p'); sub.className = 'sub'; sub.textContent = S.storiesSub; wrap.append(sub);
+    const list = document.createElement('div'); list.className = 'st-list'; wrap.append(list);
+    const num = n => (ar ? arDigits(n) : String(n));
+    for (const e of this.data.encounters) {
+      const npc = npcs.find(n => n.enc === e || n.enc.id === e.id); if (!npc) continue;
+      const status = this.save.done.includes(e.id) ? 'done' : npc.state === 'locked' ? 'locked' : 'open';
+      const v = e.steps.find(s => s.type === 'verses');
+      let ref = '';
+      if (v) {
+        const [su, a0] = v.from.split(':'), a1 = v.to.split(':')[1], name = SURAHS[su]?.[ar ? 0 : 1];
+        ref = `${S.surah} ${name ?? num(su)} ${num(a0)}${a1 !== a0 ? `–${num(a1)}` : ''}`;
+      }
+      const area = this.data.areas.find(a => a.id === e.area), R = REGIONS[e.area];
+      const place = R ? R[lang] : this.t(area);
+      const d = Math.hypot(npc.x - player.pos.x, npc.z - player.pos.z), dist = d < 15 ? num(Math.max(1, Math.round(d))) : num(Math.round(d / 10) * 10);
+      const cast = e.characters ?? [e.character];
+      const faces = cast.slice(0, 2).map(c => `<i class="face">${portrait(c.id, c)}</i>`).join('');
+      const names = cast.map(c => esc(this.t(c.name))).join(' · ');
+      const thumb = storyThumb(e);
+      const other = e.title?.[ar ? 'en' : 'ar'];
+      const b = document.createElement('button'); b.type = 'button';
+      b.className = `story ${status}${e.id === current ? ' current' : ''}`;
+      b.innerHTML = `<span class="thumb">${thumb ? `<img alt="" loading="lazy" decoding="async" src="${illustrationURL(thumb)}">` : ''}<svg class="orn" viewBox="0 0 200 124" aria-hidden="true"><use href="#o-emblem"/></svg></span>
+        <span class="info"><b class="ttl">${esc(this.t(e.title))}</b>${other ? `<small class="alt" lang="${ar ? 'en' : 'ar'}">${esc(other)}</small>` : ''}
+          <span class="who"><span class="faces">${faces}</span><span>${names}</span></span>
+          <span class="meta"><span>${icon('compass')}${esc(place)}</span>${ref ? `<span>${icon('quran')}${esc(ref)}</span>` : ''}<span class="dist">≈ ${dist} ${esc(S.meters)}</span></span></span>
+        <span class="st">${icon(status === 'done' ? 'check' : status === 'open' ? 'alert' : 'lock')}<em>${esc(e.id === current ? S.stCurrent : S[status === 'done' ? 'stDone' : status === 'open' ? 'stOpen' : 'stLocked'])}</em></span>`;
+      const img = b.querySelector('img');
+      if (img) { img.onload = () => b.querySelector('.thumb').classList.add('ok'); img.onerror = () => img.remove(); }
+      b.onclick = () => { onPick(e.id); this.closePanel?.(); };
+      list.append(b);
+    }
+    const p = this.openPanel(S.stories, wrap);
+    requestAnimationFrame(() => list.querySelector('.current')?.scrollIntoView({ block: 'nearest' }));
+    return p;
   }
 
   journal(onReplay) {

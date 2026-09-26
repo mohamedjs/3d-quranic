@@ -13,10 +13,11 @@ import { wind } from '../shaders/wind.js';
 import { ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX } from '../camera/CameraRig.js';
 import { createGuide } from './guide.js';
 import { createCoins } from '../world/coins.js';
+import { createAutowalk } from './autowalk.js';
 import { PRESETS } from './quality.js';
 
 const SAVE_KEY = 'quran-journey-v1';
-const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, coins: [],
+const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, seenTouchHint: false, coins: [], chosen: null, unlocked: [],
   settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT, path: true } });
 function loadSave() {
   const f = fresh();
@@ -36,8 +37,12 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   // <DialogueSystem/>; this system drives the flow between them
   const player = refs.player, rig = refs.cameraRig, npcs = refs.npcs;
   const MARK = markers();
+  // story state: the story the child picked is always open (a done one can be replayed); a locked
+  // one the child picked stays unlocked (save.unlocked) even after they pick another
   const refreshNpcs = () => npcs.forEach(n => {
-    n.state = save.done.includes(n.enc.id) ? 'done' : n.enc.requires.every(r => save.done.includes(r)) ? 'open' : 'locked';
+    const id = n.enc.id;
+    n.state = id === save.chosen ? 'open' : save.done.includes(id) ? 'done'
+      : n.enc.requires.every(r => save.done.includes(r)) || save.unlocked?.includes(id) ? 'open' : 'locked';
     n.marker.visible = n.state !== 'locked'; n.marker.material.map = MARK[n.state] ?? MARK.open; n.marker.material.opacity = n.state === 'done' ? 0.55 : 1;
   });
   player.place(LOOKOUT.x, LOOKOUT.z, LOOKOUT.facing);   // title screen: on the hill, looking over the village
@@ -56,6 +61,13 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   const guide = createGuide({ scene, colliders });
   const coins = createCoins({ scene, camera, grid: guide.grid, ui, npcs, getSave: () => save, persist, S, detailLow: useGame.getState().detail === 'low' });
   coins.load();
+  // "walk to the story" button / F: autopilot along the guided route; manual input cancels it
+  const auto = createAutowalk({ player, guide, onChange: (on, why) => {
+    ui.walkButton(true, on);
+    if (why === 'stuck' || why === 'lost') ui.toast(S().walkStuck, 3500);
+  } });
+  player.onManual = () => auto.stop('manual');
+  const toggleWalk = () => { if (mode === 'explore') auto.toggle(); };
   const t = o => o?.[save.settings.lang] ?? o?.ar ?? '';
   let timeScale = 1, timeTarget = 1;
 
@@ -75,6 +87,8 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   let target = null, preferred = null;
   const nearestOpen = () => {
     const open = npcs.filter(n => n.state === 'open'); if (!open.length) return null;
+    const chosen = save.chosen && open.find(n => n.enc.id === save.chosen);
+    if (chosen) return chosen;                                     // the child's own pick wins
     if (preferred && open.includes(preferred)) return preferred;
     const d = n => Math.hypot(n.x - player.pos.x, n.z - player.pos.z);
     const best = open.reduce((a, b) => (d(a) < d(b) ? a : b));
@@ -158,7 +172,9 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   }
 
   async function grant(enc) {
-    if (!save.done.includes(enc.id)) { save.done.push(enc.id); save.points += enc.reward.points; persist(); }
+    if (!save.done.includes(enc.id)) { save.done.push(enc.id); save.points += enc.reward.points; }
+    if (save.chosen === enc.id) save.chosen = null;                // finished the pick: back to the default order
+    persist();
     await ui.reward(enc);
     ui.setPoints();
     const before = npcs.filter(n => n.state === 'open').map(n => n.enc.id);
@@ -212,11 +228,13 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   async function panel(kind) {
     if (mode !== 'explore') return;
     setMode('panel'); player.enabled = false; player.target = null;
-    let replay = null;
-    if (kind === 'map') await ui.worldMap(player, npcs, guide.mapRoute, guide.progress);
+    let replay = null, pick = null;
+    if (kind === 'map') await ui.worldMap(player, npcs, guide.mapRoute, guide.progress, id => { pick = id; });
+    if (kind === 'stories') await ui.stories(player, npcs, target?.enc.id ?? null, id => { pick = id; });
     if (kind === 'journal') await ui.journal(v => { replay = v; });
     if (kind === 'settings') await ui.settings(resetProgress);
     setMode('explore'); player.enabled = true;
+    if (pick) chooseStory(pick);
     if (replay) { player.enabled = false; await recite(replay, true); player.enabled = true; }
   }
   // Neural Arabic voice for browsers without one (e.g. Chrome on Linux): download in the
@@ -228,6 +246,18 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     else if (st === 'failed') ui.toast(`${S().voiceFail}${err ? ' (' + err + ')' : ''}`, 6000);
   };
   const prepareVoice = () => { if (save.settings.voice) Voice.prepare(save.settings.lang); };
+  // Story picker / world-map pin: make any story the target (unlocking a locked one, reopening a
+  // done one for a replay). The trail, beacon, minimap, objective and 👣 all follow `target`.
+  function chooseStory(id) {
+    const npc = npcs.find(n => n.enc.id === id);
+    if (!npc || mode !== 'explore') return;
+    save.unlocked ??= [];
+    if (npc.state === 'locked' && !save.unlocked.includes(id)) save.unlocked.push(id);
+    save.chosen = id; preferred = npc; persist();
+    refreshNpcs(); target = null; updateObjective();
+    ui.toast(`${S().headingTo}: ${t(npc.enc.title)}`, 3000);
+    narrate([npc.enc.narration]);
+  }
   function resetProgress() { const st = save.settings; save = fresh(); save.settings = st; ui.save = save; persist(); location.reload(); }
 
   // ---- input ---------------------------------------------------------------------------------
@@ -236,11 +266,15 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     if (mode === 'explore' && e.code === 'KeyE' && nearNpc) startEncounter(nearNpc);
     else if (mode === 'explore' && e.code === 'KeyM') panel('map');
     else if (mode === 'explore' && e.code === 'KeyJ') panel('journal');
+    else if (mode === 'explore' && e.code === 'KeyK') panel('stories');
+    else if (mode === 'explore' && e.code === 'KeyF' && !e.repeat) toggleWalk();
     else if (mode === 'panel' && e.code === 'Escape') ui.closePanel?.();
   });
   $('talk').onclick = () => nearNpc && startEncounter(nearNpc);
   // HUD zoom buttons: a tap steps, holding keeps zooming (smoothly, via the controller)
-  for (const b of document.querySelectorAll('#zoom button')) {
+  $('walk').onclick = toggleWalk;
+  $('walk').addEventListener('contextmenu', e => e.preventDefault());
+  for (const b of document.querySelectorAll('#zoom button[data-zoom]')) {
     const dir = b.dataset.zoom === 'out' ? 1 : -1;
     const stop = () => { player.zoomHold = 0; };
     b.addEventListener('pointerdown', e => { e.preventDefault(); if (!player.enabled) return; player.zoomBy(dir > 0 ? 1.35 : 1 / 1.35); player.zoomHold = dir; });
@@ -262,7 +296,8 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     $('title').classList.add('gone'); setTimeout(() => { $('title').hidden = true; }, 1200);
     rig.shot = null; player.yaw = player.facing + Math.PI; rig.snap(); player.enabled = true; setMode('explore');
     ui.showHud(true); ui.setPoints();
-    if (!save.seenHint) { setTimeout(() => ui.toast(S().controls, 6500), 1500); save.seenHint = true; persist(); }
+    if (player.touch && !save.seenTouchHint) { setTimeout(() => ui.toast(S().controlsTouch, 7000), 1500); save.seenTouchHint = save.seenHint = true; persist(); }
+    else if (!save.seenHint) { setTimeout(() => ui.toast(S().controls, 6500), 1500); save.seenHint = true; persist(); }
     prepareVoice();
     setTimeout(() => narrate([data.narrator?.intro, nearestOpen()?.enc.narration]), 1400);
   }
@@ -317,7 +352,9 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     const preset = PRESETS[useGame.getState().quality], explore = mode === 'explore';
     if (explore && target && target.state !== 'open') updateObjective();
     guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines });
-    coins.update(dt, now, { explore, player, route: guide.route, version: guide.version, tIdx: guide.target ? data.encounters.indexOf(guide.target.enc) : -1, preset });
+    auto.update(dt, { explore });
+    ui.walkButton(explore && !!guide.route && !!guide.target, auto.active);
+    coins.update(dt, now, { explore, player, route: guide.route, version: guide.version, tIdx: guide.target && !save.done.includes(guide.target.enc.id) ? data.encounters.indexOf(guide.target.enc) : -1, preset });
     if (mode === 'explore') {
       ui.talk(!!nearNpc);
       if (bubble) {
@@ -338,6 +375,6 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   }
 
   refs.game = { recite, grant, speaker: id => cine.speaker(id), lang: () => save.settings.lang };
-  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, guide, coins, get target() { return target; }, get state() { return mode; }, save: () => save };
+  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, chooseStory, panel, guide, coins, autowalk: auto, get target() { return target; }, get state() { return mode; }, save: () => save };
   return { tick };
 }

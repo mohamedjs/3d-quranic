@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Quran Journey — رحلة القرآن</title>
 <meta name="description" content="A peaceful 3D world where children discover Quran stories and listen to authentic recitation.">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -21,10 +21,12 @@
   <div id="points"><span class="ico"><svg class="ic" aria-hidden="true"><use href="#i-star"/></svg></span><b>0</b></div>
   <button id="talk" hidden><kbd>E</kbd><span></span></button>
   <div id="zoom">
+    <button id="walk" hidden aria-pressed="false"><svg class="ic" aria-hidden="true"><use href="#i-steps"/></svg></button>
     <button data-zoom="in"><svg class="ic" aria-hidden="true"><use href="#i-zoom-in"/></svg></button>
     <button data-zoom="out"><svg class="ic" aria-hidden="true"><use href="#i-zoom-out"/></svg></button>
   </div>
   <div id="dock">
+    <button data-open="stories"><svg class="ic" aria-hidden="true"><use href="#i-stories"/></svg></button>
     <button data-open="journal"><svg class="ic" aria-hidden="true"><use href="#i-quran"/></svg></button>
     <button data-open="map"><svg class="ic" aria-hidden="true"><use href="#i-compass"/></svg></button>
     <button data-open="settings"><svg class="ic" aria-hidden="true"><use href="#i-settings"/></svg></button>

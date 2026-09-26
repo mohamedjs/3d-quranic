@@ -1,0 +1,51 @@
+{
+  "_note": "Free tier: only ElevenLabs premade voices work through the API. eleven_flash_v2_5 = 0.5 credit/char (whole game ≈ 7.4k of 10k).",
+  "model_id": "eleven_flash_v2_5",
+  "voices": {
+    "farmer": {
+      "voice_id": "pqHfZKP75CvOlQylNhV4",
+      "name": "Bill",
+      "settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.75,
+        "speed": 0.95
+      }
+    },
+    "zainab": {
+      "voice_id": "XrExE9yKIg1WjnnlVkGX",
+      "name": "Matilda",
+      "settings": {
+        "stability": 0.6,
+        "similarity_boost": 0.75,
+        "speed": 0.93
+      }
+    },
+    "amina": {
+      "voice_id": "Xb7hH8MSUJpSbSDYk0k2",
+      "name": "Alice",
+      "settings": {
+        "stability": 0.55,
+        "similarity_boost": 0.75,
+        "speed": 0.95
+      }
+    },
+    "player": {
+      "voice_id": "cgSgspJ2msm6clMCkdW9",
+      "name": "Jessica",
+      "settings": {
+        "stability": 0.45,
+        "similarity_boost": 0.75,
+        "speed": 1.0
+      }
+    },
+    "hamdan": {
+      "voice_id": "nPczCjzI2devNBz1zQrb",
+      "name": "Brian",
+      "settings": {
+        "stability": 0.5,
+        "similarity_boost": 0.75,
+        "speed": 1.0
+      }
+    }
+  }
+}

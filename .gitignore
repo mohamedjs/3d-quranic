@@ -11,3 +11,4 @@ tools/_ping.php
 tools/voice_upload.php
 tools/voice_receiver.html
 .git/*.stale*
+tools/voice_design/

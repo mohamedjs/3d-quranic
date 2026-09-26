@@ -114,6 +114,13 @@ export class Story {
     });
   }
 
+  // Wait until the current line's voice has finished (or a reading time when nothing is voiced).
+  async spokenEnd(text) {
+    const t0 = performance.now(), voiced = await this.lastSpoken;
+    const readMs = Math.max(1200, 500 + text.length * 60);
+    await new Promise(r => setTimeout(r, voiced ? 450 : Math.max(0, readMs - (performance.now() - t0))));
+  }
+
   async say(step) { this.scene(step.scene); await this.line(this.t(step)); }
 
   // The prompt (optional) is spoken by the step's speaker; the options are the child's answers.
@@ -131,7 +138,15 @@ export class Story {
       : null;
     const picked = await this.options(step.options, async () => true, auto);
     this.talk(false);
-    if (asking) { await this.line(this.t(picked), { wait: false }); await new Promise(r => setTimeout(r, 1100)); this.talk(false); }
+    // The child says what he picked — his question, or his answer to the elder — and the
+    // replies only start once his voice has finished (never cut him off mid-sentence).
+    const said = this.t(picked);
+    if (said) {
+      this.setSpeaker('player');
+      await this.line(said, { wait: false });
+      await this.spokenEnd(said);
+      this.talk(false);
+    }
     for (const r of [].concat(picked.reply ?? [])) {
       this.setSpeaker(r.speaker ?? (asking ? enc.host : step.speaker ?? enc.host));
       this.scene(r.scene ?? step.scene);

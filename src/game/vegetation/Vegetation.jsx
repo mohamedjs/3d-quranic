@@ -44,7 +44,7 @@ function inst(geo, mat, list, { colors, shadow = false, receive = true, layer } 
 const plantMat = (key, wind) => toonMaterial('plant_' + key, { vertexColors: true, side: THREE.DoubleSide, wind, rim: 0.12 });
 const tint = (r, spread = 0.18) => new THREE.Color(1, 1, 1).multiplyScalar(1 - spread / 2 + r() * spread);
 
-export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
+export function Vegetation({ colliders, clearings, assets, gardens = [], onTrees = null }) {
   const preset = usePreset(), detail = useDetail();
   const camera = useThree(s => s.camera);
   const chunks = useRef([]), trees = useRef([]);
@@ -104,7 +104,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
       if (t === 0 && (row % 4 === 1 || Math.round(x / 0.8) % 5 === 2)) continue;    // berseem: bushy, a little sparser
       if (t >= 2 && row % 2) continue;                                                 // maize, cotton, cabbage: rows 1.2 m apart
       if (t === 2 && r() > 0.85) continue;
-      if (lowDetail && r() < 0.35) continue;                                          // LOW: a thinner planting
+      if (lowDetail && r() < (detail.cropThin ?? 0.35)) continue;                     // LOW / LITE: a thinner planting
       if (blocked(x, z, 0.4)) continue;
       const jx = x + (r() - 0.5) * 0.2, h = height(jx, z);
       const model = t === 0 ? 'crop_berseem' : t === 1 ? 'crop_wheat' : t === 2 ? 'crop_maize'
@@ -190,8 +190,12 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
 
     // ---- bougainvillea in the street gardens -----------------------------------------------------
     for (const [x, z] of gardens) { const fx = x + (r() - 0.5) * 0.8, fz = z + (r() - 0.5) * 1.2; treePl.push({ model: 'bougainvillea', x: fx, y: height(fx, fz) - 0.05, z: fz, rot: r() * 6.3, sx: 0.85 + r() * 0.35 }); }
-    trees.current = instanceModels(assets, treePl, { lodDistance: 60, outlines: detail.outlines });
-    add(trees.current.group); trees.current.update(camera.position);
+    g.userData.treePl = treePl;
+    if (onTrees) trees.current = null;                            // LITE: <World/> merges them with the other props
+    else {
+      trees.current = instanceModels(assets, treePl, { lodDistance: 60, outlines: detail.outlines });
+      add(trees.current.group); trees.current.update(camera.position); g.userData.trees = trees.current;
+    }
 
     // ---- bushes ----------------------------------------------------------------------------
     const bushes = bucket(), dryTint = new THREE.Color(1.3, 1.02, 0.55); let nBush = 0;
@@ -204,7 +208,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
 
     // ---- rocks: along banks, mountain feet and ruins ----------------------------------------------
     const rockM = [], rockC = [], stone = [new THREE.Color(TOON.toon_stone[0]), new THREE.Color(TOON.toon_stone_dark[0])];
-    for (let i = 0; i < 6000 && rockM.length < 450; i++) {
+    for (let i = 0; i < 6000 && rockM.length < (detail.rocks ?? 450); i++) {
       const x = (r() - 0.5) * 480, z = (r() - 0.5) * 480, h = height(x, z), wd = waterDist(x, z);
       const wild = z > 125 || Math.max(Math.abs(x), Math.abs(z)) > 180, bank = wd > 0 && wd < 1.6;
       if (!(wild || (bank && r() < 0.5)) || h < WATER_Y - 0.4 || pathDist(x, z) < 2.3 || blocked(x, z, 0.6) || fieldPlot(x, z) >= 0) continue;
@@ -212,11 +216,11 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
       rockM.push(M(x, h + s * 0.12, z, r() * 6.3, s, s * (0.55 + r() * 0.4), (r() - 0.5) * 0.4));
       rockC.push(stone[r() < 0.6 ? 0 : 1].clone().multiplyScalar(0.92 + r() * 0.16));
     }
-    add(inst(lump(5), toonMaterial('rock', { vertexColors: true }), rockM, { colors: rockC, shadow: true }));
+    add(inst(lump(5, detail.lite ? 0 : 1), toonMaterial('rock', { vertexColors: true }), rockM, { colors: rockC, shadow: true }));
 
     // ---- fallen fronds/leaves under trees; wild flowers near homes and the oasis ------------------
     const litter = bucket(), litterPal = ['toon_frond_dry', 'toon_bark', 'toon_dates_gold', 'toon_leaf_dark'].map(n => new THREE.Color(TOON[n][0]));
-    for (const [x, z] of [...spots, ...treeSpots]) for (let j = 0; j < 10; j++) {
+    if (detail.litter !== false) for (const [x, z] of [...spots, ...treeSpots]) for (let j = 0; j < 10; j++) {
       const a = r() * 6.3, d = 0.4 + r() * 2.2, lx = x + Math.cos(a) * d, lz = z + Math.sin(a) * d;
       put(litter, 'litter', lx, lz, M(lx, height(lx, lz) + 0.02, lz, r() * 6.3, 0.09 + r() * 0.06, 1, Math.PI / 2 - 0.1), litterPal[(r() * litterPal.length) | 0]);
     }
@@ -232,6 +236,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [] }) {
     chunks.current = list;
     return g;
   }, [detail]); // eslint-disable-line react-hooks/exhaustive-deps
+  useEffect(() => { onTrees?.(group.userData.treePl); }, [group, onTrees]);
   useEffect(() => () => group.traverse(o => {   // free GPU buffers when Settings rebuilds
     if (!o.isMesh) return; o.dispose?.(); if (o.userData.shared) return; o.geometry.dispose(); o.material.dispose();
   }), [group]);

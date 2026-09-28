@@ -497,3 +497,24 @@ body.touch #dialogue { bottom: calc(3vh + var(--sa-b)); }
 .worldmap button.npc::after { content: ''; position: absolute; inset: -12px; border-radius: 50%; }
 .worldmap button.npc.open { color: #3a2408; }
 body.touch .worldmap .npc { width: 30px; height: 30px; margin: -15px 0 0 -15px; }
+
+/* ---- installable app / offline (src/pwa/pwa.js) ---------------------------------------- */
+#title nav button.subtle { font-size: 15px; font-weight: 600; opacity: .8; margin-top: 4px; }
+#title nav button.subtle:hover { opacity: 1; }
+#update { position: fixed; z-index: 40; left: 50%; top: calc(var(--sa-t) + 14px); transform: translateX(-50%); padding: 10px 20px; border-radius: 999px;
+  background: var(--glass-2); color: var(--ink); border: 1px solid var(--line); box-shadow: var(--glow); font: 700 15px var(--ui); cursor: pointer;
+  animation: updIn .5s cubic-bezier(.2, .7, .2, 1) both; }
+#update::before { content: '⟳'; color: var(--sun); margin-inline-end: 8px; }
+#update[hidden] { display: none; }
+@keyframes updIn { from { opacity: 0; transform: translate(-50%, -10px); } }
+.q-msg.soft { background: rgba(15, 42, 51, .88); border-color: var(--line); }
+.settings .offline-dl { display: flex; flex-direction: column; gap: 6px; padding: 10px 0; border-top: 1px solid var(--line-soft); }
+.settings .offline-dl .dl { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
+  background: rgba(244, 199, 102, .14); border: 1px solid var(--line); color: var(--gold-2); font-weight: 700; }
+.settings .offline-dl .dl:disabled { opacity: .6; }
+.settings .offline-dl small { color: var(--ink-dim); }
+.settings .dl-bar { height: 6px; border-radius: 3px; background: rgba(255, 255, 255, .12); overflow: hidden; }
+.settings .dl-bar i { display: block; height: 100%; width: 0; background: var(--gold-grad); transition: width .3s; }
+/* Settings opened from the title screen, and toasts there (offline ready, iOS install hint), sit above it */
+#panel { z-index: 13; }
+#toast { z-index: 14; }

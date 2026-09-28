@@ -1,6 +1,6 @@
 // The scene graph. Suspends until the Blender models and story data are loaded, then
 // builds everything once; the game loop starts when it mounts.
-import { use, useMemo, useEffect, useRef, lazy, Suspense } from 'react';
+import { use, useMemo, useEffect, useRef, useState, lazy, Suspense } from 'react';
 import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Lighting } from '../lighting/Lighting.jsx';
@@ -16,9 +16,10 @@ import { loadEnvModels } from './envAssets.js';
 import { Props } from './Props.jsx';
 import { Environment } from '../environment/Environment.jsx';
 import { Player } from '../characters/Player.jsx';
+import { Blobs } from '../characters/Blobs.jsx';
 import { NPC } from '../npc/NPC.jsx';
 import { DialogueSystem } from '../components/DialogueSystem.jsx';
-import { usePreset, useGame } from '../systems/store.js';
+import { usePreset, useGame, useDetail } from '../systems/store.js';
 import { createGame } from '../systems/game.js';
 import { refs } from '../systems/refs.js';
 import { normalizeEncounters } from '../systems/cast.js';
@@ -79,6 +80,12 @@ export function World() {
     return { terrain, village, canal, colliders, clearings, props, lanterns };
   }, [data]);
 
+  // LITE: every placed model (village, canal, story props and the trees from <Vegetation/>) goes
+  // into ONE merged-chunk set, so a 32 m cell costs ~2 draw calls whatever it holds
+  const lite = !!useDetail().lite;
+  const [treePl, setTreePl] = useState(null);
+  const litePl = useMemo(() => (lite ? [...world.village.placements.map(p => ({ ...p, blocker: true })), ...world.canal.placements, ...world.props, ...(treePl ?? [])] : null), [lite, world, treePl]);
+
   // order matters: meshes the player needs (terrain, walls) mount first; <Player/> updates
   // the camera before <Water/> renders its passes; <GameSystem/> starts once all exist
   return (
@@ -87,14 +94,16 @@ export function World() {
       <Lighting env={env} />
       <Terrain data={world.terrain} />
       <Built geometries={world.village.geometries} blocker />
-      <Props assets={assets} placements={world.village.placements} blocker lodDistance={55} />
+      {!lite && <Props assets={assets} placements={world.village.placements} blocker lodDistance={55} />}
       <Built geometries={world.canal.geometries} />
-      <Props assets={assets} placements={world.canal.placements} lodDistance={40} />
-      <primitive object={world.canal.overlays} />
-      {world.props.length > 0 && <Props assets={assets} placements={world.props} lodDistance={40} />}
+      {!lite && <Props assets={assets} placements={world.canal.placements} lodDistance={40} />}
+      {!lite && <primitive object={world.canal.overlays} />}{/* puddles + footprints: 7 draw calls, not on LITE */}
+      {!lite && world.props.length > 0 && <Props assets={assets} placements={world.props} lodDistance={40} />}
+      {lite && <Props assets={assets} placements={litePl} />}
       {world.lanterns.map((l, i) => <primitive key={'lantern' + i} object={l} />)}
-      <Vegetation colliders={world.colliders} clearings={world.clearings} assets={assets} gardens={world.village.gardens} />
+      <Vegetation colliders={world.colliders} clearings={world.clearings} assets={assets} gardens={world.village.gardens} onTrees={lite ? setTreePl : null} />
       <Player colliders={world.colliders} />
+      <Blobs />
       {data.encounters.map(e => <NPC key={e.id} encounter={e} />)}
       <DialogueSystem />
       <GameSystem world={world} data={data} />
@@ -110,7 +119,7 @@ function GameSystem({ world, data }) {
   const game = useRef(null);
   useEffect(() => {
     game.current = createGame({ camera, mapCanvas: world.terrain.mapCanvas, data, scene, colliders: world.colliders });
-    if (window.__game) window.__game.renderer = gl;   // debug/perf probes (renderer.info)
+    if (window.__game) { window.__game.renderer = gl; window.__game.scene = scene; window.__game.store = useGame; }   // debug/perf probes (renderer.info)
     const l = document.getElementById('loading');
     l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

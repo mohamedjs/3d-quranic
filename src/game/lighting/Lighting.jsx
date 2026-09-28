@@ -24,9 +24,33 @@ export function Lighting({ env }) {
   }, [env]);
   useEffect(() => { gl.shadowMap.autoUpdate = false; gl.shadowMap.needsUpdate = true; return () => { gl.shadowMap.autoUpdate = true; }; }, [gl]);
 
+  const scene = useThree(s => s.scene), detail = useGame(s => s.detail);
+  useEffect(() => { st.current.bake = true; }, [detail]);          // rebuilt vegetation/props: bake again
+
   useFrame(() => {
     const l = sun.current, p = refs.player?.pos; if (!l || !p) return;
     const s = st.current, base = preset.shadowRange;
+    if (preset.staticShadow) {
+      // LITE: the static world's shadows are rendered once into a fixed box round the child and
+      // kept; the box is re-centred (one re-render) only after walking far. The cast don't cast
+      // (their shadow would freeze in place) — they get blob shadows (characters/Blobs.jsx).
+      if (s.light !== l) { s.light = l; s.bake = true; }
+      if (s.bake || s.center === undefined || Math.hypot(p.x - s.cx, p.z - s.cz) > base * 0.55) {
+        s.bake = false; s.center = true; s.cx = p.x; s.cz = p.z;
+        const c = l.shadow.camera; c.left = -base; c.right = base; c.top = base; c.bottom = -base; c.updateProjectionMatrix();
+        l.target.position.set(p.x, p.y, p.z); l.position.copy(l.target.position).addScaledVector(env.sunDir, 150);
+        l.target.updateMatrixWorld(); l.updateMatrixWorld();
+        const off = o => { if (o.isMesh && o.castShadow) { o.castShadow = false; o.userData.liteNoCast = true; } };
+        scene.traverse(o => { if (o.isSkinnedMesh) off(o); });
+        for (const r of [refs.player?.rig?.root, ...refs.npcs.flatMap(n => [...n.members.map(m => m.rig.root), ...n.camels])]) r?.traverse(off);
+        gl.shadowMap.needsUpdate = true;
+      }
+      return;
+    }
+    if (s.center !== undefined) {                                   // leaving LITE: the cast cast again
+      s.center = undefined;
+      scene.traverse(o => { if (o.userData.liteNoCast) { o.castShadow = true; delete o.userData.liteNoCast; } });
+    }
     if (s.light !== l) { s.light = l; s.r = 0; }                   // a new light (quality change) starts from its props
     const want = Math.max(base, refs.view.dist * 1.35), r = want <= base ? base : Math.ceil(want / 8) * 8;
     let force = false;

@@ -7,6 +7,8 @@
 //   close follow (~2.6 m) out to a bird's-eye view (60 m); on the way out the pitch leans
 //   toward ~68° and the shoulder offset fades, so far out it looks down over the village
 import * as THREE from 'three';
+import { liteBlockers } from '../world/instancing.js';
+const _lite = [];
 import { groundAt } from '../terrain/heightfield.js';
 import { refs } from '../systems/refs.js';
 
@@ -56,9 +58,11 @@ export class CameraRig {
       // occlusion: shorten the boom if a wall/rock sits between look point and camera. Only
       // up close: from high above a roof edge crossing the ray is brief, and snapping a 60 m
       // boom down to the roof would be far more jarring than the glimpse it hides.
-      if (this.blockers.length && dist < 16) {
+      if ((this.blockers.length || liteBlockers.size) && dist < 16) {
         _ray.set(_look, _back); _ray.far = dist;
-        const hit = _ray.intersectObjects(this.blockers, false)[0];
+        let list = this.blockers;
+        if (liteBlockers.size) { _lite.length = 0; for (const o of liteBlockers) if (o.visible) _lite.push(o); list = _lite.length ? this.blockers.concat(_lite) : list; }
+        const hit = _ray.intersectObjects(list, false)[0];
         if (hit) dist = Math.max(1.2, hit.distance - 0.35);
       }
       _goal.copy(_look).addScaledVector(_back, dist);

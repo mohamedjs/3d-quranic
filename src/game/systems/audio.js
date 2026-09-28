@@ -113,6 +113,7 @@ export const Voice = {
   // Start fetching the neural voice early (called once the player presses start).
   async prepare(lang) {
     if (!PIPER_VOICE[lang] || this.system(lang) || piperState !== 'idle') return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;   // offline: text only, try again next start
     piperState = 'loading';
     try {
       const { TtsSession } = await import('@mintplex-labs/piper-tts-web');

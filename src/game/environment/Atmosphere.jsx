@@ -90,12 +90,13 @@ function Birds({ count }) {
 }
 
 export function Atmosphere() {
-  const q = usePreset().particles;
+  const { particles: q, birds } = usePreset();
+  const nBirds = birds ?? Math.round(28 * Math.max(q, 0.5));   // LITE: none (each bird is 3 draw calls)
   return (
     <>
-      <Motes count={Math.round(420 * q)} />
-      <Swarms count={Math.round(22 * q)} />
-      <Birds count={Math.round(28 * Math.max(q, 0.5))} />
+      {q > 0 && <Motes count={Math.round(420 * q)} />}
+      {q > 0 && <Swarms count={Math.round(22 * q)} />}
+      {nBirds > 0 && <Birds count={nBirds} />}
     </>
   );
 }

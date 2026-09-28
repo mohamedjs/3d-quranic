@@ -30,5 +30,5 @@ export function buildTerrainGeometry(seg = 360) {
   geo.deleteAttribute('uv');
   geo.computeVertexNormals();
   geo.computeBoundingSphere();
-  return { geometry: geo, mapCanvas: mapImage(mapH, mapC, mapSeg) };
+  return { geometry: geo, seg, mapCanvas: mapImage(mapH, mapC, mapSeg) };
 }

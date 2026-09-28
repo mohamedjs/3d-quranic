@@ -2,6 +2,7 @@
 import { toMap, HALF, SIZE } from '../terrain/heightfield.js';
 import { QuranService } from '../systems/quran.js';
 import { PAINTED, illustrationURL } from './scenes.js';
+import { pwa, downloadAllStories } from '../../pwa/pwa.js';
 
 // ---- UI kit assets (public/ui) -------------------------------------------------------------
 // The icon + ornament sprites are injected inline so <use href="#i-…"> works everywhere and
@@ -46,7 +47,10 @@ export const STR = {
     offline: 'تعذّر الاتصال بموقع Quran.com. تأكّد من الاتصال بالإنترنت ثم أعد المحاولة.', noAudio: 'لا يتوفّر تسجيل لهذا القارئ لهذه الآيات. جرّب قارئًا آخر من الإعدادات.',
     audioErr: 'تعذّر تشغيل التلاوة.', tapToPlay: 'اضغط «إعادة المحاولة» لتشغيل التلاوة.', retry: 'إعادة المحاولة', skip: 'تخطٍّ', reciting: 'القارئ',
     verse: 'الآية', of: 'من', tafsir: 'التفسير الميسّر', translation: 'Saheeh International', sources: 'المصادر', building: 'نبني العالم…', you: 'أنت',
-    voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.', showPath: 'إظهار الطريق إلى القصة التالية', combo: 'رائع!',
+    voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', qLite: 'خفيف جدًا · Lite',
+    install: 'ثبّت اللعبة', iosHint: 'لتثبيت اللعبة: اضغط زر المشاركة ⬆︎ في Safari ثم «إضافة إلى الشاشة الرئيسية».', updateReady: 'تحديث جديد متاح — اضغط للتحديث', offlineReady: 'اللعبة جاهزة للّعب بدون إنترنت',
+    dlAll: 'تنزيل كل القصص للّعب بدون إنترنت', dlBusy: 'جارٍ التنزيل…', dlDone: 'تم! كل القصص تعمل الآن بدون إنترنت', dlSome: 'تعذّر تنزيل بعض الملفات — حاول مرة أخرى وأنت متصل', dlNeedNet: 'تحتاج اتصالًا بالإنترنت للتنزيل', dlHint: 'الآيات والتلاوات من Quran.com لكل القصص (بضعة ميغابايت)',
+    offlineVerse: 'هذه الآيات تحتاج اتصالًا بالإنترنت أول مرة. سنكمل القصة الآن، ويمكنك الاستماع إليها لاحقًا من دفتر المعرفة.', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.', showPath: 'إظهار الطريق إلى القصة التالية', combo: 'رائع!',
     walk: 'امشِ إلى القصة', stories: 'القصص', storiesSub: 'اختر القصة التي تريد أن تذهب إليها — أي قصة تحبّ!', stDone: 'أنهيتها', stOpen: 'متاحة', stLocked: 'لم تُفتح بعد', stCurrent: 'وجهتك الآن', headingTo: 'وجهتك', surah: 'سورة', meters: 'م', mapPick: 'اضغط على علامة قصة لتذهب إليها', walkStuck: 'تعذّر إكمال الطريق — امشِ قليلًا ثم جرّب مرة أخرى', controlsTouch: 'اسحب يسار لتمشي · اسحب يمين لتلفّ الكاميرا · 👣 يمشي بك إلى القصة',
   },
   en: {
@@ -60,7 +64,10 @@ export const STR = {
     offline: 'Could not reach Quran.com. Check your internet connection and try again.', noAudio: 'This reciter has no recording for these verses. Try another reciter in Settings.',
     audioErr: 'The recitation could not be played.', tapToPlay: 'Press “Try again” to start the recitation.', retry: 'Try again', skip: 'Skip', reciting: 'Reciting',
     verse: 'Verse', of: 'of', tafsir: 'Tafsir al-Muyassar', translation: 'Saheeh International', sources: 'Sources', building: 'Building the world…', you: 'You',
-    voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.', showPath: 'Show the path to the next story', combo: 'Great!',
+    voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', qLite: 'Lite · خفيف جدًا',
+    install: 'Install the game', iosHint: 'To install: tap the Share button ⬆︎ in Safari, then “Add to Home Screen”.', updateReady: 'A new version is ready — tap to update', offlineReady: 'The game is ready to play offline',
+    dlAll: 'Download all stories for offline play', dlBusy: 'Downloading…', dlDone: 'Done! Every story now works offline', dlSome: 'Some files could not be downloaded — try again while online', dlNeedNet: 'You need the internet to download', dlHint: 'Verses and recitations from Quran.com for every story (a few MB)',
+    offlineVerse: 'These verses need the internet the first time. The story continues now — you can listen to them later from the Journal.', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.', showPath: 'Show the path to the next story', combo: 'Great!',
     walk: 'Walk to the story', stories: 'Stories', storiesSub: 'Choose the story you want to go to — any one you like!', stDone: 'Done', stOpen: 'Open', stLocked: 'Not yet', stCurrent: 'Heading here', headingTo: 'Heading to', surah: 'Surah', meters: 'm', mapPick: 'Tap a story marker to go there', walkStuck: 'Couldn’t finish the walk — move a little and try again', controlsTouch: 'Drag on the left to walk · drag on the right to turn the camera · 👣 walks you to the story',
   },
 };
@@ -98,6 +105,7 @@ export class UI {
     $('walk').title = S.walk; $('walk').setAttribute('aria-label', S.walk);
     for (const b of document.querySelectorAll('#zoom button[data-zoom]')) { b.title = S[b.dataset.zoom === 'in' ? 'zoomIn' : 'zoomOut']; b.setAttribute('aria-label', b.title); }
     this.setPoints();
+    pwa.relabel?.();
   }
 
   // ---- HUD --------------------------------------------------------------
@@ -389,13 +397,14 @@ export class UI {
     f.innerHTML = `
       <label>${esc(S.lang)}<select name="lang"><option value="ar">العربية</option><option value="en">English</option></select></label>
       <label>${esc(S.reciter)}<select name="reciter"><option value="${st.reciter}">…</option></select></label>
-      <label>${esc(S.quality)}<select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>
+      <label>${esc(S.quality)}<select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="lite">${esc(S.qLite)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>
       <label class="row"><input type="checkbox" name="voice"> ${esc(S.voice)}</label>
       <label class="row"><input type="checkbox" name="meaning"> ${esc(S.meaning)}</label>
       <label class="row"><input type="checkbox" name="auto"> ${esc(S.auto)}</label>
       <label class="row"><input type="checkbox" name="path"> ${esc(S.showPath)}</label>
       <label>${esc(S.volume)}<input type="range" name="volume" min="0" max="1" step="0.05"></label>
       <label class="row"><input type="checkbox" name="music"> ${esc(S.music)}</label>
+      ${pwa.supported ? `<div class="offline-dl"><button type="button" class="dl">${icon('stories')}${esc(S.dlAll)}</button><small>${esc(S.dlHint)}</small><div class="dl-bar" hidden><i></i></div><small class="dl-status" aria-live="polite"></small></div>` : ''}
       <button type="button" class="danger">${esc(S.reset)}</button>`;
     f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.auto.checked = st.auto !== false; f.path.checked = st.path !== false; f.volume.value = st.volume; f.music.checked = st.music;
     QuranService.getReciters().then(rs => {
@@ -407,6 +416,20 @@ export class UI {
       this.persist(); this.onSettings();
     };
     f.querySelector('.danger').onclick = () => { if (confirm(S.resetQ)) onReset(); };
+    const dl = f.querySelector('.dl');
+    if (dl) dl.onclick = async () => {
+      const status = f.querySelector('.dl-status'), bar = f.querySelector('.dl-bar');
+      if (!navigator.onLine) { status.textContent = S.dlNeedNet; return; }
+      dl.disabled = true; bar.hidden = false; status.textContent = S.dlBusy;
+      try {
+        const r = await downloadAllStories({ data: this.data, reciter: st.reciter, onProgress: (d, t) => {
+          bar.firstElementChild.style.width = `${Math.round((d / Math.max(1, t)) * 100)}%`; status.textContent = `${S.dlBusy} ${d} / ${t}`;
+        } });
+        status.textContent = r.failed ? S.dlSome : S.dlDone;
+        if (!r.failed) { st.offlineReady = st.reciter; this.persist(); }
+      } catch (e) { status.textContent = navigator.onLine ? `${S.dlSome} (${e.message})` : S.dlNeedNet; }
+      dl.disabled = false;
+    };
     return this.openPanel(S.settings, f);
   }
 

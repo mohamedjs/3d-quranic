@@ -5,8 +5,20 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Quran Journey — رحلة القرآن</title>
 <meta name="description" content="A peaceful 3D world where children discover Quran stories and listen to authentic recitation.">
+<!-- installable app (PWA): manifest + service worker (sw.js, registered after the world loads) -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0f2a33">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="رحلة القرآن">
+<meta name="application-name" content="رحلة القرآن">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Nunito:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+<!-- fonts never block the first paint (slow phones / offline): applied when they arrive -->
+<link href="https://fonts.googleapis.com/css2?family=Amiri+Quran&family=Aref+Ruqaa:wght@400;700&family=Cormorant+Garamond:ital,wght@0,600;0,700;1,500&family=Nunito:wght@500;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 </head>
 <body>
 <div id="root"></div>
@@ -34,6 +46,7 @@
 </div>
 <div id="banner"><small></small><b></b></div>
 <div id="toast"></div>
+<button id="update" hidden></button>
 
 <div id="scene" hidden></div>
 <div id="dialogue" hidden>
@@ -78,7 +91,7 @@
     <p class="tagline"></p>
     <p class="tagline2"></p>
   </div>
-  <nav><button id="btn-continue" class="primary"></button><button id="btn-new"></button><button id="btn-settings"></button></nav>
+  <nav><button id="btn-continue" class="primary"></button><button id="btn-new"></button><button id="btn-settings"></button><button id="btn-install" class="subtle" hidden></button></nav>
   <p class="credit">Quran text &amp; recitation: Quran.com · Reciter: Mohamed Siddiq al-Minshawi · Character voices: ElevenLabs</p>
 </div>
 <div id="loading"><div class="spin"></div><p>Building the world… · نبني العالم…</p></div>
@@ -94,7 +107,6 @@
     document.querySelector('#loading p').innerHTML = 'Open this game through a web server, not as a file:<br><b>http://localhost/old/3d-quranic/dist/</b><br><small>(or run <code>npm run dev</code> in this folder)</small>';
   }
 </script>
-<link rel="icon" href="data:,">
 <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>

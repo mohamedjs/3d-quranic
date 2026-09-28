@@ -3,6 +3,7 @@
 // seated character, sit / sit_talk) clips are blended by movement speed and speech (found by name, so Mixamo-style exports work as-is).
 // Draco- and Meshopt-compressed files are supported.
 import * as THREE from 'three';
+import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { toonMaterial, outlineMaterial } from '../shaders/toon.js';
 import { useGame } from '../systems/store.js';
 import { PRESETS } from '../systems/quality.js';
@@ -55,6 +56,7 @@ class GlbRig {
       if (cut) o.castShadow = false;
     });
     this.hulls = hulls;
+    if (PRESETS[useGame.getState().detail]?.lite) mergeSkinned(model);
     const box = new THREE.Box3().setFromObject(model), h = box.max.y - box.min.y || 1;
     model.scale.setScalar(targetHeight / h);
     model.position.y = -box.min.y * (targetHeight / h);
@@ -104,4 +106,43 @@ class GlbRig {
     this.mixer.update(dt);
   }
   wave() {}
+}
+
+// LITE: a character's primitives (skin, clothes, hair, lashes…) are one draw call each; merge
+// every untextured part sharing a skeleton into a single skinned mesh with its colour baked as
+// a vertex colour (textured parts — face, patterned cloth — merge per texture). ~10 → 2–3 calls.
+function mergeSkinned(model) {
+  const groups = new Map();
+  model.traverse(o => {
+    if (!o.isSkinnedMesh || o.userData.outline || o.morphTargetInfluences) return;
+    const m = o.material, key = `${o.parent.uuid}|${o.skeleton.uuid}|${m.map ? m.map.uuid : '-'}|${m.side}|${m.alphaTest > 0 && m.map ? 'cut' : ''}`;
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(o);
+  });
+  for (const list of groups.values()) {
+    if (list.length < 2) continue;
+    const first = list[0];
+    if (!list.every(o => o.bindMatrix.equals(first.bindMatrix) && o.matrix.equals(first.matrix))) continue;
+    const names = ['position', 'normal', 'uv', 'skinIndex', 'skinWeight'];
+    if (!list.every(o => names.every(n => o.geometry.attributes[n]))) continue;
+    const geos = list.map(o => {
+      const g = new THREE.BufferGeometry(), src = o.geometry, n = src.attributes.position.count;
+      for (const a of names) g.setAttribute(a, a === 'skinIndex' ? new THREE.BufferAttribute(Uint16Array.from(src.attributes.skinIndex.array), 4) : src.attributes[a]);
+      if (src.index) g.setIndex(src.index);
+      const c = o.material.color, col = new Float32Array(n * 3);
+      for (let i = 0; i < n; i++) { col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
+      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
+      return g;
+    });
+    const merged = mergeGeometries(geos.every(g => g.index) ? geos : geos.map(g => (g.index ? g.toNonIndexed() : g)));
+    if (!merged) continue;
+    const m0 = first.material;
+    const mat = toonMaterial(`charlite_${m0.map ? m0.map.uuid : 'vc'}_${m0.side}_${m0.alphaTest}`, { vertexColors: true, map: m0.map ?? null, side: m0.side, rim: 0.24, alphaTest: m0.map ? m0.alphaTest : 0 });
+    const mesh = new THREE.SkinnedMesh(merged, mat);
+    mesh.name = first.name + '_lite'; mesh.frustumCulled = false; mesh.castShadow = true; mesh.receiveShadow = true;
+    mesh.position.copy(first.position); mesh.quaternion.copy(first.quaternion); mesh.scale.copy(first.scale);
+    first.parent.add(mesh);
+    mesh.bind(first.skeleton, first.bindMatrix);
+    for (const o of list) { o.parent.remove(o); o.geometry.dispose(); }
+  }
 }

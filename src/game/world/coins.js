@@ -29,15 +29,15 @@ function crescentShape(R = 0.15, d = 0.07, r = 0.13) {
   s.absarc(d, 0, r, -b1, b1, true);
   return s;
 }
-function coinGeometry() {
+function coinGeometry(seg = 18) {
   // lathe profile (radius, thickness): a flat face inside a raised rim — one cheap closed body
   const prof = [[0, 0.02], [0.19, 0.02], [0.205, 0.034], [0.26, 0.03], [0.265, 0], [0.26, -0.03], [0.205, -0.034], [0.19, -0.02], [0, -0.02]].map(([r, y]) => new THREE.Vector2(r, y));
-  const body = new THREE.LatheGeometry(prof.reverse(), 18).rotateX(Math.PI / 2).toNonIndexed();
+  const body = new THREE.LatheGeometry(prof.reverse(), seg).rotateX(Math.PI / 2).toNonIndexed();
   const p = body.attributes.position, col = new Float32Array(p.count * 3), face = new THREE.Color(0xEDB136), rim = new THREE.Color(0xFFD25E);
   for (let i = 0; i < p.count; i++) { const c = Math.hypot(p.getX(i), p.getY(i)) > 0.196 ? rim : face; col.set([c.r, c.g, c.b], i * 3); }
   body.setAttribute('color', new THREE.BufferAttribute(col, 3));
   // flat crescent-and-star emboss on both faces (caps only: a few triangles)
-  const emb = new THREE.ShapeGeometry([crescentShape(), starShape(0.055, 0.024, 5, 0.085, 0.0)], 5).rotateZ(0.5);
+  const emb = new THREE.ShapeGeometry([crescentShape(), starShape(0.055, 0.024, 5, 0.085, 0.0)], seg < 18 ? 3 : 5).rotateZ(0.5);
   const front = paint(emb.clone().translate(0, 0, 0.0215), 0xFFF0B8), back = paint(emb.clone().rotateY(Math.PI).translate(0, 0, -0.0215), 0xFFF0B8);
   return merge([body, front, back]);
 }
@@ -153,7 +153,7 @@ function layout(grid, avoid, low) {
   return { coins, stars };
 }
 
-export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S, detailLow }) {
+export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S, detailLow, lite = false }) {
   const avoid = npcs.flatMap(n => n.members.map(m => [m.def.position[0], m.def.position[1]]));
   const L = layout(grid, avoid, detailLow);
   const routeCap = detailLow ? 36 : ROUTE_MAX;
@@ -163,7 +163,7 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
   L.coins.forEach(([x, z, h], k) => { const i = ROUTE_MAX + k; X[i] = x; Z[i] = z; Hh[i] = h; Y[i] = groundAt(x, z); ID[i] = STATIC_ID + k; });
   L.stars.forEach(([x, z], k) => { const i = ROUTE_MAX + nStatic + k; X[i] = x; Z[i] = z; Y[i] = groundAt(x, z); ID[i] = STAR_ID + k; BIG[i] = 1; });
 
-  const coinMesh = new THREE.InstancedMesh(coinGeometry(), goldMaterial('coin_gold', 0x4a3000), ROUTE_MAX + nStatic);
+  const coinMesh = new THREE.InstancedMesh(coinGeometry(lite ? 10 : 18), goldMaterial('coin_gold', 0x4a3000), ROUTE_MAX + nStatic);
   const coinInk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.29, 0.29, 0.1, 14).rotateX(Math.PI / 2), outlineMaterial('env'), ROUTE_MAX + nStatic);
   const starMesh = new THREE.InstancedMesh(starGeometry(), goldMaterial('coin_star', 0x6a4400), Math.max(1, nStar));
   const starInk = new THREE.InstancedMesh(new THREE.ExtrudeGeometry(starShape(0.5, 0.25), { depth: 0.22, bevelEnabled: false }).translate(0, 0, -0.11), outlineMaterial('env'), Math.max(1, nStar));

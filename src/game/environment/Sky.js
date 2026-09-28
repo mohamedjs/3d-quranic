@@ -3,8 +3,9 @@
 // One big back-faced sphere that follows the camera; no textures.
 import * as THREE from 'three';
 
-export function createSky(sunDir) {
+export function createSky(sunDir, lite = false) {
   const mat = new THREE.ShaderMaterial({
+    defines: { SKY_OCT: lite ? 2 : 4 },          // LITE: half the cloud noise octaves (the sky covers much of the screen)
     side: THREE.BackSide, depthWrite: false, fog: false,
     uniforms: { uSun: { value: sunDir.clone().normalize() }, uTime: { value: 0 } },
     vertexShader: /* glsl */`
@@ -15,7 +16,7 @@ export function createSky(sunDir) {
       float h(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
       float n(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
         return mix(mix(h(i), h(i + vec2(1, 0)), f.x), mix(h(i + vec2(0, 1)), h(i + vec2(1, 1)), f.x), f.y); }
-      float fbm(vec2 p) { float s = 0., a = .5; for (int i = 0; i < 4; i++) { s += a * n(p); p *= 2.07; a *= .5; } return s; }
+      float fbm(vec2 p) { float s = 0., a = .5; for (int i = 0; i < SKY_OCT; i++) { s += a * n(p); p *= 2.07; a *= .5; } return s * (.9375 / (1. - pow(.5, float(SKY_OCT)))); }   // same range at any octave count
       vec3 srgb(vec3 c) { return pow(c, vec3(2.2)); }
       void main() {
         vec3 d = normalize(vDir); float y = max(d.y, 0.);

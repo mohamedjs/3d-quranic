@@ -23,6 +23,11 @@ const COMMON = /* glsl */`
   // e: 0 bank → 1 centre · along/across: metres in the flow frame · p: world xz · flow: speed factor
   vec3 toonWater(float e, float along, float across, vec2 p, float flow) {
     float t = uTime;
+  #ifdef WATER_LITE
+    // LITE: the three flat bands and a clean foam line at the bank — no noise, streaks or dashes
+    vec3 c = e < ${f(W.shallow_to_mid)} ? uShallow : (e < ${f(W.mid_to_deep)} ? uMid : uDeep);
+    return mix(c, uFoam, step(e, ${f(W.foam_edge)}));
+  #else
     float en = e + (wfbm(p * ${f(W.noise_scale)} + vec2(t * .03, 0.)) - .5) * .36;
     vec3 c = en < ${f(W.shallow_to_mid)} ? uShallow : (en < ${f(W.mid_to_deep)} ? uMid : uDeep);
     float s = wfbm(vec2(across * 3.2, (along - t * ${f(W.streak_speed * 4)} * flow) * .22));
@@ -33,12 +38,13 @@ const COMMON = /* glsl */`
     float band = step(${f(W.dash_band[0])}, e) * step(e, ${f(W.dash_band[1])});
     float dash = step(${f(1 - 2 * W.dash_duty)}, sin((along - t * ${f(W.flow_speed * 2)} * flow) * ${f(2 * Math.PI / W.dash_period_m)} + n3 * 3.));
     return mix(c, uFoam, max(edge, band * dash));
+  #endif
   }`;
 
 // The world water plane. tBank: r = e, g = unused, b = flow angle / π + .5, a = flow speed.
-export function createWaterMaterial({ bankTex, size }) {
+export function createWaterMaterial({ bankTex, size, lite = false }) {
   return new THREE.ShaderMaterial({
-    fog: true,
+    fog: true, defines: lite ? { WATER_LITE: 1 } : {},
     uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, colors(), { tBank: { value: null }, uSize: { value: size } }]),
     vertexShader: /* glsl */`
       varying vec3 vW;

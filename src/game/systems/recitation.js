@@ -24,6 +24,8 @@ export function playRecitation({ from, to, words: part, meaning: note }, { recit
   requestAnimationFrame(() => R.classList.add('show'));
   msg.hidden = true; text.textContent = S.loading; text.classList.add('loading');
   $('.q-meaning').textContent = ''; $('.q-src').textContent = ''; $('.q-dots').innerHTML = ''; $('.q-progress i').style.width = '0';
+  for (const k of ['.q-surah', '.q-sub', '.q-vno', '.q-reciter']) $(k).textContent = '';   // nothing left over from the last recitation
+  $('.q-time').textContent = '0:00';
   $('.q-retry').textContent = S.retry; $('.q-giveup').textContent = S.skip; $('.q-skip').title = S.skip;
 
   let verses = [], i = 0, raf = 0, done = false, spans = [], lastWord = -1, clip = null;
@@ -32,11 +34,21 @@ export function playRecitation({ from, to, words: part, meaning: note }, { recit
   return new Promise(resolve => {
     const finish = () => {
       if (done) return; done = true;
-      cancelAnimationFrame(raf); audio.pause(); audio.onended = audio.onerror = audio.onplay = audio.onpause = null;
+      clearTimeout(autoGo); cancelAnimationFrame(raf); audio.pause(); audio.onended = audio.onerror = audio.onplay = audio.onpause = null;
       R.classList.remove('show'); setTimeout(() => { R.hidden = true; resolve(); }, 700);
     };
-    const fail = m => { audio.pause(); msg.hidden = false; msg.querySelector('p').textContent = m; };
-    $('.q-retry').onclick = () => { msg.hidden = true; verses.length ? playVerse(i) : load(); };
+    let autoGo = 0;
+    const fail = m => { audio.pause(); msg.hidden = false; msg.classList.remove('soft'); msg.querySelector('p').textContent = m; $('.q-giveup').textContent = S.skip; };
+    // Offline and this story's verses were never played / downloaded: say so kindly and let the
+    // story go on by itself (the Journal replays them later); «try again» stays for when the
+    // connection is back.
+    const offlineFail = () => {
+      fail(S.offlineVerse); msg.classList.add('soft'); $('.q-giveup').textContent = S.continue;
+      text.classList.remove('loading'); text.textContent = '';
+      clearTimeout(autoGo); autoGo = setTimeout(() => { if (!msg.hidden) finish(); }, 9000);
+    };
+    const offlineish = e => navigator.onLine === false || (e instanceof TypeError && /fetch|network|load failed/i.test(e.message || ''));
+    $('.q-retry').onclick = () => { clearTimeout(autoGo); msg.hidden = true; verses.length ? playVerse(i) : load(); };
     $('.q-giveup').onclick = finish; $('.q-skip').onclick = finish;
     toggle.onclick = () => (audio.paused ? audio.play().catch(() => {}) : audio.pause());
     $('.q-replay').onclick = () => verses.length && playVerse(0);
@@ -47,7 +59,10 @@ export function playRecitation({ from, to, words: part, meaning: note }, { recit
       if (i + 1 < verses.length) setTimeout(() => !done && playVerse(i + 1), 450);
       else { spans.forEach(s => s.classList.add('read')); setTimeout(finish, 1600); }
     };
-    audio.onerror = () => { if (!done && verses.length && audio.src !== SILENT) fail(`${S.audioErr} (${audio.error?.message || audio.src})`); };
+    audio.onerror = () => {
+      if (done || !verses.length || audio.src === SILENT) return;
+      if (navigator.onLine === false) offlineFail(); else fail(`${S.audioErr} (${audio.error?.message || audio.src})`);
+    };
 
     async function load() {
       try {
@@ -69,7 +84,7 @@ export function playRecitation({ from, to, words: part, meaning: note }, { recit
         $('.q-dots').innerHTML = verses.map(() => '<i></i>').join('');
         if (!verses.every(v => v.audioUrl)) return fail(S.noAudio);
         playVerse(0); tick();
-      } catch (e) { fail(`${S.offline}\n${e.message}`); }
+      } catch (e) { if (offlineish(e)) offlineFail(); else fail(`${S.offline}\n${e.message}`); }
     }
 
     function render(k) {

@@ -1,7 +1,7 @@
 // <NPC encounter/>: a storyteller from encounters.json — rig (procedural or GLB), floating
 // marker, optional camel. Idle breathing/gestures run here; proximity, greeting and the
 // talk trigger live in the game system, which reads refs.npcs.
-import { useMemo, useState, useLayoutEffect, useEffect } from 'react';
+import { useMemo, useState, useLayoutEffect } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 import { makeElder, makeCamel } from '../characters/procedural.js';
@@ -66,17 +66,18 @@ export function NPC({ encounter }) {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useLayoutEffect(() => { refs.npcs.push(npc); return () => { refs.npcs = refs.npcs.filter(n => n !== npc); }; }, [npc]);
-  useEffect(() => {
-    for (const m of npc.members) {
-      if (!m.def.model) continue;
+  // The GLB is fetched when the child (or the camera) first comes within draw distance + 60 m:
+  // a far storyteller costs nothing at start-up (LITE on an old phone loads only who is near).
+  const loadMember = m => {
+      if (!m.def.model || m.loading) return;
+      m.loading = true;
       loadGlbRig(m.def.model, m.def.look?.height ?? 1.72).then(g => {
         if (!g) return;
         const yaw = m.rig.root.rotation.y;
         placeMember(m, g, 'glb'); if (m.turns) g.root.rotation.y = yaw;
         setVersion(v => v + 1);
       }).catch(e => console.error(m.def.model, e));
-    }
-  }, [npc]);
+  };
 
   // Skinned characters skip three's frustum culling (their bounds move with the pose), so
   // each cast member is culled here against a generous sphere round the body (its shadow can
@@ -87,12 +88,17 @@ export function NPC({ encounter }) {
     const t = refs.clock.wind, r = npc.host.rig.root, preset = PRESETS[useGame.getState().quality];
     _m.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse); _fr.setFromProjectionMatrix(_m);
     let anyShown = false;
+    const mode = useGame.getState().mode;
     for (const m of npc.members) {
       const root = m.rig.root, d = camera.position.distanceTo(root.position);
+      if (!m.loading && (d < preset.npcDist + refs.view.dist + 60 || mode === 'dialogue')) loadMember(m);
       _s.center.set(root.position.x, root.position.y + 1, root.position.z); _s.radius = 3.5;
       const show = d < preset.npcDist + refs.view.dist && _fr.intersectsSphere(_s);   // zoomed out: still shown round the child
       root.visible = show; anyShown ||= show;
-      if (show) m.rig.animate(Math.min(dt, 0.05) * refs.clock.scale, t, 0);
+      // LITE: beyond 12 m the skeleton is posed at ~10 fps (dt accumulated, so clips keep time)
+      m.acc = (m.acc ?? 0) + Math.min(dt, 0.05) * refs.clock.scale;
+      if (show && (!preset.lite || d < 12 || (m.skip = ((m.skip ?? 0) + 1) % 3) === 0)) { m.rig.animate(Math.min(m.acc, 0.15), t, 0); m.acc = 0; }
+      else if (!show) m.acc = 0;
       if (m.rig.hulls) { const ink = preset.outlines && d < Math.max(28, preset.outlineDist * 1.6); for (const h of m.rig.hulls) h.visible = ink; }
     }
     const k = Math.max(1, refs.view.dist / 9);

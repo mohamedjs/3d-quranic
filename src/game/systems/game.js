@@ -15,6 +15,7 @@ import { createGuide } from './guide.js';
 import { createCoins } from '../world/coins.js';
 import { createAutowalk } from './autowalk.js';
 import { PRESETS } from './quality.js';
+import { initPWA } from '../../pwa/pwa.js';
 
 const SAVE_KEY = 'quran-journey-v1';
 const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, seenTouchHint: false, coins: [], chosen: null, unlocked: [],
@@ -59,7 +60,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   const S = () => STR[save.settings.lang];
   // guided path + collectibles
   const guide = createGuide({ scene, colliders });
-  const coins = createCoins({ scene, camera, grid: guide.grid, ui, npcs, getSave: () => save, persist, S, detailLow: useGame.getState().detail === 'low' });
+  const coins = createCoins({ scene, camera, grid: guide.grid, ui, npcs, getSave: () => save, persist, S, detailLow: ['low', 'lite'].includes(useGame.getState().detail), lite: useGame.getState().detail === 'lite' });
   coins.load();
   // "walk to the story" button / F: autopilot along the guided route; manual input cancels it
   const auto = createAutowalk({ player, guide, onChange: (on, why) => {
@@ -313,6 +314,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   };
   rig.shot = titleShot(); rig.snap();
   setMode('title');
+  initPWA({ S, toast: (text, ms) => ui.toast(text, ms) });   // offline cache, update toast, install button
 
   // ---- per frame --------------------------------------------------------------------------------
   const v3 = new THREE.Vector3();
@@ -375,6 +377,6 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   }
 
   refs.game = { recite, grant, speaker: id => cine.speaker(id), lang: () => save.settings.lang };
-  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, chooseStory, panel, guide, coins, autowalk: auto, get target() { return target; }, get state() { return mode; }, save: () => save };
+  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, chooseStory, panel, guide, coins, autowalk: auto, recite: step => recite(step, true), get target() { return target; }, get state() { return mode; }, save: () => save };
   return { tick };
 }

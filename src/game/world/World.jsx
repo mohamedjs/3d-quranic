@@ -49,6 +49,7 @@ export function World() {
   refs.sunDir = env.sunDir;
 
   const world = useMemo(() => {
+    (window.__builds ??= []).push('world:' + useGame.getState().detail);   // test probe: the world must be built exactly once
     const terrain = buildTerrainGeometry(PRESETS[useGame.getState().detail].terrainSeg);
     const village = buildVillage();
     const first = data.encounters[0], farmer = (first.characters.find(c => c.pose !== 'sit') ?? first.character).position;

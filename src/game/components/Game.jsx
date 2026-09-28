@@ -79,7 +79,8 @@ function FrameGovernor() {
 }
 
 // AUTO: measure the first seconds on the title / first steps; a device that can't reach
-// 25 fps there goes straight to LITE (remembered for the next visit).
+// 25 fps there switches to LITE's per-frame settings now (no rebuild) and is remembered, so the
+// next visit builds the light world from the start.
 function EarlyProbe() {
   const s = useRef({ t: 0, n: 0, done: false });
   useFrame((_, dt) => {

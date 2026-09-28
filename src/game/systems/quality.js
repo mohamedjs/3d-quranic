@@ -71,3 +71,70 @@ function probe() {
     return 'medium';
   } catch { return 'lite'; }
 }
+
+// ---- device age: resolved on the loading screen, BEFORE the world is built ---------------------
+// Rule: a device from before ~2021 starts on LOW (or LITE when probe() above already calls it very
+// weak); 2021+ devices keep the AUTO guess. Browsers don't expose a release year, so any ONE of
+// these signals marks a device as pre-2021 (each is conservative — a false "old" only costs detail):
+//  · Android ≤ 10 — from UA Client Hints (platformVersion) when Chrome offers them; the UA string
+//    only when it isn't Chrome's frozen "Android 10; K" (which every modern Android reports)
+//  · iOS ≤ 14 (the iPhone 13 / 2021 shipped with iOS 15)
+//  · iPhone screen sizes only pre-2021 models have: 320×568 (5s/SE1), 375×667 (6–8/SE2),
+//    414×736 (Plus), 414×896 (XR/11/XS Max/11 Pro Max). 375×812 (X–11 Pro vs 12/13 mini) and newer
+//    sizes are left alone.
+//  · the GPU generation, from WEBGL_debug_renderer_info (table below)
+//  · navigator.deviceMemory ≤ 2 GB (Chrome only)
+// A saved manual choice in Settings always wins (store.js); a device that measured too slow once is
+// remembered as LITE (store.js HINT) and wins over all of this too.
+export const OLD_GPU = [
+  [/adreno[^0-9]*(\(tm\) )?[2-5]\d\d\b/i, 'Adreno 2xx–5xx (≤2018)'],
+  [/adreno[^0-9]*(\(tm\) )?6([0-3]\d|40|50)\b/i, 'Adreno 605–650 (Snapdragon up to the 865, ≤2020); 642L/643/644/660+ are 2021'],
+  [/mali-?t\d|mali-?4\d\d/i, 'Mali-400/450, Mali T-series (Utgard/Midgard, ≤2017)'],
+  [/mali-?g(31|51|52|57|71|72|76|77)\b/i, 'Mali-G31…G77 (Bifrost / first Valhall, ≤2020); G68/G78/G310/G610+ are 2021+'],
+  [/powervr|sgx|rogue|ge8\d{3}/i, 'PowerVR (budget phones, old iPads)'],
+  [/apple a([4-9]|1[0-2])\b/i, 'Apple A12 or older (Safari usually says just "Apple GPU": then screen/iOS decide)'],
+  [/intel.*[^u]hd graphics|intel.*uhd graphics (p?6\d\d)\b|intel.*iris(\(r\))? (plus|pro|graphics [56]\d\d)/i, 'Intel HD, UHD 6xx, Iris Plus/Pro (≤2020); Iris Xe / UHD 7xx are 2021'],
+  [/(gtx|geforce) ?(9\d\d|10\d\d|16\d\d)\b|geforce mx ?\d{3}|quadro [kmp]\d/i, 'GeForce GTX 9xx/10xx/16xx, MX (≤2019); RTX keeps AUTO'],
+  [/radeon(\(tm\))? (r[579] |hd |rx ?[45]\d\d\b|vega)/i, 'Radeon R5–R9, HD, RX 4xx/5xx, Vega (≤2019); plain "Radeon Graphics" APUs keep AUTO'],
+];
+const OLD_IPHONE = [[320, 568], [375, 667], [414, 736], [414, 896]];
+
+async function clientHints() {
+  const ch = typeof navigator !== 'undefined' ? navigator.userAgentData : null;
+  if (!ch?.getHighEntropyValues) return { platform: ch?.platform };
+  try {
+    const v = await Promise.race([ch.getHighEntropyValues(['model', 'platformVersion']), new Promise((_, no) => setTimeout(no, 500))]);
+    return { platform: v.platform ?? ch.platform, platformVersion: v.platformVersion, model: v.model };
+  } catch { return { platform: ch.platform }; }
+}
+export async function deviceAge() {
+  const ua = navigator.userAgent, reasons = [], h = await clientHints();
+  let android = null;
+  if (/android/i.test(h.platform ?? '') && h.platformVersion) android = parseFloat(h.platformVersion);
+  else { const m = ua.match(/Android (\d+)(?:\.\d+)*;? ?([^;)]*)/); if (m && !(m[1] === '10' && m[2] === 'K')) android = +m[1]; }
+  if (android !== null && android <= 10) reasons.push(`Android ${android}`);
+  const ios = ua.match(/(iPhone|iPad|iPod)[^)]* OS (\d+)_/);
+  if (ios && +ios[2] <= 14) reasons.push(`iOS ${ios[2]}`);
+  if (/iPhone/.test(ua) && typeof screen !== 'undefined') {
+    const w = Math.min(screen.width, screen.height), hh = Math.max(screen.width, screen.height);
+    if (OLD_IPHONE.some(([a, b]) => a === w && b === hh)) reasons.push(`iPhone screen ${w}×${hh}`);
+  }
+  const gpu = gpuRenderer(), g = OLD_GPU.find(([re]) => re.test(gpu));
+  if (g) reasons.push(`GPU: ${g[1]}`);
+  if ((navigator.deviceMemory ?? 8) <= 2) reasons.push(`${navigator.deviceMemory} GB RAM`);
+  return { old: reasons.length > 0, reasons, gpu, model: h.model || '' };
+}
+// Called once by main.jsx while the loading screen is up; store.js reads the result (autoLevel).
+let resolved = null;
+export const resolvedQuality = () => resolved;
+export async function resolveQuality() {
+  if (resolved) return resolved;
+  const base = guessLevel();
+  let age = { old: false, reasons: [] };
+  try { age = await deviceAge(); } catch { /* keep the plain guess */ }
+  const level = age.old ? (base === 'lite' ? 'lite' : 'low') : base;
+  resolved = { level, base, ...age, at: performance.now() };
+  if (typeof window !== 'undefined') window.__quality = resolved;          // test / support probe
+  console.info(`[quality] ${level} (guess ${base}${age.old ? '; pre-2021: ' + age.reasons.join(', ') : ''}) · ${age.gpu || gpuName}`);
+  return resolved;
+}

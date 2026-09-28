@@ -46,10 +46,10 @@ export class PlayerController {
     addEventListener('keyup', e => this.keys.delete(e.code));
     addEventListener('blur', () => { this.keys.clear(); this.zoomHold = 0; endStick(); });
     // Pointers (each finger tracked by pointerId, so they combine):
-    //  · touch in the left half → floating joystick (a quick tap there still walks to the spot)
-    //  · one finger elsewhere / mouse → drag to orbit (touch keeps some inertia), tap to walk
-    //  · two orbit fingers → pinch to zoom (a second finger landing right after the stick finger
-    //    turns both into a pinch, so a two-finger pinch works anywhere)
+    //  · a touch that STARTS on the fixed joystick (bottom-left) moves the child; the knob follows
+    //    the finger even off the base, until it lifts
+    //  · any other finger / mouse → drag to orbit (touch keeps some inertia), a short tap walks there
+    //  · two orbit fingers → pinch to zoom; fingers that pinched never orbit afterwards
     const pts = this.pointers = new Map();
     let pinch = null, stickId = null;
     const looks = () => [...pts.values()].filter(p => p.role === 'look');
@@ -57,6 +57,13 @@ export class PlayerController {
     const endStick = () => { const s = pts.get(stickId); if (s) s.role = 'dead'; stickId = null; this.stickRaw.x = this.stickRaw.y = 0; this.joy?.hide(); };
     this.endStick = endStick;
     const stopLook = () => { this.lookVel.yaw = this.lookVel.pitch = 0; };
+    const stickTo = p => {
+      let kx = p.x - p.cx, ky = p.y - p.cy; const l = Math.hypot(kx, ky);
+      if (l > STICK_R) { kx *= STICK_R / l; ky *= STICK_R / l; }
+      this.joy?.move(kx, ky);
+      this.stickRaw.x = kx / STICK_R; this.stickRaw.y = -ky / STICK_R;
+      if (!p.drove && l > STICK_R * DEAD) { p.drove = true; this.interrupt(); }
+    };
     this.dom.addEventListener('contextmenu', e => e.preventDefault());       // no long-press menu on the canvas
     this.dom.addEventListener('pointerdown', e => {
       const touch = e.pointerType === 'touch';
@@ -65,29 +72,20 @@ export class PlayerController {
       pts.set(e.pointerId, p);
       try { this.dom.setPointerCapture(e.pointerId); } catch { /* synthetic events */ }
       stopLook();                                                             // a new touch catches a coasting camera
-      if (touch && this.enabled && stickId === null && e.clientX < innerWidth / 2 && !looks().some(q => q !== p)) {
+      if (touch && this.enabled && stickId === null && this.joy?.hit(e.clientX, e.clientY)) {
         p.role = 'stick'; stickId = e.pointerId;
-        const c = this.joy?.show(e.clientX, e.clientY);
-        p.cx = c?.x ?? e.clientX; p.cy = c?.y ?? e.clientY;
-      } else if (touch && stickId !== null) {
-        const s = pts.get(stickId);
-        if (s && now - s.t0 < 180 && s.moved < TAP_PX) { endStick(); s.role = 'look'; }   // it was a pinch
+        const c = this.joy.circle; p.cx = c.x; p.cy = c.y;                   // deflection is measured from the base centre
+        this.joy.press(); stickTo(p);
       }
-      if (looks().length === 2) { pinch = { d0: spread(), dist0: this.dist }; for (const q of looks()) q.moved = 1e9; }   // a pinch is never a tap
+      if (looks().length === 2) { pinch = { d0: spread(), dist0: this.dist }; for (const q of looks()) { q.moved = 1e9; q.pinched = true; } }   // a pinch is never a tap
     });
     this.dom.addEventListener('pointermove', e => {
       const p = pts.get(e.pointerId); if (!p || p.role === 'dead') return;
       const dx = e.clientX - p.x, dy = e.clientY - p.y; p.x = e.clientX; p.y = e.clientY;
       p.moved = Math.max(p.moved, Math.hypot(p.x - p.x0, p.y - p.y0));
-      if (p.role === 'stick') {
-        let kx = p.x - p.x0, ky = p.y - p.y0; const l = Math.hypot(kx, ky);
-        if (l > STICK_R) { kx *= STICK_R / l; ky *= STICK_R / l; }
-        this.joy?.move(kx, ky);
-        this.stickRaw.x = kx / STICK_R; this.stickRaw.y = -ky / STICK_R;
-        if (!p.drove && l > STICK_R * DEAD) { p.drove = true; this.interrupt(); }
-        return;
-      }
+      if (p.role === 'stick') { stickTo(p); return; }
       if (pinch && looks().length >= 2) { if (this.enabled) this.dist = THREE.MathUtils.clamp(pinch.dist0 * pinch.d0 / spread(), ZOOM_MIN, ZOOM_MAX); return; }
+      if (p.pinched) return;                                                  // the finger left over from a pinch doesn't swing the camera
       if (p.moved <= (p.touch ? TAP_PX : 6) || !this.enabled) return;
       const ky = p.touch ? 0.0078 : 0.005, kp = p.touch ? 0.0055 : 0.004;   // kids' thumbs: a bit livelier on touch
       this.yaw -= dx * ky; this.pitch = THREE.MathUtils.clamp(this.pitch + dy * kp, -0.05, 1.0);
@@ -103,13 +101,14 @@ export class PlayerController {
       pts.delete(e.pointerId);
       const now = e.timeStamp;                                                 // event times, not handler times
       const tap = e.type === 'pointerup' && this.enabled && (p.touch ? now - p.t0 < TAP_MS && p.moved <= TAP_PX : p.moved <= 6);
-      if (p.role === 'stick') { endStick(); if (tap) this.tapTo(e.clientX, e.clientY); }
+      if (p.role === 'stick') endStick();                                     // a tap on the stick is not a walk-there
       else if (p.role === 'look') {
         if (tap && !pinch && !looks().length && stickId === null) this.tapTo(e.clientX, e.clientY);
         if (!p.touch || pinch || now - p.lastMove > 90) stopLook();           // only a flick coasts
       }
       if (looks().length < 2) pinch = null;
     };
+    this.joy?.hide();
     this.dom.addEventListener('pointerup', up);
     this.dom.addEventListener('pointercancel', up);
     // mouse wheel, and trackpad pinch (arrives as ctrl+wheel): exponential, so each notch

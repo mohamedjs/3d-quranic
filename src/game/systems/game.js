@@ -18,7 +18,7 @@ import { PRESETS } from './quality.js';
 import { initPWA } from '../../pwa/pwa.js';
 
 const SAVE_KEY = 'quran-journey-v1';
-const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, seenTouchHint: false, coins: [], chosen: null, unlocked: [],
+const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, seenStickHint: false, coins: [], chosen: null, unlocked: [],
   settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT, path: true } });
 function loadSave() {
   const f = fresh();
@@ -297,7 +297,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     $('title').classList.add('gone'); setTimeout(() => { $('title').hidden = true; }, 1200);
     rig.shot = null; player.yaw = player.facing + Math.PI; rig.snap(); player.enabled = true; setMode('explore');
     ui.showHud(true); ui.setPoints();
-    if (player.touch && !save.seenTouchHint) { setTimeout(() => ui.toast(S().controlsTouch, 7000), 1500); save.seenTouchHint = save.seenHint = true; persist(); }
+    if (player.touch && !save.seenStickHint) { setTimeout(() => ui.toast(S().controlsTouch, 7000), 1500); save.seenStickHint = save.seenHint = true; persist(); }
     else if (!save.seenHint) { setTimeout(() => ui.toast(S().controls, 6500), 1500); save.seenHint = true; persist(); }
     prepareVoice();
     setTimeout(() => narrate([data.narrator?.intro, nearestOpen()?.enc.narration]), 1400);

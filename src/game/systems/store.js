@@ -3,12 +3,13 @@
 // `quality` sets per-frame costs (resolution, AO, bloom, water passes…) and is what AUTO
 // adjusts from measured frame rate — so adapting never freezes the game with a rebuild.
 import { create } from 'zustand';
-import { guessLevel, PRESETS } from './quality.js';
+import { guessLevel, resolvedQuality, PRESETS } from './quality.js';
 
 // AUTO remembers when this device had to fall back to LITE (measured, not guessed), so the
 // next visit builds the light world straight away instead of building Low and rebuilding.
 const HINT = 'quran-journey-perf';
-export const autoLevel = () => { try { if (localStorage.getItem(HINT) === 'lite') return 'lite'; } catch { /* private mode */ } return guessLevel(); };
+// AUTO = the level main.jsx resolved on the loading screen (GPU guess + device age), else the plain guess
+export const autoLevel = () => { try { if (localStorage.getItem(HINT) === 'lite') return 'lite'; } catch { /* private mode */ } return resolvedQuality()?.level ?? guessLevel(); };
 export const rememberLite = on => { try { on ? localStorage.setItem(HINT, 'lite') : localStorage.removeItem(HINT); } catch { /* ignore */ } };
 
 // Start from the saved choice (same key as systems/game.js) so the world is built once at the
@@ -27,9 +28,10 @@ export const useGame = create(set => ({
   focus: null,                 // THREE.Vector3 the DoF focuses on during dialogue
   setMode: mode => set({ mode }),
   setQuality: q => set({ quality: q }),
-  // AUTO dropping to LITE also rebuilds the world light (merged props, less grass): LITE's
-  // savings are mostly in what is built, and it happens once, not back and forth
-  dropToLite: () => set(st => (st.quality === 'lite' && st.detail === 'lite' ? {} : { quality: 'lite', detail: 'lite' })),
+  // AUTO dropping to LITE mid-play switches only the per-frame costs (30 fps cap, DPR ≤ 1, baked
+  // shadow, simple water…) — never a world rebuild while the child plays. It is remembered
+  // (rememberLite), so the next launch BUILDS the light world from the start.
+  dropToLite: () => set(st => (st.quality === 'lite' ? {} : { quality: 'lite' })),
   setDprScale: k => set(st => (Math.abs(st.dprScale - k) < 0.05 ? {} : { dprScale: k })),
   setQualitySetting: s => set(st => {
     if (s === st.qualitySetting) return {};

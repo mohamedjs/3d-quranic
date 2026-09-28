@@ -53,8 +53,8 @@ public/
 
 | | |
 |---|---|
-| Walk | WASD / arrows (`Shift` runs), or tap/click the ground · touch: floating joystick in the left half |
-| Look | drag (mouse) · touch: one-finger drag in the right half (a flick coasts) |
+| Walk | WASD / arrows (`Shift` runs), or tap/click the ground · touch: the fixed joystick at the bottom-left |
+| Look | drag (mouse) · touch: one-finger drag anywhere off the joystick (a flick coasts) |
 | Walk to the story | 👣 HUD button or `F`: walks along the golden path to the next storyteller |
 | Zoom / fly up | mouse wheel · trackpad pinch · two-finger pinch · `+` / `−` · `PageDown` / `PageUp` · `Z` (in) / `Q` (out) · the ＋/－ HUD buttons (hold to keep zooming) |
 | Talk · Map · Journal · Stories | `E` · `M` · `J` · `K` |
@@ -66,17 +66,21 @@ back afterwards. The world map (`M`) zooms with the wheel / pinch / buttons, pan
 double-click zooms in, and ◎ centres on the child.
 
 **Phones and tablets.** Touch devices (`pointer: coarse` / `maxTouchPoints`; the first touch also
-switches over) get a split screen: a finger landing in the **left half** spawns a translucent
-teal-glass joystick under the thumb (gold ring + knob, 60 px travel, 12 % dead-zone, eased).
-Up is away from the camera; a small push strolls, most of the travel walks, the outer ring runs.
-It feeds the same movement path as the keys (collisions, slopes, coin pickups) and cancels any
-tap-to-walk target. The **right half** orbits the camera with one finger (yaw + limited pitch,
-with a little inertia); two fingers pinch-zoom anywhere; a short tap anywhere still walks to that
-spot. Joystick and camera fingers work at the same time (tracked per `pointerId`). All buttons
-sit on the physical right in both languages (dock bottom-right, then 👣 / ＋ / － above it, or in
-one row on landscape phones; «تحدّث» next to them), clear of the joystick, inside the
-safe-area insets. The page never scrolls, zooms or opens a long-press menu. A one-time hint
-(«اسحب يسار لتمشي · اسحب يمين لتلفّ الكاميرا») explains it.
+switches over) always show a **fixed joystick** in the bottom-left corner (128 px teal-glass base
+with a gold ring and knob, inside the safe area, dimmed to 60 % until touched; `ui/joystick.js`).
+Only a touch that **starts on it** moves the child: the knob follows the finger (even off the base,
+50 px travel, 12 % dead-zone, eased) until it lifts, and springs back. Up is away from the camera;
+a small push strolls, most of the travel walks, the outer ring runs. It feeds the same movement
+path as the keys (collisions, slopes, coin pickups) and cancels any tap-to-walk target / 👣.
+**Any other one-finger drag, left or right half, orbits the camera** (yaw + limited pitch, a flick
+coasts); two fingers pinch-zoom anywhere and never move the child — the finger left over from a
+pinch doesn't swing the camera either. A short tap off the joystick still walks to that spot.
+Joystick and camera fingers work at the same time (tracked per `pointerId`). Panels (world map,
+stories, journal) sit above the canvas, so dragging the map pans only the map. All buttons sit on
+the physical right in both languages (dock bottom-right, then 👣 / ＋ / － above it, or in one row on
+landscape phones; «تحدّث» next to them), clear of the joystick (slimmer dock on ≤ 430 px phones),
+inside the safe-area insets. The page never scrolls, zooms or opens a long-press menu. A one-time
+hint («استخدم العصا تحت لتمشي · اسحب في أي مكان لتلفّ الكاميرا») explains it.
 
 **Stories (`K`, the book-with-pin button in the dock).** A sheet lists every story in
 `encounters.json` as a card: its first painted illustration (else a gold emblem), title in both
@@ -99,13 +103,25 @@ of tries it stops with a gentle message.
 ## Quality levels
 
 Settings → Graphics quality: Auto / Lite «خفيف جدًا» / Low / Medium / High / Ultra.
-Auto starts from a device guess (`systems/quality.js`: GPU string, `deviceMemory`,
+**The level is settled on the loading screen, before anything is built** («نجهّز العالم لجهازك…»):
+`main.jsx` awaits `resolveQuality()` and only then loads the game module (and its store), so the
+world is built once, at that level (`window.__builds` lists each build; `window.__quality` the
+decision). Order of precedence: a level chosen in Settings → the remembered measured Lite →
+Auto. **Device age:** a device from before ~2021 starts on Low (Lite if the guess below already
+says Lite); 2021+ keeps the guess. "Before 2021" is any of: Android ≤ 10 (UA Client Hints
+`platformVersion`; the UA string only when it isn't Chrome's frozen "Android 10; K"), iOS ≤ 14,
+an iPhone screen only older models have (320×568, 375×667, 414×736, 414×896), a GPU from the
+`OLD_GPU` table in `quality.js` (Adreno ≤ 650, Mali-T / G31…G77, PowerVR, Apple A12-, Intel HD /
+UHD 6xx / Iris Plus, GTX 9xx–16xx / MX, Radeon R/HD/RX 4xx–5xx/Vega), or ≤ 2 GB `deviceMemory`.
+Auto's guess itself (`systems/quality.js`: GPU string, `deviceMemory`,
 `hardwareConcurrency`, phone/tablet UA; High only for clearly strong desktop GPUs):
 **Lite** for old/weak devices — ≤ 2–3 GB RAM phones, quad-core Android phones, old GPUs
 (Mali-4xx / T6xx–T8xx / G31–G57, Adreno 3xx/4xx/5xx below 530, PowerVR, Intel HD ≤ 5xxx,
 VideoCore/Vivante, software renderers). It also drops to Lite when the first seconds on the
-title / first steps measure < 25 fps (remembered in `localStorage['quran-journey-perf']` so the
-next visit builds Lite straight away), and at runtime from Low when fps stays < 28. While
+title / first steps measure < 25 fps, and at runtime from Low when fps stays < 28 — mid-play that
+switches only Lite's per-frame settings (30 fps cap, DPR ≤ 1, baked shadow, simple water…), never
+a rebuild; it is remembered in `localStorage['quran-journey-perf']` so the next launch *builds*
+Lite straight away. While
 exploring, drei's `PerformanceMonitor` first trims the resolution (down to 70 %), then steps the
 level down (or back up; Lite never climbs by itself). Phones cap the pixel ratio at 1.5.
 Menus redraw at ~12 fps, hidden tabs not at all.

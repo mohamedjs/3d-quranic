@@ -13,7 +13,7 @@ import { instanceModels } from '../world/instancing.js';
 import { mergedPlant } from '../world/envAssets.js';
 import { toonMaterial, outlineMaterial, WIND } from '../shaders/toon.js';
 import { TOON } from '../shaders/toonPalette.js';
-import { usePreset, useDetail } from '../systems/store.js';
+import { usePreset, useDetail, useGame } from '../systems/store.js';
 import { LAYER_NO_REFLECT } from '../systems/layers.js';
 import { refs } from '../systems/refs.js';
 
@@ -50,6 +50,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [], onTrees
   const chunks = useRef([]), trees = useRef([]);
 
   const group = useMemo(() => {
+    (window.__builds ??= []).push('vegetation:' + useGame.getState().detail);   // test probe: built once
     const r = rng(7), rs = rng(99), g = new THREE.Group();   // rs: shuffles only, so placement stays as before
     const add = (...o) => o.forEach(x => x && g.add(x));
     colliders.length = colliders.baseLength ??= colliders.length;   // rebuilds (quality change) replace, not append, tree colliders

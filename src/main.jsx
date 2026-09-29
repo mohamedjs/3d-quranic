@@ -1,6 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import './game/ui/style.css';
 import './game/ui/clay.css';
+import './telemetry.js';       // anonymous play statistics (visits, crashes) — background only
 import './pwa/pwa.js';          // listens for beforeinstallprompt from the first moment
 import { resolveQuality } from './game/systems/quality.js';
 

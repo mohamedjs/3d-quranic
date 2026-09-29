@@ -248,3 +248,26 @@ config), `preview.py` (turnarounds, `cast_lineup.png`, `cast_faces.png` in `blen
 Each GLB = one skinned mesh `<key>` (materials `toon_*`) + `<key>_outline` (material `outline`,
 flipped normals — render BackSide/unlit). Extra bones `lid_l`, `lid_r`, `mouth` (children of `head`)
 are scale-keyed in every clip: blinks and a talking mouth.
+
+## Play statistics (Supabase)
+
+`src/telemetry.js` sends anonymous rows to one Supabase table, `public.events` (project `rehla-ma3-alquran`,
+eu-central-1), in the background — fire-and-forget, never blocks or breaks the game, off on localhost:
+
+| kind  | when | notable columns |
+|-------|------|-----------------|
+| visit | once per app launch, a few seconds after load | visitor_id (random, kept on the device), os, browser, device, model, screen, gpu, memory_gb, cores, quality, installed, app_version, referrer |
+| crash | uncaught error / rejected promise / React error — max 5 per launch, no repeats | message, stack, extra.where / extra.mode |
+| story | a story finished | message = story id, extra.difficulty |
+
+`ip`, `country` and `user_agent` are filled by a database trigger from the request headers. The public key can
+only INSERT (RLS + grants); read the data in the Supabase dashboard, or the views `stats_daily`, `stats_devices`,
+`stats_countries`, `recent_crashes`. Every row carries `app_version` (package version + git sha, set in vite.config.js).
+
+## Hosting
+
+- **Main link: https://rehla-ma3-alquran.up.railway.app** — Railway project `rehla-ma3-alquran`, service `game`,
+  region Amsterdam (`europe-west4-drams3a`). It is connected to GitHub `mohamedjs/3d-quranic`, branch `main`:
+  every push builds (`npm ci` → `vite build`, detected by Railpack) and serves `dist/` with Caddy.
+- GitHub Pages (https://mohamedjs.github.io/3d-quranic/) still deploys from the same pushes via
+  `.github/workflows/build.yml` and stays as a mirror.

@@ -12,3 +12,10 @@ then muxed with ffmpeg. Clay style + Remix Icon, the game's own portraits/illust
 4. `python3 render.py v video 30 0 end` (and `h`), then
    `ffmpeg -framerate 30 -i frames_v/%05d.jpg -i audio/mix.wav -c:v libx264 -crf 18 -pix_fmt yuv420p -c:a aac -b:a 192k -shortest out.mp4`
 Narrator for the final cut: ElevenLabs Voice Library «Haytham – Energetic, Warm and Cheerful» (Egyptian), made on the website (free tier can't use library voices through the API).
+
+## v2 — real footage
+`clips.py` cuts four pieces from the iPhone recording (`Downloads/ad.mp4`): level picker, the walk that collects
+coins up to «فتحت القصة! 🎉» (1.4× speed), arriving at grandma Zainab's house with her own greeting, and the title
+screen. It crops the status bar and home band, inpaints the AssistiveTouch dot (OpenCV), upscales to 640 px and
+sharpens → `clips/<name>/%04d.jpg` at 30 fps. `index.html` shows them in clay phone frames (`phone()`), and the
+scene order follows the game: logo → pick a level → walk & collect → villagers → categories → Quran → play.

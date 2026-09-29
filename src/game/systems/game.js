@@ -15,6 +15,7 @@ import { createGuide } from './guide.js';
 import { createCoins } from '../world/coins.js';
 import { createAutowalk } from './autowalk.js';
 import { PRESETS } from './quality.js';
+import { trackStory } from '../../telemetry.js';
 import { initPWA } from '../../pwa/pwa.js';
 import { createProgress, gateMarker, needFor, DIFFICULTY } from './progress.js';
 
@@ -239,7 +240,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   }
 
   async function grant(enc) {
-    if (!save.done.includes(enc.id)) { save.done.push(enc.id); save.points += enc.reward.points; }
+    if (!save.done.includes(enc.id)) { save.done.push(enc.id); save.points += enc.reward.points; trackStory(enc.id, { difficulty: save.difficulty, done: save.done.length }); }
     if (save.chosen === enc.id) save.chosen = null;                // finished the pick: back to the default order
     save.category = prog.catOf(enc.id) ?? save.category;          // carry on in this story's category
     persist();

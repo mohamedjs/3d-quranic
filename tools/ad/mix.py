@@ -5,6 +5,9 @@ SFX = [('whoosh', t) for t in C['whoosh']] + [('pop', t) for t in C['pop']] + [(
 ins = []; fc = []; n = 0; vo = []; sf = []
 for f, t in VO:
     ins += ['-i', f]; fc.append(f'[{n}:a]aresample=48000,aformat=channel_layouts=stereo,adelay={int(t*1000)}|{int(t*1000)}[v{n}]'); vo.append(f'[v{n}]'); n += 1
+for c in T.get('clips', []):
+    ins += ['-i', c['file']]; a = c['at']
+    fc.append(f"[{n}:a]atrim={c['from']}:{c['to']},asetpts=PTS-STARTPTS,aresample=48000,aformat=channel_layouts=stereo,afade=t=in:d=0.12,afade=t=out:st={c['to']-c['from']-0.35}:d=0.35,volume=1.6,adelay={int(a*1000)}|{int(a*1000)}[v{n}]"); vo.append(f'[v{n}]'); n += 1
 for name, t in SFX:
     ins += ['-i', f'/tmp/ad/audio/{name}.wav']; g = {'whoosh': 0.6, 'pop': 0.45, 'chime': 0.35}[name]
     fc.append(f'[{n}:a]aresample=48000,aformat=channel_layouts=stereo,volume={g},adelay={int(max(0,t)*1000)}|{int(max(0,t)*1000)}[s{n}]'); sf.append(f'[s{n}]'); n += 1

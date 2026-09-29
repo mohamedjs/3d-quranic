@@ -6,6 +6,7 @@ import * as THREE from 'three';
 import { World } from '../world/World.jsx';
 import { useGame, usePreset, rememberLite } from '../systems/store.js';
 import { LEVELS, PRESETS, isMobile, liteDpr } from '../systems/quality.js';
+import { reportCrash } from '../../telemetry.js';
 
 function step(dir, fps = 0) {
   const { qualitySetting, quality, setQuality, mode } = useGame.getState();
@@ -32,7 +33,7 @@ export function showError(msg) {
 class Boundary extends Component {
   state = { failed: false };
   static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch(e) { console.error(e); showError(e?.message || String(e)); }
+  componentDidCatch(e) { console.error(e); reportCrash(e, 'react'); showError(e?.message || String(e)); }
   render() { return this.state.failed ? null : this.props.children; }
 }
 addEventListener('error', e => { if (document.getElementById('loading')?.hidden === false) showError(e.message); });

@@ -21,10 +21,17 @@ import { createProgress, gateMarker, needFor, DIFFICULTY } from './progress.js';
 const SAVE_KEY = 'quran-journey-v1';
 const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, seenStickHint: false, coins: [], chosen: null, unlocked: [],
   difficulty: 'easy', opened: [], category: null,
-  settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT, path: true } });
+  settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'lite', zoom: ZOOM_DEFAULT, path: true } });
 function loadSave() {
   const f = fresh();
-  try { const s = JSON.parse(localStorage.getItem(SAVE_KEY)); if (s) return { ...f, ...s, settings: { ...f.settings, ...s.settings } }; } catch { /* private mode */ }
+  try {
+    const s = JSON.parse(localStorage.getItem(SAVE_KEY));
+    if (s) {
+      const r = { ...f, ...s, settings: { ...f.settings, ...s.settings } };
+      if (r.settings.quality === 'auto' && !r.settings.autoPicked) r.settings.quality = 'lite';   // the game now starts on Lite; AUTO only when picked
+      return r;
+    }
+  } catch { /* private mode */ }
   return f;
 }
 const $ = id => document.getElementById(id);
@@ -388,7 +395,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   };
   rig.shot = titleShot(); rig.snap();
   setMode('title');
-  initPWA({ S, toast: (text, ms) => ui.toast(text, ms) });   // offline cache, update toast, install button
+  initPWA({ S, toast: (text, ms) => ui.toast(text, ms), busy: () => mode !== 'title' && mode !== 'explore' });   // offline cache, update toast, install button
 
   // ---- per frame --------------------------------------------------------------------------------
   const v3 = new THREE.Vector3();

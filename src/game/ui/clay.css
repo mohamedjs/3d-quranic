@@ -208,3 +208,24 @@ html[dir="rtl"] .settings input[type=checkbox]:checked::before { transform: tran
 
 /* story illustration: a clay frame instead of the thin gold line */
 #scene { border: 0; border-radius: 30px; box-shadow: 0 0 0 7px var(--c-bg), 0 0 0 8px rgba(176, 116, 48, .25), 0 22px 44px -12px rgba(60, 35, 8, .6); }
+
+/* ---- install popup (src/pwa/pwa.js) + Settings row ------------------------------------------------ */
+#install-pop { position: fixed; z-index: 30; left: 50%; bottom: calc(var(--sa-b) + 20px); width: min(460px, calc(100vw - 24px)); display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 12px 14px;
+  padding: 18px 18px 18px 18px; border-radius: 30px; background: var(--c-bg); color: var(--c-ink); box-shadow: var(--clay), 0 20px 50px -10px rgba(40, 24, 8, .55);
+  transform: translate(-50%, 30px) scale(.94); opacity: 0; transition: transform .35s cubic-bezier(.3, 1.5, .5, 1), opacity .25s; font-family: var(--ui); }
+#install-pop.show { transform: translate(-50%, 0) scale(1); opacity: 1; }
+#install-pop .app { width: 64px; height: 64px; border-radius: 18px; box-shadow: var(--clay-color); }
+#install-pop .tx b { display: block; font-size: 17px; font-weight: 800; line-height: 1.35; padding-inline-end: 34px; }
+#install-pop .tx small { display: block; margin-top: 3px; font-size: 13.5px; line-height: 1.5; color: var(--c-dim); font-weight: 600; }
+#install-pop .go { grid-column: 1 / -1; display: flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 20px; border-radius: 999px; background: var(--c-teal); color: #fff; font-weight: 800; font-size: 17px; box-shadow: var(--clay-color); }
+#install-pop .go .ic { width: 22px; height: 22px; }
+#install-pop .go:active { transform: scale(.97); }
+#install-pop .x { position: absolute; top: 12px; inset-inline-end: 12px; width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: var(--c-dim); background: var(--c-bg2); box-shadow: var(--clay-sm); font-size: 16px; }
+#install-pop .x:active { box-shadow: var(--clay-well); }
+body.touch #install-pop { bottom: auto; top: calc(var(--sa-t) + 12px); transform: translate(-50%, -30px) scale(.94); }
+body.touch #install-pop.show { transform: translate(-50%, 0) scale(1); }
+.settings .inst { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 8px 12px; padding: 12px 14px; border-radius: 22px; background: var(--c-tile); box-shadow: var(--clay-sm); font-weight: 700; color: var(--c-ink); }
+.settings .inst-go { padding: 10px 18px; border-radius: 999px; background: var(--c-teal); color: #fff; font-weight: 800; box-shadow: var(--clay-color); white-space: nowrap; }
+
+/* the longer name «رحلة مع القرآن» stays on one line on phones */
+@media (max-width: 700px) { #title h1 { white-space: nowrap; font-size: clamp(38px, 12vw, 72px); } }

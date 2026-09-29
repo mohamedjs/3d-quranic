@@ -1,4 +1,4 @@
-# Quran Journey — رحلة القرآن
+# Quran Journey — رحلة مع القرآن
 
 A 3D exploration game for children: walk a golden-hour farming valley, meet villagers,
 hear a Quran story, then listen to the verses in an authentic recitation.
@@ -190,7 +190,7 @@ Google Fonts load without blocking the first paint.
 
 The build is an installable Progressive Web App that works without internet:
 
-- `public/manifest.webmanifest` — «رحلة القرآن», `lang: ar`, `dir: rtl`, fullscreen, any
+- `public/manifest.webmanifest` — «رحلة مع القرآن», `lang: ar`, `dir: rtl`, fullscreen, any
   orientation, teal `#0f2a33` theme; icons in `public/icons/` (192/512, maskable, apple-touch)
   made from the title emblem by `python3 tools/make_icons.py` (headless Chromium via Playwright
   if installed, else ImageMagick). `start_url`/`scope` are `./`, so the same `dist/` works at

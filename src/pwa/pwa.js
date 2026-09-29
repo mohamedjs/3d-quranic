@@ -10,7 +10,7 @@ const supported = typeof navigator !== 'undefined' && 'serviceWorker' in navigat
 let deferredInstall = null, onInstallable = null;
 if (typeof window !== 'undefined') {
   addEventListener('beforeinstallprompt', e => { e.preventDefault(); deferredInstall = e; onInstallable?.(); });
-  addEventListener('appinstalled', () => { deferredInstall = null; const b = $('btn-install'); if (b) b.hidden = true; });
+  addEventListener('appinstalled', () => { deferredInstall = null; pwa.onInstallChange?.(); });
 }
 const isIOS = () => /iphone|ipad|ipod/i.test(navigator.userAgent) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(navigator.userAgent));
 const isSafari = () => /safari/i.test(navigator.userAgent) && !/crios|fxios|edgios|opios|chrome|android/i.test(navigator.userAgent);
@@ -18,26 +18,59 @@ export const isStandalone = () => matchMedia('(display-mode: standalone), (displ
 
 export const pwa = { registration: null, version: null, ready: false, supported };
 
-// S(): the current language's strings · toast(text, ms)
-export function initPWA({ S, toast, delay = 2500 }) {
+// S(): the current language's strings · toast(text, ms) · busy(): true while a story / verse / sheet
+// is on screen (the install popup waits for a calm moment)
+const DISMISS_KEY = 'quran-journey-install-dismissed';
+export const canInstall = () => !isStandalone() && (!!deferredInstall || (isIOS() && isSafari()));
+// ask the browser to install (Android / desktop Chrome, Edge…); iOS Safari has no prompt → false
+export async function installApp() {
+  if (!deferredInstall) return false;
+  const e = deferredInstall; deferredInstall = null;
+  e.prompt(); const { outcome } = await e.userChoice.catch(() => ({}));
+  pwa.onInstallChange?.();
+  return outcome === 'accepted';
+}
+export function initPWA({ S, toast, busy = () => false, delay = 2500 }) {
   // ---- install ---------------------------------------------------------------------------
   const btn = $('btn-install');
-  const showInstall = () => {
-    if (!btn || isStandalone()) return;
-    btn.textContent = S().install; btn.hidden = false;
+  const refresh = () => {
+    if (btn) { btn.hidden = !canInstall(); if (!btn.hidden) btn.textContent = S().install; }
+    if (!canInstall()) closePopup();
   };
-  if (btn) {
-    btn.onclick = async () => {
-      if (deferredInstall) {
-        const e = deferredInstall; deferredInstall = null;
-        e.prompt(); const { outcome } = await e.userChoice.catch(() => ({}));
-        if (outcome === 'accepted') btn.hidden = true;
-      } else if (isIOS()) toast(S().iosHint, 9000);
-    };
-    onInstallable = showInstall;
-    if (deferredInstall) showInstall();
-    else if (isIOS() && isSafari() && !isStandalone()) showInstall();        // iOS: a short hint instead of a prompt
+  pwa.onInstallChange = refresh;
+  if (btn) btn.onclick = async () => { if (!(await installApp()) && isIOS()) toast(S().iosHint, 9000); refresh(); };
+
+  // the install popup: once the game is ready for offline play (service worker active) and the
+  // browser offers installing, at a calm moment (title screen or walking). Install, or ✕ to
+  // close it — then it stays away for a week; Settings always has «Install the game».
+  let pop = null;
+  function closePopup(remember = false) {
+    if (remember) try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch { /* ignore */ }
+    if (!pop) return; const el = pop; pop = null; el.classList.remove('show'); setTimeout(() => el.remove(), 300);
   }
+  function openPopup() {
+    if (pop || !canInstall()) return;
+    const ios = !deferredInstall;
+    pop = document.createElement('div'); pop.id = 'install-pop'; pop.setAttribute('role', 'dialog');
+    pop.innerHTML = `<button type="button" class="x" aria-label="${S().close}"><svg class="ic" aria-hidden="true"><use href="#i-close"/></svg></button>
+      <img class="app" src="icons/icon-192.png" alt="">
+      <div class="tx"><b>${S().installTitle}</b><small>${ios ? S().iosHint : S().installText}</small></div>
+      ${ios ? '' : `<button type="button" class="go"><svg class="ic" aria-hidden="true"><use href="#i-download"/></svg>${S().installNow}</button>`}`;
+    document.body.append(pop); requestAnimationFrame(() => pop?.classList.add('show'));
+    pop.querySelector('.x').onclick = () => closePopup(true);
+    const go = pop.querySelector('.go');
+    if (go) go.onclick = async () => { const ok = await installApp(); closePopup(!ok); refresh(); };
+  }
+  const recentlyDismissed = () => { try { return Date.now() - +(localStorage.getItem(DISMISS_KEY) || 0) < 7 * 864e5; } catch { return false; } };
+  const offerTimer = setInterval(() => {
+    if (!canInstall() || isStandalone()) return;
+    if (recentlyDismissed()) return clearInterval(offerTimer);
+    if (supported && !pwa.ready) return;                     // wait until it really works offline
+    if (busy()) return;
+    clearInterval(offerTimer); openPopup();
+  }, 2000);
+  onInstallable = refresh;
+  refresh();
   pwa.relabel = () => { if (btn && !btn.hidden) btn.textContent = S().install; const u = $('update'); if (u && !u.hidden) u.textContent = S().updateReady; };
 
   // ---- service worker ----------------------------------------------------------------------

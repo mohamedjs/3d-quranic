@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "رحلة القرآن",
-  "short_name": "رحلة القرآن",
-  "description": "Quran Journey — a peaceful 3D village where children discover Quran stories and listen to authentic recitation. رحلة القرآن: لعبة ثلاثية الأبعاد يكتشف فيها الأطفال قصص القرآن.",
+  "name": "رحلة مع القرآن",
+  "short_name": "رحلة مع القرآن",
+  "description": "Quran Journey — a peaceful 3D village where children discover Quran stories and listen to authentic recitation. رحلة مع القرآن: لعبة ثلاثية الأبعاد يكتشف فيها الأطفال قصص القرآن.",
   "lang": "ar",
   "dir": "rtl",
   "start_url": "./",

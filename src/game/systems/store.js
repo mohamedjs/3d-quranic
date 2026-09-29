@@ -15,13 +15,17 @@ export const rememberLite = on => { try { on ? localStorage.setItem(HINT, 'lite'
 // Start from the saved choice (same key as systems/game.js) so the world is built once at the
 // right level instead of being built at the guess and rebuilt when the save is applied.
 const savedQuality = (() => {
-  try { const q = JSON.parse(localStorage.getItem('quran-journey-v1'))?.settings?.quality; return PRESETS[q] || q === 'auto' ? q : null; } catch { return null; }
+  try {
+    const st = JSON.parse(localStorage.getItem('quran-journey-v1'))?.settings, q = st?.quality;
+    if (q === 'auto' && !st.autoPicked) return 'lite';          // the game starts on Lite; AUTO only when the player picked it
+    return PRESETS[q] || q === 'auto' ? q : null;
+  } catch { return null; }
 })();
-const startLevel = savedQuality && savedQuality !== 'auto' ? savedQuality : autoLevel();
+const startLevel = !savedQuality ? 'lite' : savedQuality !== 'auto' ? savedQuality : autoLevel();   // first visit: Lite — the player raises it in Settings
 
 export const useGame = create(set => ({
   mode: 'loading',             // loading | title | explore | dialogue | quran | panel
-  qualitySetting: savedQuality ?? 'auto',   // auto | lite | low | medium | high | ultra
+  qualitySetting: savedQuality ?? 'lite',   // auto | lite | low | medium | high | ultra
   quality: startLevel,
   detail: startLevel,
   dprScale: 1,                 // adaptive resolution (PerformanceMonitor factor), applied on top of the preset

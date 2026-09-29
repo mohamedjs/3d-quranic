@@ -2,7 +2,7 @@
 import { toMap, HALF, SIZE } from '../terrain/heightfield.js';
 import { QuranService } from '../systems/quran.js';
 import { PAINTED, illustrationURL } from './scenes.js';
-import { pwa, downloadAllStories } from '../../pwa/pwa.js';
+import { pwa, downloadAllStories, canInstall, installApp, isStandalone } from '../../pwa/pwa.js';
 import { categoryIcon, DIFF_KEYS } from '../systems/progress.js';
 
 // ---- UI kit assets (public/ui) -------------------------------------------------------------
@@ -39,7 +39,7 @@ const REGIONS = {
 
 export const STR = {
   ar: {
-    title: 'رحلة القرآن', alt: 'Quran Journey', tagline: 'استكشف · استمع · تعلّم · انمُ', tagline2: 'Explore · Listen · Learn · Grow', cont: 'متابعة الرحلة', newGame: 'رحلة جديدة', settings: 'الإعدادات',
+    title: 'رحلة مع القرآن', alt: 'Quran Journey', tagline: 'استكشف · استمع · تعلّم · انمُ', tagline2: 'Explore · Listen · Learn · Grow', cont: 'متابعة الرحلة', newGame: 'رحلة جديدة', settings: 'الإعدادات',
     talk: 'تحدّث', journal: 'دفتر المعرفة', map: 'خريطة العالم', mapSub: 'اكتشف المزيد من قصص القرآن', unlocked: 'فتحتَ كنزًا من المعرفة!', unlockedAlt: 'Knowledge Unlocked', lesson: 'ماذا نتعلّم؟', here: 'أنت هنا',
     points: 'نقطة معرفة', continue: 'متابعة', nextStory: 'قصة جديدة متاحة', discovered: 'مكان جديد', explore: 'استكشف العالم',
     exploreSub: 'قصص جديدة قريبًا إن شاء الله', soon: 'قريبًا', empty: 'لم تفتح أي قصة بعد. تجوّل وتحدّث مع أهل القرية!',
@@ -50,7 +50,7 @@ export const STR = {
     audioErr: 'تعذّر تشغيل التلاوة.', tapToPlay: 'اضغط «إعادة المحاولة» لتشغيل التلاوة.', retry: 'إعادة المحاولة', skip: 'تخطٍّ', reciting: 'القارئ',
     verse: 'الآية', of: 'من', tafsir: 'التفسير الميسّر', translation: 'Saheeh International', sources: 'المصادر', building: 'نبني العالم…', you: 'أنت',
     voiceDl: 'نجهّز صوت الشخصيات العربي لأول مرة', voiceReady: 'صوت الشخصيات جاهز', voiceFail: 'تعذّر تحميل الصوت العربي — سيظهر الكلام مكتوبًا.', quality: 'جودة الرسوم', qAuto: 'تلقائي', qLite: 'خفيف جدًا · Lite',
-    install: 'ثبّت اللعبة', iosHint: 'لتثبيت اللعبة: اضغط زر المشاركة ⬆︎ في Safari ثم «إضافة إلى الشاشة الرئيسية».', updateReady: 'تحديث جديد متاح — اضغط للتحديث', offlineReady: 'اللعبة جاهزة للّعب بدون إنترنت',
+    install: 'ثبّت اللعبة', installTitle: 'ثبّت «رحلة مع القرآن» على جهازك', installText: 'تفتحها بلمسة من الشاشة الرئيسية، وتلعبها من غير إنترنت.', installNow: 'ثبّت الآن', installed: 'اللعبة متثبّتة على جهازك ✓', installRow: 'تثبيت اللعبة', iosHint: 'لتثبيت اللعبة: اضغط زر المشاركة ⬆︎ في Safari ثم «إضافة إلى الشاشة الرئيسية».', updateReady: 'تحديث جديد متاح — اضغط للتحديث', offlineReady: 'اللعبة جاهزة للّعب بدون إنترنت',
     dlAll: 'تنزيل كل القصص للّعب بدون إنترنت', dlBusy: 'جارٍ التنزيل…', dlDone: 'تم! كل القصص تعمل الآن بدون إنترنت', dlSome: 'تعذّر تنزيل بعض الملفات — حاول مرة أخرى وأنت متصل', dlNeedNet: 'تحتاج اتصالًا بالإنترنت للتنزيل', dlHint: 'الآيات والتلاوات من Quran.com لكل القصص (بضعة ميغابايت)',
     offlineVerse: 'هذه الآيات تحتاج اتصالًا بالإنترنت أول مرة. سنكمل القصة الآن، ويمكنك الاستماع إليها لاحقًا من دفتر المعرفة.', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.', showPath: 'إظهار الطريق إلى القصة التالية', combo: 'رائع!',
     walk: 'امشِ إلى القصة', stories: 'القصص', storiesSub: 'اختر القصة التي تريد أن تذهب إليها — أي قصة تحبّ!', stDone: 'أنهيتها', stOpen: 'متاحة', stLocked: 'لم تُفتح بعد', stCurrent: 'وجهتك الآن', headingTo: 'وجهتك', surah: 'سورة', meters: 'م', mapPick: 'اضغط على علامة قصة لتذهب إليها', walkStuck: 'تعذّر إكمال الطريق — امشِ قليلًا ثم جرّب مرة أخرى', controlsTouch: 'استخدم العصا تحت لتمشي · اسحب في أي مكان لتلفّ الكاميرا · 👣 يمشي بك إلى القصة',
@@ -61,7 +61,7 @@ export const STR = {
     stGated: 'اجمع العملات', stChain: 'بعد القصة السابقة', catEmpty: 'قصص هذا القسم قريبًا إن شاء الله', coinsWord: 'عملة',
   },
   en: {
-    title: 'Quran Journey', alt: 'رحلة القرآن', tagline: 'Explore · Listen · Learn · Grow', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Continue', newGame: 'New Journey', settings: 'Settings',
+    title: 'Quran Journey', alt: 'رحلة مع القرآن', tagline: 'Explore · Listen · Learn · Grow', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Continue', newGame: 'New Journey', settings: 'Settings',
     talk: 'Talk', journal: 'Knowledge Book', map: 'Explore the World', mapSub: 'Discover more Quranic stories', unlocked: 'Knowledge Unlocked!', unlockedAlt: 'فتحتَ كنزًا من المعرفة', lesson: 'What do we learn?', here: 'You are here',
     points: 'Knowledge Points', continue: 'Continue', nextStory: 'Next story available', discovered: 'Discovered', explore: 'Explore the world',
     exploreSub: 'More stories coming soon, in sha Allah', soon: 'Coming soon', empty: 'No stories unlocked yet. Walk around and talk to the villagers!',
@@ -72,7 +72,7 @@ export const STR = {
     audioErr: 'The recitation could not be played.', tapToPlay: 'Press “Try again” to start the recitation.', retry: 'Try again', skip: 'Skip', reciting: 'Reciting',
     verse: 'Verse', of: 'of', tafsir: 'Tafsir al-Muyassar', translation: 'Saheeh International', sources: 'Sources', building: 'Building the world…', you: 'You',
     voiceDl: 'Preparing the Arabic character voice (first time only)', voiceReady: 'Character voice ready', voiceFail: 'Could not load the Arabic voice — lines will show as text.', quality: 'Graphics quality', qAuto: 'Auto', qLite: 'Lite · خفيف جدًا',
-    install: 'Install the game', iosHint: 'To install: tap the Share button ⬆︎ in Safari, then “Add to Home Screen”.', updateReady: 'A new version is ready — tap to update', offlineReady: 'The game is ready to play offline',
+    install: 'Install the game', installTitle: 'Install Quran Journey on your device', installText: 'Open it with one tap from your home screen and play without internet.', installNow: 'Install now', installed: 'The game is installed on this device ✓', installRow: 'Install the game', iosHint: 'To install: tap the Share button ⬆︎ in Safari, then “Add to Home Screen”.', updateReady: 'A new version is ready — tap to update', offlineReady: 'The game is ready to play offline',
     dlAll: 'Download all stories for offline play', dlBusy: 'Downloading…', dlDone: 'Done! Every story now works offline', dlSome: 'Some files could not be downloaded — try again while online', dlNeedNet: 'You need the internet to download', dlHint: 'Verses and recitations from Quran.com for every story (a few MB)',
     offlineVerse: 'These verses need the internet the first time. The story continues now — you can listen to them later from the Journal.', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.', showPath: 'Show the path to the next story', combo: 'Great!',
     walk: 'Walk to the story', stories: 'Stories', storiesSub: 'Choose the story you want to go to — any one you like!', stDone: 'Done', stOpen: 'Open', stLocked: 'Not yet', stCurrent: 'Heading here', headingTo: 'Heading to', surah: 'Surah', meters: 'm', mapPick: 'Tap a story marker to go there', walkStuck: 'Couldn’t finish the walk — move a little and try again', controlsTouch: 'Use the stick at the bottom to walk · drag anywhere to turn the camera · 👣 walks you to the story',
@@ -474,6 +474,7 @@ export class UI {
       <label class="row">${si('route', 'gold')}<span class="lb">${esc(S.showPath)}</span><input type="checkbox" name="path"></label>
       <label>${si('volume', 'coral')}<span class="lb">${esc(S.volume)}</span><input type="range" name="volume" min="0" max="1" step="0.05"></label>
       <label class="row">${si('music', 'violet')}<span class="lb">${esc(S.music)}</span><input type="checkbox" name="music"></label>
+      ${isStandalone() ? `<div class="inst">${si('check', 'green')}<span class="lb">${esc(S.installed)}</span></div>` : canInstall() ? `<div class="inst">${si('download', 'teal')}<span class="lb">${esc(S.installRow)}</span><button type="button" class="inst-go">${esc(S.installNow)}</button></div>` : ''}
       ${pwa.supported ? `<div class="offline-dl"><button type="button" class="dl">${icon('download')}${esc(S.dlAll)}</button><small>${esc(S.dlHint)}</small><div class="dl-bar" hidden><i></i></div><small class="dl-status" aria-live="polite"></small></div>` : ''}
       <button type="button" class="danger">${icon('refresh')}${esc(S.reset)}</button>`;
     f.difficulty.value = this.save.difficulty ?? 'easy';
@@ -483,10 +484,12 @@ export class UI {
       f.reciter.value = st.reciter;
     }).catch(e => { f.reciter.innerHTML = `<option value="${st.reciter}">${esc(e.message)}</option>`; });
     f.onchange = () => {
-      Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, auto: f.auto.checked, path: f.path.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value });
+      Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, auto: f.auto.checked, path: f.path.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value, autoPicked: f.quality.value === 'auto' });
       this.save.difficulty = f.difficulty.value;
       this.persist(); this.onSettings();
     };
+    const ig = f.querySelector('.inst-go');
+    if (ig) ig.onclick = async () => { if (!(await installApp()) && /iphone|ipad|ipod|macintosh/i.test(navigator.userAgent) && navigator.maxTouchPoints > 0) this.toast(S.iosHint, 9000); if (!canInstall()) ig.closest('.inst').remove(); };
     f.querySelector('.danger').onclick = () => { if (confirm(S.resetQ)) onReset(); };
     const dl = f.querySelector('.dl');
     if (dl) dl.onclick = async () => {

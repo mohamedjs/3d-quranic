@@ -121,9 +121,30 @@ function GameSystem({ world, data }) {
   useEffect(() => {
     game.current = createGame({ camera, mapCanvas: world.terrain.mapCanvas, data, scene, colliders: world.colliders });
     if (window.__game) { window.__game.renderer = gl; window.__game.scene = scene; window.__game.store = useGame; }   // debug/perf probes (renderer.info)
-    const l = document.getElementById('loading');
-    l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);
+    // Keep the loading screen up until the world is really ready: every shader compiled and
+    // the first frames drawn and settled — so the title screen never stutters or freezes.
+    let alive = true;
+    (async () => {
+      const l = document.getElementById('loading'), msg = l?.querySelector('p');
+      if (msg) msg.textContent = 'نجهّز كل حاجة… · Getting everything ready…';
+      try { await (gl.compileAsync ? gl.compileAsync(scene, camera) : gl.compile(scene, camera)); } catch (e) { console.warn('[warm-up] compile', e); }
+      const t0 = performance.now();
+      await new Promise(done => {
+        const check = () => {
+          if (!alive) return done();
+          const f = frames.current, recent = f.dts.slice(-10), avg = recent.reduce((a, b) => a + b, 0) / Math.max(1, recent.length);
+          // 30+ frames drawn and the last ten smooth (< 70 ms), or give up waiting after 12 s
+          if ((f.n >= 30 && recent.length === 10 && avg < 0.07) || performance.now() - t0 > 12000) return done();
+          requestAnimationFrame(check);
+        };
+        check();
+      });
+      if (window.__game) window.__game.warmup = +(performance.now() - t0).toFixed(0);
+      l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);
+    })();
+    return () => { alive = false; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-  useFrame((_, dt) => game.current?.tick(dt));
+  const frames = useRef({ n: 0, dts: [] });
+  useFrame((_, dt) => { const f = frames.current; f.n++; f.dts.push(dt); if (f.dts.length > 20) f.dts.shift(); game.current?.tick(dt); });
   return null;
 }

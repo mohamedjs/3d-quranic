@@ -16,6 +16,7 @@ export const spritesReady = typeof document === 'undefined' ? Promise.resolve() 
 });
 if (typeof document !== 'undefined') document.documentElement.style.setProperty('--title-img', `url("${asset('illustrations/title.webp')}")`);
 export const icon = (name, cls = 'ic') => `<svg class="${cls}" aria-hidden="true"><use href="#i-${name}"/></svg>`;
+const si = (name, tone) => `<span class="si ${tone}">${icon(name)}</span>`;   // settings row badge
 // Speaker portrait for the dialogue name tag: by character id, else guessed from the look.
 const PORTRAITS = ['grandma', 'farmer', 'player'];
 export function portrait(id, who) {
@@ -463,18 +464,18 @@ export class UI {
   settings(onReset) {
     const S = this.S, st = this.save.settings, f = document.createElement('form'); f.className = 'settings';
     f.innerHTML = `
-      <label>${esc(S.lang)}<select name="lang"><option value="ar">العربية</option><option value="en">English</option></select></label>
-      <label>${esc(S.reciter)}<select name="reciter"><option value="${st.reciter}">…</option></select></label>
-      <label>${esc(S.difficulty)}<select name="difficulty">${DIFF_KEYS.map(d => `<option value="${d}">${esc(S[d])} · ${esc(S[d + 'Sub'])}</option>`).join('')}</select><small class="note">${esc(S.diffNote)}</small></label>
-      <label>${esc(S.quality)}<select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="lite">${esc(S.qLite)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>
-      <label class="row"><input type="checkbox" name="voice"> ${esc(S.voice)}</label>
-      <label class="row"><input type="checkbox" name="meaning"> ${esc(S.meaning)}</label>
-      <label class="row"><input type="checkbox" name="auto"> ${esc(S.auto)}</label>
-      <label class="row"><input type="checkbox" name="path"> ${esc(S.showPath)}</label>
-      <label>${esc(S.volume)}<input type="range" name="volume" min="0" max="1" step="0.05"></label>
-      <label class="row"><input type="checkbox" name="music"> ${esc(S.music)}</label>
-      ${pwa.supported ? `<div class="offline-dl"><button type="button" class="dl">${icon('stories')}${esc(S.dlAll)}</button><small>${esc(S.dlHint)}</small><div class="dl-bar" hidden><i></i></div><small class="dl-status" aria-live="polite"></small></div>` : ''}
-      <button type="button" class="danger">${esc(S.reset)}</button>`;
+      <label>${si('translate', 'sky')}<span class="lb">${esc(S.lang)}</span><select name="lang"><option value="ar">العربية</option><option value="en">English</option></select></label>
+      <label>${si('mic', 'teal')}<span class="lb">${esc(S.reciter)}</span><select name="reciter"><option value="${st.reciter}">…</option></select></label>
+      <label>${si('medal', 'gold')}<span class="lb">${esc(S.difficulty)}</span><select name="difficulty">${DIFF_KEYS.map(d => `<option value="${d}">${esc(S[d])} · ${esc(S[d + 'Sub'])}</option>`).join('')}</select><small class="note">${esc(S.diffNote)}</small></label>
+      <label>${si('quality', 'violet')}<span class="lb">${esc(S.quality)}</span><select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="lite">${esc(S.qLite)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>
+      <label class="row">${si('voice', 'teal')}<span class="lb">${esc(S.voice)}</span><input type="checkbox" name="voice"></label>
+      <label class="row">${si('text', 'green')}<span class="lb">${esc(S.meaning)}</span><input type="checkbox" name="meaning"></label>
+      <label class="row">${si('auto', 'sky')}<span class="lb">${esc(S.auto)}</span><input type="checkbox" name="auto"></label>
+      <label class="row">${si('route', 'gold')}<span class="lb">${esc(S.showPath)}</span><input type="checkbox" name="path"></label>
+      <label>${si('volume', 'coral')}<span class="lb">${esc(S.volume)}</span><input type="range" name="volume" min="0" max="1" step="0.05"></label>
+      <label class="row">${si('music', 'violet')}<span class="lb">${esc(S.music)}</span><input type="checkbox" name="music"></label>
+      ${pwa.supported ? `<div class="offline-dl"><button type="button" class="dl">${icon('download')}${esc(S.dlAll)}</button><small>${esc(S.dlHint)}</small><div class="dl-bar" hidden><i></i></div><small class="dl-status" aria-live="polite"></small></div>` : ''}
+      <button type="button" class="danger">${icon('refresh')}${esc(S.reset)}</button>`;
     f.difficulty.value = this.save.difficulty ?? 'easy';
     f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.auto.checked = st.auto !== false; f.path.checked = st.path !== false; f.volume.value = st.volume; f.music.checked = st.music;
     QuranService.getReciters().then(rs => {

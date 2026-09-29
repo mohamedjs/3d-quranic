@@ -421,14 +421,15 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
         if (n.greeted === 0 && n.state === 'open') n.greeted = now;
         if (n.greeted && now - n.greeted < 1.4) n.rig.wave(now);
         bubble = { n, text: n.state === 'gated' ? gateLine(n) : t(n.state === 'open' ? n.enc.greeting : n.state === 'done' ? n.enc.after : n.enc.locked) };
-        if (d < (n.enc.stage?.talkRadius ?? 3.4) && avail(n)) nearNpc = n;
+        if (d < (n.enc.stage?.talkRadius ?? 3.4) && n.state === 'open') nearNpc = n;   // a story still waiting for coins shows no talk button
       } else if (d > 16) n.greeted = 0;
     }
     if (mode === 'title') rig.shot = titleShot();
     const preset = PRESETS[useGame.getState().quality], explore = mode === 'explore';
     if (explore && target && !avail(target)) updateObjective();
-    // a story still waiting for coins: the golden trail leads to its nearest coin, then on to the next
-    goal = explore && target?.state === 'gated' ? coins.nextCoin(target.enc.id, player.pos.x, player.pos.z, goal?.key) : null;
+    // the golden trail always leads to the target storyteller's house, open or still waiting for
+    // coins — it never turns off to chase coins; the child gathers them on their own
+    goal = null;
     guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines, goal });
     auto.update(dt, { explore });
     ui.walkButton(explore && !!guide.route && !!guide.target, auto.active);

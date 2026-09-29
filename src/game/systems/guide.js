@@ -295,7 +295,7 @@ export function createGuide({ scene, colliders }) {
           const t = pendingTarget, g = pendingGoal; pendingTarget = null; pendingGoal = null;
           if (cells.length === 1 && pendingEnd) cells.push(cells[0]);   // the coin is in the child's own cell: a straight step to it
           if (cells.length > 1) { route = buildRoute(grid, cells, pendingFrom[0], pendingFrom[1], cells.reached ? pendingEnd : null); route.reached = cells.reached; routeTarget = t; routeGoal = g; prog = 0; stray = 0; version++; }
-          else if (t !== routeTarget || g !== routeGoal) { route = null; routeTarget = t; routeGoal = g; version++; }
+          else if (t !== routeTarget || g !== routeGoal) { if (t !== routeTarget) { route = null; version++; } routeTarget = t; routeGoal = g; }   // same house: keep the old trail rather than blink out
         }
       }
       track(px, pz);

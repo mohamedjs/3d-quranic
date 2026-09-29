@@ -6,7 +6,7 @@ import { markers } from '../npc/NPC.jsx';
 import { Sound, Voice } from './audio.js';
 import { primeAudio, playRecitation } from './recitation.js';
 import { DEFAULT_RECITER } from './quran.js';
-import { UI, STR, MEDAL } from '../ui/ui.js';
+import { UI, STR, MEDAL, arDigits } from '../ui/ui.js';
 import { useGame } from './store.js';
 import { refs } from './refs.js';
 import { wind } from '../shaders/wind.js';
@@ -16,9 +16,11 @@ import { createCoins } from '../world/coins.js';
 import { createAutowalk } from './autowalk.js';
 import { PRESETS } from './quality.js';
 import { initPWA } from '../../pwa/pwa.js';
+import { createProgress, gateMarker, needFor, DIFFICULTY } from './progress.js';
 
 const SAVE_KEY = 'quran-journey-v1';
 const fresh = () => ({ done: [], points: 0, discovered: [], pos: null, seenHint: false, seenStickHint: false, coins: [], chosen: null, unlocked: [],
+  difficulty: 'easy', opened: [], category: null,
   settings: { lang: 'ar', reciter: DEFAULT_RECITER, voice: true, meaning: true, auto: true, volume: 0.7, music: false, quality: 'auto', zoom: ZOOM_DEFAULT, path: true } });
 function loadSave() {
   const f = fresh();
@@ -38,30 +40,74 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   // <DialogueSystem/>; this system drives the flow between them
   const player = refs.player, rig = refs.cameraRig, npcs = refs.npcs;
   const MARK = markers();
-  // story state: the story the child picked is always open (a done one can be replayed); a locked
-  // one the child picked stays unlocked (save.unlocked) even after they pick another
-  const refreshNpcs = () => npcs.forEach(n => {
-    const id = n.enc.id;
-    n.state = id === save.chosen ? 'open' : save.done.includes(id) ? 'done'
-      : n.enc.requires.every(r => save.done.includes(r)) || save.unlocked?.includes(id) ? 'open' : 'locked';
-    n.marker.visible = n.state !== 'locked'; n.marker.material.map = MARK[n.state] ?? MARK.open; n.marker.material.opacity = n.state === 'done' ? 0.55 : 1;
-  });
+  const prog = createProgress({ data });
+  const npcById = id => npcs.find(n => n.enc.id === id);
+  // Story states: done · locked (the story before it in its category isn't done) · gated (its
+  // turn has come, but the child hasn't collected the difficulty's share of its coin set yet) ·
+  // open. A pick (save.chosen) skips the chain but never the coins; a done pick reopens for a
+  // replay. Reaching the coin share opens a story for good (save.opened), so changing the
+  // difficulty only applies to stories that are still closed.
+  const avail = n => n.state === 'open' || n.state === 'gated';
+  function refreshNpcs(celebrate = false) {
+    save.opened ??= [];
+    for (const n of npcs) {
+      const id = n.enc.id, done = save.done.includes(id);
+      let st;
+      if (done) st = id === save.chosen ? 'open' : 'done';
+      else if (id !== save.chosen && !save.opened.includes(id) && !prog.prereq(id).every(r => save.done.includes(r))) st = 'locked';
+      else {
+        const g = coins.progress(id);
+        n.gate = g ? { have: g.have, total: g.total, need: needFor(g.total, save.difficulty) } : null;
+        if (!save.opened.includes(id) && g && g.have >= n.gate.need) {
+          save.opened.push(id); persist();
+          if (celebrate) opened(n);
+        }
+        st = save.opened.includes(id) ? 'open' : 'gated';
+      }
+      n.state = st;
+      n.marker.visible = st !== 'locked';
+      if (st === 'gated') {
+        (n.gateMark ??= gateMarker()).draw(n.gate, save.settings.lang);
+        n.marker.material.map = n.gateMark.tex; n.markerScale = 1.9; n.marker.material.opacity = 1; n.marker.renderOrder = 5;   // over the beacon
+      } else {
+        n.marker.material.map = MARK[st] ?? MARK.open; n.markerScale = 1; n.marker.material.opacity = st === 'done' ? 0.55 : 1;
+      }
+    }
+  }
+  // the coin share of a story was just reached: fanfare, toast, the marker turns into "!"
+  function opened(n) {
+    Sound.unlock?.();
+    n.greeted = 0;
+    setTimeout(() => ui.toast(S().gateOpen, 3500), 250);
+    ui.floatText(innerWidth / 2, innerHeight * 0.3, S().gateOpen, true);
+  }
   player.place(LOOKOUT.x, LOOKOUT.z, LOOKOUT.facing);   // title screen: on the hill, looking over the village
 
   // ---- UI + story ---------------------------------------------------------------------
   const ui = new UI({ mapCanvas, data, save, persist, onSettings: applySettings });
+  ui.prog = prog;
   function applySettings() {
     if (refs.dialogue) refs.dialogue.autoAdvance = save.settings.auto !== false;
     Voice.enabled = save.settings.voice; Sound.setVolume(save.settings.volume); Sound.setMusic(save.settings.music);
     useGame.getState().setQualitySetting(save.settings.quality);
-    ui.applyLang(); updateObjective();
+    ui.applyLang(); refreshNpcs(); updateObjective();
     if (mode !== 'title') prepareVoice();
   }
   const S = () => STR[save.settings.lang];
   // guided path + collectibles
   const guide = createGuide({ scene, colliders });
-  const coins = createCoins({ scene, camera, grid: guide.grid, ui, npcs, getSave: () => save, persist, S, detailLow: ['low', 'lite'].includes(useGame.getState().detail), lite: useGame.getState().detail === 'lite' });
+  // every story's own coin set: along the route from the story before it in its category (or the
+  // spawn) to its storyteller
+  const endpoints = id => {
+    const n = npcById(id); if (!n) return null;
+    const p = prog.prereq(id).map(npcById).find(Boolean);
+    return { from: p ? [p.x, p.z] : [SPAWN.x, SPAWN.z], to: [n.x, n.z], r: (n.enc.stage?.talkRadius ?? 3.4) * 0.8 };
+  };
+  const coins = createCoins({ scene, camera, grid: guide.grid, ui, npcs, getSave: () => save, persist, S, lite: useGame.getState().detail === 'lite', endpoints,
+    onCollect: () => { refreshNpcs(true); updateObjective(); },
+    onBuilt: () => { refreshNpcs(false); if (mode !== 'title') updateObjective(); } });
   coins.load();
+  coins.want(prog.categories.flatMap(c => c.ids));
   // "walk to the story" button / F: autopilot along the guided route; manual input cancels it
   const auto = createAutowalk({ player, guide, onChange: (on, why) => {
     ui.walkButton(true, on);
@@ -85,22 +131,35 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   }
   // The story the objective (and the guided path) points at: the one the narrator just announced,
   // else the nearest open one — kept unless another is clearly (15 m) closer, so it doesn't flicker.
-  let target = null, preferred = null;
-  const nearestOpen = () => {
-    const open = npcs.filter(n => n.state === 'open'); if (!open.length) return null;
-    const chosen = save.chosen && open.find(n => n.enc.id === save.chosen);
-    if (chosen) return chosen;                                     // the child's own pick wins
-    if (preferred && open.includes(preferred)) return preferred;
-    const d = n => Math.hypot(n.x - player.pos.x, n.z - player.pos.z);
-    const best = open.reduce((a, b) => (d(a) < d(b) ? a : b));
-    return target && open.includes(target) && d(target) < d(best) + 15 ? target : best;
-  };
-
-  function updateObjective() {
-    target = nearestOpen();
-    if (!target) { ui.objective([S().explore, S().exploreSub]); return; }
-    ui.objective(t(target.enc.objective));
+  // The story the objective (and the guided path) points at: the child's pick, else the next
+  // story of the category they are in (the last one picked / finished; the first category by
+  // default) — an open one first, else the first in order still waiting for its coins. A
+  // finished category hands over to the next one that has something to do.
+  let target = null;
+  const curCategory = () => (prog.category(save.category) ? save.category : prog.categories[0]?.id);
+  function nextStory() {
+    const chosen = save.chosen && npcById(save.chosen);
+    if (chosen && avail(chosen)) return chosen;
+    const cur = curCategory(), order = [cur, ...prog.categories.map(c => c.id).filter(c => c !== cur)];
+    for (const cid of order) {
+      const list = prog.category(cid).ids.map(npcById).filter(n => n && avail(n));
+      if (list.length) return list.find(n => n.state === 'open') ?? list[0];
+    }
+    return null;
   }
+  const lines = o => { const v = t(o); return Array.isArray(v) ? v : [v]; };
+  const num = n => (save.settings.lang === 'ar' ? arDigits(n) : String(n));
+  function updateObjective() {
+    target = nextStory();
+    if (!target) { ui.objective([S().explore, S().exploreSub]); return; }
+    coins.want([target.enc.id], true);
+    if (target.state === 'gated') {
+      const g = target.gate;
+      ui.objective(g ? [`${S().gateObj}: ${num(g.have)} / ${num(g.need)} 🪙`, t(target.enc.title) || lines(target.enc.objective)[0]] : [S().gatePrep, t(target.enc.title)]);
+    } else ui.objective(lines(target.enc.objective));
+  }
+  // what a storyteller says while their story still waits for coins (text only, no new audio)
+  const gateLine = n => (n.gate ? S().gateLine(Math.max(0, n.gate.need - n.gate.have)) : S().gatePrep);
 
   // ---- cinematic shots --------------------------------------------------------------------
   // One NPC or a group: the camera sits by the child's shoulder and frames whoever is
@@ -175,21 +234,22 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   async function grant(enc) {
     if (!save.done.includes(enc.id)) { save.done.push(enc.id); save.points += enc.reward.points; }
     if (save.chosen === enc.id) save.chosen = null;                // finished the pick: back to the default order
+    save.category = prog.catOf(enc.id) ?? save.category;          // carry on in this story's category
     persist();
     await ui.reward(enc);
     ui.setPoints();
-    const before = npcs.filter(n => n.state === 'open').map(n => n.enc.id);
+    const before = npcs.filter(avail).map(n => n.enc.id);
     refreshNpcs();
-    const next = npcs.filter(n => n.state === 'open' && !before.includes(n.enc.id));
-    preferred = next[0] ?? null;                                   // the path re-targets to the story just announced
-    coins.prune(data.encounters.map((e, i) => (save.done.includes(e.id) ? i : -1)).filter(i => i >= 0));
-    updateObjective();
+    target = null; updateObjective();                              // the path re-targets to the next story
+    const next = npcs.filter(n => avail(n) && !before.includes(n.enc.id)).sort((a, b) => (a === target ? -1 : b === target ? 1 : 0));
     if (next.length) setTimeout(() => ui.toast(`${S().nextStory}: ${next.map(n => t(n.enc.title)).join(' · ')}`, 5000), 900);
     if (next.length) setTimeout(() => narrate([data.narrator?.next, next[0].enc.narration]), 1600);
   }
 
   async function startEncounter(npc) {
     if (mode !== 'explore') return;
+    if (npc.state === 'gated') { ui.toast(gateLine(npc), 4000); npc.rig.wave?.(now); return; }   // friendly nudge, story stays closed
+    if (npc.state !== 'open') return;
     setMode('dialogue'); player.enabled = false; player.target = null; player.vel.set(0, 0, 0);
     ui.talk(false); ui.bubble(null); ui.showHud(false); ui.letterbox(true); $('toast').classList.remove('show');
     Sound.mode('dialogue'); timeTarget = 0.6;
@@ -231,11 +291,13 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     setMode('panel'); player.enabled = false; player.target = null;
     let replay = null, pick = null;
     if (kind === 'map') await ui.worldMap(player, npcs, guide.mapRoute, guide.progress, id => { pick = id; });
-    if (kind === 'stories') await ui.stories(player, npcs, target?.enc.id ?? null, id => { pick = id; });
+    let cat = null;
+    if (kind === 'stories') await ui.stories(player, npcs, target?.enc.id ?? null, id => { pick = id; }, { prog, category: target ? prog.catOf(target.enc.id) : curCategory(), onCategory: c => { cat = c; } });
     if (kind === 'journal') await ui.journal(v => { replay = v; });
     if (kind === 'settings') await ui.settings(resetProgress);
     setMode('explore'); player.enabled = true;
     if (pick) chooseStory(pick);
+    else if (cat && cat !== (target ? prog.catOf(target.enc.id) : curCategory())) switchCategory(cat);
     if (replay) { player.enabled = false; await recite(replay, true); player.enabled = true; }
   }
   // Neural Arabic voice for browsers without one (e.g. Chrome on Linux): download in the
@@ -249,17 +311,28 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   const prepareVoice = () => { if (save.settings.voice) Voice.prepare(save.settings.lang); };
   // Story picker / world-map pin: make any story the target (unlocking a locked one, reopening a
   // done one for a replay). The trail, beacon, minimap, objective and 👣 all follow `target`.
+  // Story picker / world-map pin: make any story the target. A done one reopens for a replay; one
+  // that isn't open yet becomes the target with its coins laid out, but still opens only with its
+  // coin share. The trail, beacon, minimap, objective and 👣 all follow `target`.
   function chooseStory(id) {
-    const npc = npcs.find(n => n.enc.id === id);
+    const npc = npcById(id);
     if (!npc || mode !== 'explore') return;
-    save.unlocked ??= [];
-    if (npc.state === 'locked' && !save.unlocked.includes(id)) save.unlocked.push(id);
-    save.chosen = id; preferred = npc; persist();
+    save.chosen = id; save.category = prog.catOf(id) ?? save.category; persist();
+    coins.want([id], true);
     refreshNpcs(); target = null; updateObjective();
     ui.toast(`${S().headingTo}: ${t(npc.enc.title)}`, 3000);
     narrate([npc.enc.narration]);
   }
-  function resetProgress() { const st = save.settings; save = fresh(); save.settings = st; ui.save = save; persist(); location.reload(); }
+  // a category tab left open in the story sheet: carry on with that category's next story
+  function switchCategory(cid) {
+    if (!prog.category(cid) || mode !== 'explore') return;
+    save.category = cid;
+    if (save.chosen && prog.catOf(save.chosen) !== cid) save.chosen = null;
+    persist(); refreshNpcs(); target = null; updateObjective();
+    if (target && prog.catOf(target.enc.id) === cid) { ui.toast(`${S().headingTo}: ${t(target.enc.title)}`, 3000); narrate([target.enc.narration]); }
+  }
+  function setDifficulty(d) { if (DIFFICULTY[d]) { save.difficulty = d; persist(); refreshNpcs(); updateObjective(); } }
+  function resetProgress() { const st = save.settings, d = save.difficulty; save = fresh(); save.settings = st; save.difficulty = d; ui.save = save; persist(); location.reload(); }
 
   // ---- input ---------------------------------------------------------------------------------
   let nearNpc = null;
@@ -287,8 +360,8 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   $('dock').onclick = e => { const b = e.target.closest('button'); if (b) panel(b.dataset.open); };
 
   // ---- title ------------------------------------------------------------------------------------
-  function begin(newGame) {
-    if (newGame) { const st = save.settings; save = fresh(); save.settings = st; ui.save = save; persist(); preferred = null; target = null; }
+  function begin(newGame, difficulty) {
+    if (newGame) { const st = save.settings; save = fresh(); save.settings = st; save.difficulty = DIFFICULTY[difficulty] ? difficulty : 'easy'; ui.save = save; persist(); target = null; }
     coins.load();
     player.place(...(save.pos ?? [SPAWN.x, SPAWN.z, 0]));
     player.dist = THREE.MathUtils.clamp(+save.settings.zoom || ZOOM_DEFAULT, ZOOM_MIN, ZOOM_MAX);
@@ -300,10 +373,11 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     if (player.touch && !save.seenStickHint) { setTimeout(() => ui.toast(S().controlsTouch, 7000), 1500); save.seenStickHint = save.seenHint = true; persist(); }
     else if (!save.seenHint) { setTimeout(() => ui.toast(S().controls, 6500), 1500); save.seenHint = true; persist(); }
     prepareVoice();
-    setTimeout(() => narrate([data.narrator?.intro, nearestOpen()?.enc.narration]), 1400);
+    setTimeout(() => narrate([data.narrator?.intro, nextStory()?.enc.narration]), 1400);
   }
   $('btn-continue').onclick = () => begin(false);
-  $('btn-new').onclick = () => begin(true);
+  // New Journey: pick the difficulty first (Easy 20 % · Medium 50 % · Hard 90 % of each story's coins)
+  $('btn-new').onclick = () => ui.difficultyPicker(d => begin(true, d));
   $('btn-settings').onclick = () => ui.settings(() => { try { localStorage.removeItem(SAVE_KEY); } catch { /* ignore */ } location.reload(); });
   $('btn-continue').hidden = !(save.done.length || save.pos);
   document.querySelector('#reward .medal').innerHTML = MEDAL;
@@ -318,7 +392,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
 
   // ---- per frame --------------------------------------------------------------------------------
   const v3 = new THREE.Vector3();
-  let lastArea = null, saveTimer = 0, miniTimer = 0, now = 0;
+  let lastArea = null, saveTimer = 0, miniTimer = 0, now = 0, goal = null;
   const areaAt = (x, z) => data.areas.find(a => Math.hypot(a.x - x, a.z - z) < a.r);
 
   function tick(dt) {
@@ -346,21 +420,25 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
       if (d < 9) {
         if (n.greeted === 0 && n.state === 'open') n.greeted = now;
         if (n.greeted && now - n.greeted < 1.4) n.rig.wave(now);
-        bubble = { n, text: t(n.state === 'open' ? n.enc.greeting : n.state === 'done' ? n.enc.after : n.enc.locked) };
-        if (d < (n.enc.stage?.talkRadius ?? 3.4) && n.state === 'open') nearNpc = n;
+        bubble = { n, text: n.state === 'gated' ? gateLine(n) : t(n.state === 'open' ? n.enc.greeting : n.state === 'done' ? n.enc.after : n.enc.locked) };
+        if (d < (n.enc.stage?.talkRadius ?? 3.4) && avail(n)) nearNpc = n;
       } else if (d > 16) n.greeted = 0;
     }
     if (mode === 'title') rig.shot = titleShot();
     const preset = PRESETS[useGame.getState().quality], explore = mode === 'explore';
-    if (explore && target && target.state !== 'open') updateObjective();
-    guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines });
+    if (explore && target && !avail(target)) updateObjective();
+    // a story still waiting for coins: the golden trail leads to its nearest coin, then on to the next
+    goal = explore && target?.state === 'gated' ? coins.nextCoin(target.enc.id, player.pos.x, player.pos.z, goal?.key) : null;
+    guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines, goal });
     auto.update(dt, { explore });
     ui.walkButton(explore && !!guide.route && !!guide.target, auto.active);
-    coins.update(dt, now, { explore, player, route: guide.route, version: guide.version, tIdx: guide.target && !save.done.includes(guide.target.enc.id) ? data.encounters.indexOf(guide.target.enc) : -1, preset });
+    coins.update(dt, now, { explore, player, show: target && !save.done.includes(target.enc.id) ? target.enc.id : null, preset });
     if (mode === 'explore') {
       ui.talk(!!nearNpc);
       if (bubble) {
-        const r = bubble.n.rig.root; v3.set(r.position.x, bubble.n.host.headY + 0.3, r.position.z).project(camera);
+        // over a storyteller still waiting for coins the bubble sits above the lock-and-count marker
+        const r = bubble.n.rig.root, lift = bubble.n.state === 'gated' ? 0.6 * Math.max(1, refs.view.dist / 9) * (bubble.n.markerScale ?? 1) * 1.6 + 0.1 : 0.3;
+        v3.set(r.position.x, bubble.n.host.headY + lift, r.position.z).project(camera);
         ui.bubble(bubble.text, v3.z < 1 ? { x: (v3.x + 1) / 2 * innerWidth, y: (1 - v3.y) / 2 * innerHeight } : null);
       } else ui.bubble(null);
       const area = areaAt(player.pos.x, player.pos.z);
@@ -377,6 +455,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
   }
 
   refs.game = { recite, grant, speaker: id => cine.speaker(id), lang: () => save.settings.lang };
-  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, chooseStory, panel, guide, coins, autowalk: auto, recite: step => recite(step, true), get target() { return target; }, get state() { return mode; }, save: () => save };
+  window.__game = { THREE, player, npcs, camera, cameraRig: rig, startEncounter, chooseStory, panel, guide, coins, autowalk: auto, recite: step => recite(step, true), get target() { return target; }, get state() { return mode; }, save: () => save,
+    progress: prog, setDifficulty, switchCategory, begin, get goal() { return goal; }, balance: o => coins.balance(o), refreshNpcs };
   return { tick };
 }

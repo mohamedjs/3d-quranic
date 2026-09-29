@@ -12,3 +12,7 @@ tools/voice_upload.php
 tools/voice_receiver.html
 .git/*.stale*
 tools/voice_design/
+tools/voice_raw_omni/
+tools/voice_raw_omni_test/
+Claude outputs/
+.poscheck.mjs

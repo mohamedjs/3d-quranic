@@ -87,10 +87,36 @@ hint («استخدم العصا تحت لتمشي · اسحب في أي مكان
 languages, the storytellers' portraits and names, the place, the verse reference and the distance,
 with a ✓ done / ! open / 🔒 not-yet badge. Tapping a card (or a story marker on the world map)
 makes it the target: trail, beacon, minimap/world-map route, objective chip and 👣 switch to it and
-the narrator says where to go. Any story can be picked: a locked one is unlocked for good
-(`save.unlocked`), a done one reopens for a replay (no double points, no new breadcrumb coins).
+the narrator says where to go. Any story can be picked: one that isn't open yet becomes the target with its coins laid out
+(it still opens only with its coin share — see below), a done one reopens for a replay (no double points).
 The pick is saved (`save.chosen`) until that story is finished; then the default order (nearest
 open / newly unlocked story) takes over again. Without a pick nothing changes.
+
+**Difficulty and coin-gated stories.** «رحلة جديدة» first asks for a level — «سهل ٢٠٪ · متوسط ٥٠٪
+· صعب ٩٠٪» (`save.difficulty`, default Easy; Settings → «مستوى الصعوبة» changes it for the stories
+that are not open yet). Every story owns a deterministic **coin set** (`world/coins.js`): coins every
+~4.5 m along the A* route from the story before it in its category (or the spawn) to its storyteller,
+plus the exploration clusters (≤ 6 m) and big stars (≤ 12 m) near that route, topped up with small
+side arches on short routes — 22–45 coins per story. Route coins have ids `"<story>:<k>"`; cluster
+coins/stars keep their numeric ids and can count for several sets. Sets are computed a few ms per
+frame (on the title screen already) and cached in `localStorage['quran-journey-coinsets']`.
+A story opens when (a) the story before it in its category is done and (b) the child has
+⌈level × set size⌉ of its coins; then it stays open (`save.opened`). While waiting, its storyteller
+shows a padlock in a gold progress ring with a «١٢ / ٢٠ 🪙» pill, talking to them gives a text nudge
+(«اجمع ٨ عملات أخرى على الطريق لتفتح القصة!»), the objective chip shows the count, only that story's
+route coins are laid out, and the golden trail (and 👣) leads from coin to coin (`guide.update({goal})`).
+Reaching the share plays a fanfare, toasts «فتحت القصة! 🎉» and the marker turns into "!".
+`window.__game.balance({verify: true})` prints the size/length/reachability table.
+
+**Categories.** `encounters.json` → `categories: [{id, title, icon}]` and per story `category` / `order`
+(defaults: `quran`, file order; `systems/progress.js`). Each category is its own chain: a story's
+`requires` inside its category, else the story before it in `order`. The stories sheet has a tab per
+category (icons `i-quran`, `i-prophets`, `i-companions` in `public/ui/icons.svg`) listing done ✓ /
+open ! / coin progress / 🔒. The HUD follows the category of the last picked or finished story
+(`save.category`); leaving the sheet on another tab switches to it. Picking a story (sheet or map)
+makes it the target even out of chain order, but it still needs its coins. Old saves: done stories
+stay done, cluster coins keep counting, and breadcrumb coins collected on the way to a story are
+matched to that story's set.
 
 **Walk to the story (👣 / `F`).** Shown in explore mode while a guided route exists. The child
 walks the guide's A* route (`systems/autowalk.js` aims ~2.5 m ahead on the polyline) at walking

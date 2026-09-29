@@ -1,8 +1,36 @@
 {
-  "_note": "Story encounters. Verses are referenced by key only; their text and audio are always fetched from Quran.com at runtime. Narration is a simplified retelling of what the listed sources state — have it reviewed by a qualified teacher before release. The six asbab al-nuzul encounters follow «الصحيح المسند من أسباب النزول» (al-Wadi'i); reviewer sheet: docs/asbab-stories-script.md. A verses step may play part of one verse: words:[first,last] (1-based word positions) plus a simple meaning:{ar,en}.",
+  "_note": "Story encounters. Verses are referenced by key only; their text and audio are always fetched from Quran.com at runtime. Narration is a simplified retelling of what the listed sources state — have it reviewed by a qualified teacher before release. The six asbab al-nuzul encounters follow «الصحيح المسند من أسباب النزول» (al-Wadi'i); reviewer sheet: docs/asbab-stories-script.md. A verses step may play part of one verse: words:[first,last] (1-based word positions) plus a simple meaning:{ar,en}. Categories (top-level `categories`): 'quran', 'prophets' (the five ulu al-'azm: Nuh, Ibrahim, Musa, Isa, Muhammad ﷺ) and 'companions' (the four rightly guided caliphs). Every encounter has `category` + `order`; a story requires the previous one of its own category (the first of each category requires nothing). Reviewer sheet for the prophets/companions stories: docs/new-stories-review.md. Prophets and companions are never depicted — only narrated about.",
+  "categories": [
+    {
+      "id": "quran",
+      "title": {
+        "ar": "قصص من القرآن",
+        "en": "Stories from the Qur'an"
+      },
+      "icon": "quran"
+    },
+    {
+      "id": "prophets",
+      "title": {
+        "ar": "قصص الأنبياء",
+        "en": "Stories of the Prophets"
+      },
+      "icon": "prophets"
+    },
+    {
+      "id": "companions",
+      "title": {
+        "ar": "قصص الصحابة",
+        "en": "Stories of the Companions"
+      },
+      "icon": "companions"
+    }
+  ],
   "encounters": [
     {
       "id": "people-of-the-elephant",
+      "category": "quran",
+      "order": 1,
       "area": "village",
       "requires": [],
       "title": {
@@ -401,6 +429,8 @@
     },
     {
       "id": "quraysh-journeys",
+      "category": "quran",
+      "order": 2,
       "area": "desert",
       "requires": [
         "people-of-the-elephant"
@@ -593,6 +623,8 @@
     },
     {
       "id": "yusuf-dream",
+      "category": "quran",
+      "order": 3,
       "area": "oasis",
       "requires": [
         "people-of-the-elephant"
@@ -771,6 +803,8 @@
     },
     {
       "id": "threads-of-dawn",
+      "category": "quran",
+      "order": 4,
       "area": "village",
       "requires": [
         "people-of-the-elephant"
@@ -1096,6 +1130,8 @@
     },
     {
       "id": "qays-the-fasting-farmer",
+      "category": "quran",
+      "order": 5,
       "area": "fields",
       "requires": [
         "threads-of-dawn"
@@ -1444,6 +1480,8 @@
     },
     {
       "id": "best-dates",
+      "category": "quran",
+      "order": 6,
       "area": "oasis",
       "requires": [
         "qays-the-fasting-farmer"
@@ -1828,6 +1866,8 @@
     },
     {
       "id": "houses-by-their-doors",
+      "category": "quran",
+      "order": 7,
       "area": "village",
       "requires": [
         "best-dates"
@@ -2139,6 +2179,8 @@
     },
     {
       "id": "the-new-qibla",
+      "category": "quran",
+      "order": 8,
       "area": "ruins",
       "requires": [
         "houses-by-their-doors"
@@ -2506,6 +2548,8 @@
     },
     {
       "id": "the-guest-and-the-lamp",
+      "category": "quran",
+      "order": 9,
       "area": "village",
       "requires": [
         "the-new-qibla"
@@ -2905,6 +2949,3277 @@
       "narration": {
         "ar": "زور الجدّة آمنة والجدّ سالم عند البيت اللي فيه السراج، في شارع القرية الجنوبي.",
         "en": "Visit Grandma Amina and Grandpa Salim at the house with the lamp, on the south street of the village."
+      }
+    },
+    {
+      "id": "abu-bakr-the-cave",
+      "category": "companions",
+      "order": 1,
+      "area": "ruins",
+      "requires": [],
+      "title": {
+        "ar": "أبو بكر الصدّيق: صاحبُ الغار",
+        "en": "Abu Bakr al-Siddiq: The Companion in the Cave"
+      },
+      "host": "hamdan",
+      "characters": [
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "المسافر",
+            "en": "The Traveller"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            156.0,
+            -120.0
+          ],
+          "facing": 0.0,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى العمّ حمدان على طريق الدار القديمة",
+          "ينتظرك قبل الأطلال"
+        ],
+        "en": [
+          "Find Uncle Hamdan on the road to the Old Homestead",
+          "He's waiting just before the old ruins"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا صغيري! تعالَ، أحكي لك عن أعظم رحلة، وعن صاحبٍ وفيّ.",
+        "en": "Hello, little one! Come — let me tell you about the greatest journey, and a loyal friend."
+      },
+      "after": {
+        "ar": "الله معنا دائمًا، فلا تحزن ولا تخف.",
+        "en": "Allah is always with us — so do not be sad, and do not be afraid."
+      },
+      "sources": [
+        "Qur'an 9:40",
+        "صحيح البخاري 3653 — حديث أبي بكر رضي الله عنه في الغار (https://sunnah.com/bukhari:3653)؛ صحيح مسلم 2381",
+        "صحيح البخاري 3905 — حديث عائشة رضي الله عنها في الهجرة: غار ثور، عبد الله بن أبي بكر، عامر بن فهيرة، نطاق أسماء (https://sunnah.com/bukhari:3905)",
+        "صحيح البخاري 3615 — حديث البراء عن أبي بكر في طريق الهجرة (https://sunnah.com/bukhari:3615)",
+        "Tafsir Ibn Kathir — 9:40"
+      ],
+      "_note": "Only Bukhari/Muslim details are used. Deliberately NOT used (weak/unestablished): the spider's web and nesting doves at the cave mouth, the snake biting Abu Bakr's foot. The pursuers are only 'people from Makkah looking for them'. Whole 9:40 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "أهلًا يا صغيري! أنا أحبّ السفر كثيرًا. لكنّي اليوم سأحكي لك عن رحلةٍ عظيمة: رحلة الهجرة، حين خرج نبيّنا محمد ﷺ من مكة إلى المدينة.",
+          "en": "Hello, little one! I love travelling. But today I will tell you about a great journey: the Hijra, when our Prophet Muhammad ﷺ left Makkah for Madinah."
+        },
+        {
+          "type": "choice",
+          "speaker": "hamdan",
+          "ar": "هل تعرف مَن كان صاحبَه في هذه الرحلة؟",
+          "en": "Do you know who travelled with him on this journey?",
+          "options": [
+            {
+              "ar": "أبو بكر الصدّيق؟",
+              "en": "Abu Bakr al-Siddiq?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "أحسنت! أبو بكر الصدّيق رضي الله عنه، أقربُ أصحابه إليه، وأوّلُ مَن آمن به من الرجال.",
+                  "en": "Well done! Abu Bakr al-Siddiq, may Allah be pleased with him — his closest companion, and the first grown man to believe in him."
+                }
+              ]
+            },
+            {
+              "ar": "لا، مَن هو؟",
+              "en": "No — who was it?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "إنّه أبو بكر الصدّيق رضي الله عنه، أقربُ أصحابه إليه، وأوّلُ مَن آمن به من الرجال.",
+                  "en": "It was Abu Bakr al-Siddiq, may Allah be pleased with him — his closest companion, and the first grown man to believe in him."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا سُمّي «الصدّيق»؟",
+              "en": "Why was he called “al-Siddiq”?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "لأنّه كان يُصدّق النبيَّ ﷺ في كلّ ما يُخبر به عن الله، بلا تردّد. والصدّيق هو الذي يَصدُق كثيرًا ويُصدِّق بالحقّ.",
+                  "en": "Because he believed the Prophet ﷺ in everything he told from Allah, without hesitating. “Siddiq” means someone who is always truthful and always believes the truth."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا خرج النبيّ ﷺ من مكة؟",
+              "en": "Why did the Prophet ﷺ leave Makkah?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "year",
+                  "ar": "لأنّ كثيرًا من أهل مكة آذَوه وآذَوا المسلمين، وأرادوا أن يمنعوه من الدعوة إلى الله. فأذِن الله له أن يهاجر إلى المدينة، حيث ينتظره أهلُها الذين آمنوا به.",
+                  "en": "Because many people in Makkah hurt him and the Muslims, and tried to stop him calling people to Allah. So Allah allowed him to emigrate to Madinah, where the believers there were waiting for him."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف استعدّ أبو بكر للرحلة؟",
+              "en": "How did Abu Bakr get ready for the journey?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "hijra_road",
+                  "ar": "حكت عائشة رضي الله عنها أنّ أبا بكر جهّز ناقتين للسفر، واستأجرا رجلًا خبيرًا بالطريق ليدلّهما.",
+                  "en": "Aisha, may Allah be pleased with her, told that Abu Bakr had two camels ready for the road, and they hired a man who knew the way well to guide them."
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "hijra_road",
+                  "ar": "وقطعت أختُها أسماءُ بنتُ أبي بكر قطعةً من نطاقها — أي حزامها — فربطت بها فمَ كيس الطعام، فسُمّيت «ذات النطاقين».",
+                  "en": "And her sister Asma', Abu Bakr's daughter, cut a piece from her belt to tie the mouth of the food bag — so she was called “the one with the two belts”."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وأين اختبآ؟",
+              "en": "Where did they hide?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "cave_thawr",
+                  "ar": "في غارٍ في جبلٍ اسمه «ثَور»، قريبًا من مكة. بقيا فيه ثلاث ليال.",
+                  "en": "In a cave in a mountain called Thawr, near Makkah. They stayed there three nights."
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "cave_thawr",
+                  "ar": "وكان عبدُ الله بن أبي بكر، وهو شابٌّ ذكيّ، يبيت عندهما ويخبرهما بالأخبار، ويرجع إلى مكة قبل الصبح. وكان عامرُ بن فُهيرة يرعى الغنم قريبًا منهما، فيشربان من لبنها.",
+                  "en": "Abdullah, Abu Bakr's clever young son, spent the nights with them and brought them the news, then went back to Makkah before dawn. And 'Amir ibn Fuhayra grazed sheep nearby, so they could drink their milk."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل جاء أحدٌ يبحث عنهما؟",
+              "en": "Did anyone come looking for them?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "cave_thawr",
+                  "ar": "نعم، خرج أناسٌ من مكة يبحثون عنهما، حتى وقفوا فوق الغار! فقال أبو بكر رضي الله عنه: يا رسول الله، لو أنّ أحدهم نظر تحت قدميه لرآنا.",
+                  "en": "Yes — people from Makkah went out searching, until they were standing right above the cave! Abu Bakr said: “O Messenger of Allah, if one of them looked down at his feet, he would see us.”"
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "cave_thawr",
+                  "ar": "فقال النبيّ ﷺ بطمأنينة: «ما ظنُّك يا أبا بكر باثنين اللهُ ثالثُهما؟» يعني: لا تخف، فالله معنا يحفظنا.",
+                  "en": "The Prophet ﷺ answered calmly: “What do you think, Abu Bakr, of two when Allah is the third of them?” Meaning: don’t be afraid — Allah is with us, protecting us."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "ماذا قال النبيّ ﷺ لأبي بكر في الغار؟",
+          "en": "What did the Prophet ﷺ tell Abu Bakr in the cave?",
+          "options": [
+            {
+              "ar": "لا تحزن، إنّ الله معنا",
+              "en": "Don't be sad — Allah is with us",
+              "correct": true
+            },
+            {
+              "ar": "اهرب بسرعة",
+              "en": "Run away quickly"
+            },
+            {
+              "ar": "نَم ولا تتكلّم",
+              "en": "Go to sleep and say nothing"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: مَن كان «ثالثَهما» في الغار؟",
+            "en": "Remember: who was “the third” with them in the cave?"
+          },
+          "praise": {
+            "ar": "أحسنت! الله كان معهما يحفظهما، فلم يرهما أحد.",
+            "en": "Well done! Allah was with them, protecting them — and no one saw them."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل وصلا إلى المدينة؟",
+              "en": "Did they reach Madinah?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "hijra_road",
+                  "ar": "نعم، حفظهما الله حتى وصلا إلى المدينة سالمَين، واستقبلهما أهلها بفرحٍ عظيم. وكان أبو بكر رضي الله عنه في الطريق يحرص على راحة النبيّ ﷺ ويخدمه بنفسه.",
+                  "en": "Yes. Allah kept them safe until they reached Madinah, and its people welcomed them with great joy. All along the way, Abu Bakr looked after the Prophet's ﷺ comfort and served him himself."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "وقد ذكر الله هذه اللحظة في القرآن: «ثانيَ اثنين إذ هما في الغار، إذ يقول لصاحبه لا تحزن إنّ الله معنا». تعالَ نسمع الآية بصوت الشيخ.",
+          "en": "Allah mentions this moment in the Quran: “the second of two, when they were in the cave, when he said to his companion: Do not be sad, Allah is with us.” Come, let’s hear the verse in the sheikh’s voice."
+        },
+        {
+          "type": "verses",
+          "from": "9:40",
+          "to": "9:40"
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "فماذا نتعلّم من قصة الغار؟",
+          "en": "So what do we learn from the story of the cave?",
+          "options": [
+            {
+              "ar": "أنّ الله معنا دائمًا فنتوكّل عليه، وأن نكون أصدقاء أوفياء",
+              "en": "Allah is always with us so we trust Him — and we should be loyal friends",
+              "correct": true
+            },
+            {
+              "ar": "أن نخاف إذا كنّا وحدنا",
+              "en": "To be afraid when we are alone"
+            },
+            {
+              "ar": "أن نترك أصدقاءنا وقت الشدّة",
+              "en": "To leave our friends when things get hard"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا قال النبيّ ﷺ لصاحبه؟ وهل ترك أبو بكر صاحبه؟",
+            "en": "Remember what the Prophet ﷺ told his companion — and did Abu Bakr ever leave him?"
+          },
+          "praise": {
+            "ar": "ممتاز! وكان أبو بكر صديقًا وفيًّا، بقي مع صاحبه في وقت الشدّة.",
+            "en": "Excellent! And Abu Bakr was a loyal friend who stayed with his companion in the hardest time."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "إذا خفتُ سأتذكّر: إنّ الله معنا!",
+          "en": "When I'm afraid I'll remember: Allah is with us!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة أبي بكر الصدّيق في الغار.",
+        "en": "You learned the story of Abu Bakr al-Siddiq in the cave."
+      },
+      "narration": {
+        "ar": "روح للعمّ حمدان على طريق الدار القديمة، مستنيك قبل الأطلال.",
+        "en": "Go to Uncle Hamdan on the road to the Old Homestead — he is waiting just before the ruins."
+      }
+    },
+    {
+      "id": "umar-and-the-widow",
+      "category": "companions",
+      "order": 2,
+      "area": "village",
+      "requires": [
+        "abu-bakr-the-cave"
+      ],
+      "title": {
+        "ar": "عمر بن الخطّاب: الأمير الرحيم",
+        "en": "Umar ibn al-Khattab: The Caring Leader"
+      },
+      "host": "hamdan",
+      "characters": [
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "التاجر",
+            "en": "The Trader"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            12.0,
+            -4.2
+          ],
+          "facing": 0.8,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            13.8,
+            -6.4
+          ],
+          "facing": 0.0,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى السوق عند دكّان القرية",
+          "العمّ حمدان والجدّة آمنة ينتظرانك"
+        ],
+        "en": [
+          "Go to the market by the village stall",
+          "Uncle Hamdan and Grandma Amina are waiting"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا صغيري! السوق مزدحم اليوم… وهذا يذكّرني بقصةٍ حدثت في سوق المدينة.",
+        "en": "Hello, little one! The market is busy today… it reminds me of a story that happened in the market of Madinah."
+      },
+      "locked": {
+        "ar": "أهلًا يا صغيري! اسمع أولًا قصة «أبي بكر الصدّيق» على طريق الدار القديمة، ثم تعالَ إلينا.",
+        "en": "Hello, little one! First hear “Abu Bakr al-Siddiq” on the road to the Old Homestead, then come to us."
+      },
+      "after": {
+        "ar": "ساعِد المحتاج، واسأل عن حال مَن حولك.",
+        "en": "Help those in need, and ask how the people around you are doing."
+      },
+      "sources": [
+        "صحيح البخاري 4160–4161 — حديث أسلم مولى عمر: المرأة الغفارية في السوق (https://sunnah.com/bukhari:4160)",
+        "Qur'an 93:9–10",
+        "Tafsir Ibn Kathir — Surat al-Duha"
+      ],
+      "_note": "Aslam's narration (Bukhari 4160) as in the Sahih. Left out for children: «وخشيت أن تأكلهم الضبع» and «ثكلتك أمك». Umar's answer about her father and brother (who besieged a fortress) is paraphrased as 'they gave much in serving the Muslims and we still benefit from it'. The famous story of Umar carrying flour at night to the woman cooking stones is NOT used (weak chain). Verses 93:9–10 are played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "أهلًا يا صغيري! تعالَ بين الدكاكين. هل تعلم أنّ أميرَ المؤمنين عمرَ بن الخطّاب رضي الله عنه كان يخرج إلى السوق ويمشي بين الناس؟",
+          "en": "Hello, little one! Come among the stalls. Did you know that the leader of the believers, Umar ibn al-Khattab, may Allah be pleased with him, used to go out to the market and walk among the people?"
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "هل تعرف مَن هو عمر بن الخطّاب؟",
+          "en": "Do you know who Umar ibn al-Khattab was?",
+          "options": [
+            {
+              "ar": "صاحبُ النبيّ ﷺ؟",
+              "en": "A companion of the Prophet ﷺ?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "نعم يا حبيبي. هو من أقرب أصحاب النبيّ ﷺ، وصار خليفةَ المسلمين بعد أبي بكر الصدّيق رضي الله عنهما. ولُقّب «الفاروق» لأنّه يفرّق بين الحقّ والباطل.",
+                  "en": "Yes, my darling. He was one of the Prophet's ﷺ closest companions, and became the leader of the Muslims after Abu Bakr. He was called “al-Faruq”, because he told right apart from wrong."
+                }
+              ]
+            },
+            {
+              "ar": "لا، مَن هو؟",
+              "en": "No — who was he?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "هو من أقرب أصحاب النبيّ ﷺ، وصار خليفةَ المسلمين بعد أبي بكر الصدّيق رضي الله عنهما. ولُقّب «الفاروق» لأنّه يفرّق بين الحقّ والباطل.",
+                  "en": "He was one of the Prophet's ﷺ closest companions, and became the leader of the Muslims after Abu Bakr. He was called “al-Faruq”, because he told right apart from wrong."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف كان مع الناس؟",
+              "en": "What was he like with people?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "كان قويًّا في الحقّ، رحيمًا بالضعفاء، يخاف الله كثيرًا، ويشعر أنّه مسؤولٌ عن كلّ واحدٍ من الناس.",
+                  "en": "He was firm about what is right and gentle with the weak. He feared Allah greatly, and felt responsible for every single person."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث في السوق؟",
+              "en": "What happened in the market?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "حكى أسلمُ، خادمُ عمر: خرجتُ مع عمر إلى السوق، فلحقته امرأةٌ شابّة فقالت: يا أمير المؤمنين، مات زوجي وترك أطفالًا صغارًا، ليس عندهم زرعٌ ولا غنم.",
+                  "en": "Aslam, Umar's helper, told: I went out with Umar to the market, and a young woman caught up with him and said: “O leader of the believers, my husband has died and left little children. They have no crops and no sheep.”"
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "وقالت: أنا بنتُ خُفاف بن إيماء الغِفاريّ، وقد شهد أبي الحديبية مع النبيّ ﷺ.",
+                  "en": "And she said: “I am the daughter of Khufaf ibn Ima' al-Ghifari — my father was with the Prophet ﷺ at al-Hudaybiyah.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل تركها عمر ومضى؟",
+              "en": "Did Umar just walk on?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "food_camel",
+                  "ar": "لا! وقف معها عمر ولم يمضِ، وقال: «مرحبًا بنسبٍ قريب». ثم ذهب إلى جملٍ قويٍّ كان مربوطًا في الدار.",
+                  "en": "No! Umar stopped with her and didn't walk on. He said: “Welcome to a family close to us.” Then he went to a strong camel tied up in the yard."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "food_camel",
+                  "ar": "فحمّل عليه كيسين كبيرين ملأهما طعامًا، ووضع بينهما مالًا وثيابًا، ثم أعطاها زمامه وقال: «اقتاديه، فلن يفنى حتى يأتيكم الله بخير».",
+                  "en": "He loaded it with two big sacks full of food, put money and clothes between them, handed her the rope and said: “Lead it home — it won't run out before Allah brings you something good.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "ماذا أعطى عمرُ المرأةَ وأطفالها؟",
+          "en": "What did Umar give the woman and her children?",
+          "options": [
+            {
+              "ar": "جملًا محمّلًا بالطعام والمال والثياب",
+              "en": "A camel loaded with food, money and clothes",
+              "correct": true
+            },
+            {
+              "ar": "درهمًا واحدًا",
+              "en": "One single coin"
+            },
+            {
+              "ar": "لم يعطها شيئًا",
+              "en": "Nothing at all"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا حمّل على الجمل القويّ؟",
+            "en": "Remember what he loaded onto the strong camel…"
+          },
+          "praise": {
+            "ar": "أحسنت! أعطاها عطاءً كثيرًا يكفي أطفالها.",
+            "en": "Well done! He gave her plenty — enough for her children."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ألم يقل له أحدٌ إنّه أعطاها كثيرًا؟",
+              "en": "Didn't anyone say he gave her too much?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "بلى، قال رجل: يا أمير المؤمنين، أكثرتَ لها! فقال عمر: إنّ أباها وأخاها بذلا الكثير في خدمة المسلمين، ونحن ما زلنا ننتفع بما قدّماه.",
+                  "en": "Yes — a man said: “O leader of the believers, you gave her too much!” Umar said: her father and brother gave a great deal in serving the Muslims, and we are still benefiting from what they did."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "يعني: أهلُ الخير لا يُنسى خيرُهم، ونحن نحفظ الجميل لأولادهم.",
+                  "en": "Meaning: good people's kindness is never forgotten — we repay it to their children."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا اهتمّ عمر بها كلَّ هذا الاهتمام؟",
+              "en": "Why did Umar care so much?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "لأنّ الله أوصانا باليتيم والمحتاج. وأطفالها صاروا أيتامًا — واليتيم هو الطفل الذي مات أبوه.",
+                  "en": "Because Allah tells us to look after orphans and people in need. Her children had become orphans — an orphan is a child whose father has died."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "وفي القرآن آيتان تقولان لنا: أكرِم اليتيم ولا تقسُ عليه، وكلِّم مَن يسألك حاجةً برفق.",
+                  "en": "And two verses of the Quran tell us: be kind to the orphan and never harsh, and speak gently to anyone who asks you for help."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "تعالَ نسمع الآيتين بصوت الشيخ.",
+          "en": "Come, let's hear the two verses in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "93:9",
+          "to": "93:10"
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من قصة عمر رضي الله عنه؟",
+          "en": "So what do we learn from the story of Umar?",
+          "options": [
+            {
+              "ar": "أن نرحم اليتيم والمحتاج ونساعدهم",
+              "en": "To be kind to orphans and people in need, and help them",
+              "correct": true
+            },
+            {
+              "ar": "أن نمشي في السوق بسرعة",
+              "en": "To walk quickly through the market"
+            },
+            {
+              "ar": "أن نساعد فقط مَن نعرفه",
+              "en": "To help only people we know"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا فعل عمر حين سمع حاجة المرأة؟",
+            "en": "Remember what Umar did when he heard what the woman needed…"
+          },
+          "praise": {
+            "ar": "ممتاز! القائد الحقّ يرحم الناس ويسأل عن حالهم، وأنت أيضًا تستطيع أن تساعد.",
+            "en": "Excellent! A true leader is kind to people and asks how they are — and you can help too."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأساعد مَن يحتاج، وأكون رحيمًا بالأيتام!",
+          "en": "I'll help anyone in need, and be kind to orphans!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة عمر بن الخطّاب الأمير الرحيم.",
+        "en": "You learned the story of Umar ibn al-Khattab, the caring leader."
+      },
+      "narration": {
+        "ar": "روح للسوق جنب دكّان القرية، العمّ حمدان والجدّة آمنة مستنيينك.",
+        "en": "Go to the market by the village stall — Uncle Hamdan and Grandma Amina are waiting for you."
+      }
+    },
+    {
+      "id": "uthman-and-the-well",
+      "category": "companions",
+      "order": 3,
+      "area": "village",
+      "requires": [
+        "umar-and-the-widow"
+      ],
+      "title": {
+        "ar": "عثمان بن عفّان: بئرُ رُومة",
+        "en": "Uthman ibn Affan: The Well of Rumah"
+      },
+      "host": "farmer",
+      "characters": [
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            -5.0,
+            7.2
+          ],
+          "facing": 0.0,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى بئر القرية في الساحة",
+          "الجدّ سالم ينتظرك عند البئر"
+        ],
+        "en": [
+          "Go to the village well on the square",
+          "Grandpa Salim is waiting by the well"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا بُنيّ! تعالَ عند البئر… ما أطيبَ الماء البارد!",
+        "en": "Hello, my son! Come to the well… how lovely cool water is!"
+      },
+      "locked": {
+        "ar": "أهلًا يا بُنيّ! اسمع أولًا قصة «عمر بن الخطّاب» في السوق، ثم تعالَ إليّ.",
+        "en": "Hello, my son! First hear “Umar ibn al-Khattab” at the market, then come back to me."
+      },
+      "after": {
+        "ar": "ما تُنفقه في الخير يكبر عند الله، مثل حبّة القمح.",
+        "en": "What you give for good grows with Allah — like a grain of wheat."
+      },
+      "sources": [
+        "جامع الترمذي 3703 — مناشدة عثمان رضي الله عنه: «من يشتري بئر رومة…» (حسن) (https://sunnah.com/tirmidhi:3703)؛ والنسائي 3608",
+        "صحيح البخاري 2778 — «من حفر رومة فله الجنة» و«من جهّز جيش العسرة فله الجنة» (https://sunnah.com/bukhari:2778)؛ وعلّقه البخاري في كتاب المساقاة (https://sunnah.com/bukhari/42)",
+        "Qur'an 2:261",
+        "Tafsir Ibn Kathir — 2:261"
+      ],
+      "_note": "Tirmidhi 3703 (hasan): «قدم المدينة وليس بها ماء يستعذب غير بئر رومة… فاشتريتها من صلب مالي». Not used: the popular details about the owner, the price and buying half the well first. The 'army of hardship' is only mentioned as 'equipped many in a time of hardship'. Dhu al-Nurayn: married two of the Prophet's ﷺ daughters (Ruqayyah, then Umm Kulthum). Whole 2:261 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "أهلًا يا بُنيّ! نحن في القرية نحمد الله على هذا البئر؛ منه نشرب ونسقي. تخيّل مدينةً كاملة ليس فيها ماءٌ عذبٌ إلا بئرٌ واحدة!",
+          "en": "Hello, my son! In our village we thank Allah for this well — we drink from it and water our plants. Imagine a whole town with only one well of sweet water!"
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "هل سمعتَ ببئر «رُومة»؟",
+          "en": "Have you heard of the well of Rumah?",
+          "options": [
+            {
+              "ar": "لا يا جدّي، ما قصتها؟",
+              "en": "No, Grandpa — what's its story?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "اسمع يا بُنيّ، هي قصة صحابيٍّ كريمٍ جدًّا.",
+                  "en": "Listen, my son — it is the story of a very generous companion."
+                }
+              ]
+            },
+            {
+              "ar": "بئرٌ في المدينة؟",
+              "en": "A well in Madinah?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "نعم! بئرٌ في المدينة المنوّرة، ولها قصةٌ جميلة.",
+                  "en": "Yes! A well in Madinah, and it has a beautiful story."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا كانت هذه البئر مهمّة؟",
+              "en": "Why was this well so important?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "well_rumah",
+                  "ar": "لمّا قدم النبيّ ﷺ المدينة، لم يكن فيها ماءٌ عذبٌ طيّب إلا بئر رومة، وكانت ملكًا لرجل، والناس يحتاجون إلى مائها.",
+                  "en": "When the Prophet ﷺ came to Madinah, the only sweet, fresh water there was the well of Rumah. It belonged to one man, and people needed its water."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال النبيّ ﷺ؟",
+              "en": "What did the Prophet ﷺ say?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "well_rumah",
+                  "ar": "قال رسول الله ﷺ: «مَن يشتري بئرَ رومة، فيجعلُ دلوَه مع دِلاء المسلمين، بخيرٍ له منها في الجنة؟»",
+                  "en": "The Messenger of Allah ﷺ said: “Who will buy the well of Rumah and put his bucket in it alongside the buckets of the Muslims — for something better than it in Paradise?”"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "well_rumah",
+                  "ar": "يعني: مَن يشتريها ويجعل ماءها للناس جميعًا، يشرب منها مثلهم، وله أجرٌ أعظم في الجنة.",
+                  "en": "Meaning: whoever buys it and gives its water to everyone — drinking from it just like them — will have a far greater reward in Paradise."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ومَن اشتراها؟",
+              "en": "Who bought it?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "well_rumah",
+                  "ar": "عثمانُ بن عفّان رضي الله عنه! قال: «فاشتريتُها من صُلب مالي» — أي من ماله الخاص. وجعل ماءها لكلّ المسلمين.",
+                  "en": "Uthman ibn Affan, may Allah be pleased with him! He said: “I bought it with my own money.” And he gave its water to all the Muslims."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "هل كان عثمان كريمًا في أشياء أخرى؟",
+              "en": "Was Uthman generous in other ways too?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "نعم يا بُنيّ! كان من أكرم الصحابة. جهّز من ماله الكثيرين في وقت شدّةٍ وعُسرة، ووسّع مسجدَ النبيّ ﷺ.",
+                  "en": "Yes, my son! He was one of the most generous companions. With his own money he equipped many people in a time of hardship, and he enlarged the Prophet's ﷺ mosque."
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "وكان يُلقَّب «ذا النورين»، لأنّه تزوّج ابنتين من بنات النبيّ ﷺ، واحدةً بعد الأخرى.",
+                  "en": "He was called “Dhu al-Nurayn” — the one with two lights — because he married two of the Prophet's ﷺ daughters, one after the other."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف يكبر أجرُ الصدقة يا جدّي؟",
+              "en": "Grandpa, how does the reward of giving grow?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "seven_ears",
+                  "ar": "أنا فلّاح، وأعرف هذا جيّدًا! أزرع حبّةَ قمحٍ واحدة، فتنبت سنابل. والله ضرب لنا مثلًا في القرآن: حبّةٌ واحدة تُنبت سبعَ سنابل، في كلّ سنبلةٍ مئةُ حبّة!",
+                  "en": "I'm a farmer — I know this well! I plant one grain of wheat and ears of wheat grow. Allah gives us an example in the Quran: one grain grows seven ears, and every ear has a hundred grains!"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "seven_ears",
+                  "ar": "هكذا يضاعف الله أجرَ مَن ينفق مالَه في الخير، والله يضاعف لمن يشاء.",
+                  "en": "That is how Allah multiplies the reward of those who spend their money on good — and Allah multiplies it even more for whom He wills."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "تعالَ نسمع هذه الآية بصوت الشيخ.",
+          "en": "Come, let's hear this verse in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "2:261",
+          "to": "2:261"
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "في مثال الآية: كم حبّةً تصير الحبّةُ الواحدة؟",
+          "en": "In the verse's example, how many grains does one grain become?",
+          "options": [
+            {
+              "ar": "سبعمئة حبّة",
+              "en": "Seven hundred grains",
+              "correct": true
+            },
+            {
+              "ar": "حبّتين",
+              "en": "Two grains"
+            },
+            {
+              "ar": "عشر حبّات",
+              "en": "Ten grains"
+            }
+          ],
+          "hint": {
+            "ar": "سبعُ سنابل، في كلّ سنبلةٍ مئةُ حبّة…",
+            "en": "Seven ears, and a hundred grains in every ear…"
+          },
+          "praise": {
+            "ar": "ممتاز! سبعةٌ في مئة = سبعمئة، والله يضاعف أكثر لمن يشاء.",
+            "en": "Excellent! Seven times a hundred is seven hundred — and Allah multiplies even more for whom He wills."
+          }
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "فماذا نتعلّم من قصة عثمان رضي الله عنه؟",
+          "en": "So what do we learn from the story of Uthman?",
+          "options": [
+            {
+              "ar": "أن ننفق في الخير ونشارك الناس ما ينفعهم",
+              "en": "To give for good and share what helps people",
+              "correct": true
+            },
+            {
+              "ar": "أن نحتفظ بكلّ شيءٍ لأنفسنا",
+              "en": "To keep everything for ourselves"
+            },
+            {
+              "ar": "أن نبيع الماء للعطشان بثمنٍ غالٍ",
+              "en": "To sell water to thirsty people for a high price"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: لمن جعل عثمانُ ماءَ البئر؟",
+            "en": "Remember who Uthman gave the well water to…"
+          },
+          "praise": {
+            "ar": "ممتاز! حتى كوبُ ماءٍ تقدّمه لعطشان صدقةٌ جميلة.",
+            "en": "Excellent! Even a cup of water you give a thirsty person is a lovely charity."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأسقي العطشان، وأشارك ما عندي!",
+          "en": "I'll give water to the thirsty and share what I have!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة عثمان بن عفّان وبئر رومة.",
+        "en": "You learned the story of Uthman ibn Affan and the well of Rumah."
+      },
+      "narration": {
+        "ar": "روح لبئر القرية في الساحة، الجدّ سالم مستنيك جنب البئر.",
+        "en": "Go to the village well on the square — Grandpa Salim is waiting by the well."
+      }
+    },
+    {
+      "id": "ali-and-the-trusts",
+      "category": "companions",
+      "order": 4,
+      "area": "village",
+      "requires": [
+        "uthman-and-the-well"
+      ],
+      "title": {
+        "ar": "عليّ بن أبي طالب: ليلةُ الهجرة والأمانات",
+        "en": "Ali ibn Abi Talib: The Night of the Hijra and the Trusts"
+      },
+      "host": "amina",
+      "characters": [
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            -26.7,
+            -15.8
+          ],
+          "facing": 1.5708,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "props": [
+        {
+          "model": "lantern",
+          "position": [
+            -27.95,
+            -17.3
+          ],
+          "rot": 1.5708,
+          "y": 1.9
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر الجدّة آمنة عند باب البيت ذي الفانوس",
+          "غرب ساحة القرية"
+        ],
+        "en": [
+          "Visit Grandma Amina at the door with the lantern",
+          "West of the village square"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا حبيبي! هل تعرف معنى «الأمانة»؟ تعالَ، عندي لك قصة.",
+        "en": "Hello, my darling! Do you know what “amanah”, keeping a trust, means? Come — I have a story for you."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «عثمان وبئر رومة» عند بئر القرية، ثم تعالَ إليّ.",
+        "en": "Hello, my darling! First hear “Uthman and the Well of Rumah” at the village well, then come back to me."
+      },
+      "after": {
+        "ar": "ردَّ الأمانةَ إلى صاحبها، ولو كانت شيئًا صغيرًا.",
+        "en": "Always give back what you were trusted with — even something small."
+      },
+      "sources": [
+        "سيرة ابن هشام (عن ابن إسحاق) — مبيت عليّ على فراش النبي ﷺ و«نم على فراشي وتسجَّ ببردي هذا…» (https://www.islamweb.net/ar/library/content/200/16922)",
+        "مسند أحمد 3251 — حديث ابن عباس رضي الله عنهما: «فبات عليّ على فراش النبي ﷺ تلك الليلة…»؛ والحاكم في المستدرك («شرى عليّ نفسه… ثم نام مكانه»، وصحّح إسناده) (https://shamela.ws/book/13606/119)",
+        "السنن الكبرى للبيهقي 6/289 — أقام عليّ ثلاث ليال وأيامها حتى أدّى عن رسول الله ﷺ الودائع التي كانت عنده للناس؛ قوّاه ابن حجر (التلخيص 3/112) وحسّنه الألباني (إرواء الغليل 1546) (https://saadalkhathlan.com/radio-programs/lessons/953)",
+        "Qur'an 4:58 (first part)"
+      ],
+      "_note": "Sira reports (Ibn Ishaq; Ahmad/Hakim; Bayhaqi — hasan) rather than Bukhari/Muslim: reviewer please confirm the wording. The plotters' intention is told only as 'wanted to harm him'. 8:30 (about that night) is not played because it mentions killing; 4:58 words 1–8 («إن الله يأمركم أن تؤدوا الأمانات إلى أهلها») are played with a simple meaning.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "أهلًا يا حبيبي! لو أعطاك صديقك لعبته وقال: احفظها لي حتى أرجع… ماذا تفعل؟",
+          "en": "Hello, my darling! If your friend gave you his toy and said, “Keep it safe for me until I come back”… what would you do?"
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "هل تحفظها وتردّها إليه؟",
+          "en": "Would you keep it safe and give it back?",
+          "options": [
+            {
+              "ar": "نعم، أحفظها وأردّها كما هي!",
+              "en": "Yes — I'd keep it safe and give it back just as it was!",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "أحسنت! هذه هي «الأمانة». وقصتنا اليوم عن النبيّ ﷺ وعن ابن عمّه عليّ بن أبي طالب رضي الله عنه.",
+                  "en": "Well done! That is “amanah” — keeping a trust. Our story today is about the Prophet ﷺ and his cousin, Ali ibn Abi Talib, may Allah be pleased with him."
+                }
+              ]
+            },
+            {
+              "ar": "أحتفظ بها لنفسي؟",
+              "en": "Keep it for myself?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "لا يا حبيبي! نردّها إلى صاحبها، وهذه هي «الأمانة». اسمع القصة.",
+                  "en": "No, my darling! We give it back to its owner — that is “amanah”. Listen to the story."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "مَن هو عليّ بن أبي طالب؟",
+              "en": "Who was Ali ibn Abi Talib?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "هو ابنُ عمّ النبيّ ﷺ. عاش في بيته وهو صغير، وكان أوّلَ مَن آمن به من الصبيان، وصار بعد ذلك رابعَ الخلفاء الراشدين.",
+                  "en": "He was the Prophet's ﷺ cousin. He grew up in the Prophet's home as a boy, was the first boy to believe in him, and later became the fourth of the rightly guided caliphs."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا كان يلقّب أهلُ مكة النبيَّ ﷺ؟",
+              "en": "What did the people of Makkah call the Prophet ﷺ?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "كانوا يسمّونه «الأمين»، لأنّه لا يخون أبدًا. حتى إنّ الناس كانوا يتركون عنده أشياءهم الثمينة ليحفظها لهم — وهي «الودائع».",
+                  "en": "They called him “al-Amin” — the Trustworthy — because he never broke a trust. People even left their precious things with him to keep safe; these were called “wada’i’”, deposits."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث ليلةَ الهجرة؟",
+              "en": "What happened on the night of the Hijra?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "night_house",
+                  "ar": "أراد بعضُ كفّار مكة أن يؤذوا النبيَّ ﷺ، فأذِن الله له أن يهاجر إلى المدينة. وفي تلك الليلة قال النبيّ ﷺ لعليّ: «نَمْ على فراشي، وتَسَجَّ بِبُردي هذا».",
+                  "en": "Some of the disbelievers of Makkah wanted to harm the Prophet ﷺ, so Allah allowed him to emigrate to Madinah. That night the Prophet ﷺ said to Ali: “Sleep in my bed, and cover yourself with this cloak of mine.”"
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "green_cloak",
+                  "ar": "يعني: نَمْ في مكاني، وتغطَّ بعباءتي الخضراء. وطمأنه أنّه لن يصيبه منهم شيءٌ يكرهه.",
+                  "en": "Meaning: sleep in my place and wrap yourself in my green cloak. And he reassured him that nothing bad would reach him from them."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ألم يخف عليّ؟",
+              "en": "Wasn't Ali afraid?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "green_cloak",
+                  "ar": "كان عليٌّ رضي الله عنه شجاعًا، يحبّ النبيَّ ﷺ ويثق بكلامه. فنام في فراشه مطمئنًّا، وخرج النبيّ ﷺ سالمًا، وحفظه الله.",
+                  "en": "Ali was brave. He loved the Prophet ﷺ and trusted his word, so he slept in his bed calmly — and the Prophet ﷺ left safely, protected by Allah."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "green_cloak",
+                  "ar": "وفي الصباح وجدوا عليًّا في الفراش، فعرفوا أنّ النبيّ ﷺ قد خرج، وردّ الله كيدهم.",
+                  "en": "In the morning they found Ali in the bed, and knew the Prophet ﷺ had already gone — Allah had spoiled their plan."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "لماذا نام عليٌّ في فراش النبيّ ﷺ؟",
+          "en": "Why did Ali sleep in the Prophet's ﷺ bed?",
+          "options": [
+            {
+              "ar": "لأنّ النبيّ ﷺ طلب منه ذلك ليخرج بأمان",
+              "en": "Because the Prophet ﷺ asked him to, so he could leave safely",
+              "correct": true
+            },
+            {
+              "ar": "لأنّ فراشه كان أنعم",
+              "en": "Because the bed was softer"
+            },
+            {
+              "ar": "لأنّه كان متعبًا",
+              "en": "Because he was tired"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا قال النبيّ ﷺ لعليّ تلك الليلة؟",
+            "en": "Remember what the Prophet ﷺ told Ali that night…"
+          },
+          "praise": {
+            "ar": "أحسنت! أطاع عليٌّ النبيَّ ﷺ بشجاعةٍ وحبّ.",
+            "en": "Well done! Ali obeyed the Prophet ﷺ with courage and love."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث للودائع التي عند النبيّ ﷺ؟",
+              "en": "What happened to the deposits the Prophet ﷺ was keeping?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "trusts",
+                  "ar": "هنا الجزء الجميل! بقي عليٌّ في مكة بعد النبيّ ﷺ ثلاثَ ليالٍ وأيامَها، يردّ الودائع إلى أصحابها.",
+                  "en": "Here's the beautiful part! Ali stayed in Makkah for three nights and days after the Prophet ﷺ left, giving the deposits back to their owners."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "trusts",
+                  "ar": "فلمّا أدّى الأماناتِ كلَّها إلى أهلها، هاجر ولحق بالنبيّ ﷺ في المدينة.",
+                  "en": "When every trust had been returned to its owner, he emigrated too and joined the Prophet ﷺ in Madinah."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "حتى الذين آذَوه؟ ردّ إليهم أشياءهم؟",
+              "en": "Even to the people who hurt him? He gave their things back?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "نعم يا حبيبي! كانت الودائع لأهل مكة، والأمانة تُردّ إلى صاحبها دائمًا. هكذا علّمنا النبيّ ﷺ، حتى في أصعب الأوقات.",
+                  "en": "Yes, my darling! The deposits belonged to the people of Makkah, and a trust is always returned to its owner. That is what the Prophet ﷺ taught us — even in the hardest times."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "وقد أمرنا الله بذلك في القرآن. تعالَ نسمع أوّل الآية بصوت الشيخ.",
+          "en": "Allah commands us to do this in the Quran. Come, let's hear the beginning of the verse in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "4:58",
+          "to": "4:58",
+          "words": [
+            1,
+            8
+          ],
+          "meaning": {
+            "ar": "إنّ الله يأمركم أن تردّوا كلَّ ما اؤتُمنتم عليه إلى أصحابه كاملًا.",
+            "en": "Allah commands you to give back everything you were trusted with to its owners, in full."
+          }
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من قصة عليّ رضي الله عنه؟",
+          "en": "So what do we learn from the story of Ali?",
+          "options": [
+            {
+              "ar": "أن أحفظ الأمانة وأردّها إلى صاحبها، وأكون شجاعًا في الخير",
+              "en": "To keep a trust and return it to its owner — and to be brave in doing good",
+              "correct": true
+            },
+            {
+              "ar": "أن آخذ ما ليس لي",
+              "en": "To take what isn't mine"
+            },
+            {
+              "ar": "أن أنسى ما أعطاني الناس لأحفظه",
+              "en": "To forget what people gave me to keep"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا فعل عليٌّ بالودائع قبل أن يهاجر؟",
+            "en": "Remember what Ali did with the deposits before he emigrated…"
+          },
+          "praise": {
+            "ar": "ممتاز! وكن «أمينًا» مثل نبيّنا ﷺ.",
+            "en": "Excellent! And be “amin”, trustworthy, like our Prophet ﷺ."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأحفظ الأمانة وأردّها دائمًا!",
+          "en": "I'll always keep a trust and give it back!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة عليّ بن أبي طالب وليلة الهجرة والأمانات.",
+        "en": "You learned the story of Ali ibn Abi Talib, the night of the Hijra and the trusts."
+      },
+      "narration": {
+        "ar": "زور الجدّة آمنة عند باب البيت اللي عليه فانوس، غرب ساحة القرية.",
+        "en": "Visit Grandma Amina at the door with the lantern, west of the village square."
+      }
+    },
+    {
+      "id": "nuh-and-the-ark",
+      "category": "prophets",
+      "order": 1,
+      "area": "fields",
+      "requires": [],
+      "title": {
+        "ar": "نوح عليه السلام والسفينة",
+        "en": "Nuh (Noah) and the Ark"
+      },
+      "host": "farmer",
+      "characters": [
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            10.0,
+            62.0
+          ],
+          "facing": 3.1416,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "التاجر",
+            "en": "The Trader"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            7.5,
+            62.8
+          ],
+          "facing": 2.5,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الجدّ سالم والعمّ حمدان عند شاطئ النهر",
+          "شمال الحقول، قرب الجسر"
+        ],
+        "en": [
+          "Find Grandpa Salim and Uncle Hamdan by the riverbank",
+          "North of the fields, near the bridge"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا بُنيّ! انظر إلى النهر ما أوسعه! تعالَ، نحكي لك عن سفينةٍ عظيمة.",
+        "en": "Hello, my son! Look how wide the river is! Come — we will tell you about a great ship."
+      },
+      "after": {
+        "ar": "اصبر على فعل الخير، ولا تهتمّ بمن يسخر منك.",
+        "en": "Keep doing good patiently, and don't mind anyone who laughs at you."
+      },
+      "sources": [
+        "Qur'an 11:25–48",
+        "Qur'an 71:1–28",
+        "Qur'an 29:14",
+        "Qur'an 54:11–14",
+        "صحيح البخاري 4476 — حديث الشفاعة: «ائتوا نوحًا فإنه أول رسول بعثه الله إلى أهل الأرض» (https://sunnah.com/bukhari:4476)",
+        "Tafsir Ibn Kathir — Surat Hud",
+        "Tafsir al-Muyassar — Surat Hud"
+      ],
+      "_note": "Qur'an-only retelling. Left out for young children: Nuh's son who refused and drowned (11:42–43), and any drowning details; only 'those who stubbornly refused were not saved'. No numbers of believers, ark size or animal lists (not in the Qur'an). Verses 11:40–41 are played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "أهلًا يا بُنيّ! نحن الفلاحين نعرف قيمة الماء، به تحيا الأرض. والماء أيضًا جزءٌ من قصةٍ عظيمة في القرآن: قصة نوح عليه السلام.",
+          "en": "Hello, my son! We farmers know how precious water is — it brings the land to life. And water is part of a great story in the Quran: the story of Nuh, peace be upon him."
+        },
+        {
+          "type": "choice",
+          "speaker": "hamdan",
+          "ar": "هل تعرف مَن هو نوح عليه السلام؟",
+          "en": "Do you know who Nuh, peace be upon him, was?",
+          "options": [
+            {
+              "ar": "نبيٌّ صنع سفينة؟",
+              "en": "A prophet who built a ship?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "أحسنت! هو أوّل رسولٍ أرسله الله إلى أهل الأرض، ومن أولي العزم من الرسل، وصنع سفينةً بأمر الله.",
+                  "en": "Well done! He was the first messenger Allah sent to the people of the earth, one of the five greatest messengers — and he built a ship by Allah’s command."
+                }
+              ]
+            },
+            {
+              "ar": "لا، احكيا لي!",
+              "en": "No — tell me!",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "من عينيّ! هو أوّل رسولٍ أرسله الله إلى أهل الأرض، ومن أولي العزم من الرسل. اسمع يا بُنيّ.",
+                  "en": "With all my heart! He was the first messenger Allah sent to the people of the earth, one of the five greatest messengers. Listen, my son."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا أرسله الله؟",
+              "en": "Why did Allah send him?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "كان قومُه يعبدون أصنامًا لا تنفع ولا تضرّ. فأرسل الله إليهم نوحًا ليقول لهم: اعبدوا الله وحده.",
+                  "en": "His people worshipped idols that could neither help nor harm. So Allah sent Nuh to tell them: worship Allah alone."
+                },
+                {
+                  "speaker": "hamdan",
+                  "ar": "ودعاهم نوحٌ ليلًا ونهارًا، سرًّا وجهرًا، وصبر عليهم زمنًا طويلًا جدًّا: ألفَ سنةٍ إلا خمسين عامًا!",
+                  "en": "Nuh called them night and day, quietly and openly, and was patient with them for a very long time — a thousand years less fifty!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "كلّ هذه السنين؟! وهل آمنوا به؟",
+              "en": "All those years?! Did they believe him?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "آمن معه قليلٌ من الناس فقط، وأكثرُهم رفضوا وسخروا منه. ومع ذلك ظلّ يدعوهم برفقٍ وصبر.",
+                  "en": "Only a few people believed with him; most refused and made fun of him. Still, he kept calling them gently and patiently."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا أمره الله أن يفعل؟",
+              "en": "What did Allah tell him to do?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "ark_build",
+                  "ar": "أوحى الله إلى نوح أنّه لن يؤمن من قومه إلا مَن قد آمن، وأمره أن يصنع سفينةً، تحت رعاية الله وبتعليمه.",
+                  "en": "Allah revealed to Nuh that no more of his people would believe except those who already had, and told him to build a ship — under Allah’s care and by His teaching."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "ark_build",
+                  "ar": "فبدأ نوحٌ يصنع السفينة من الألواح والمسامير. وكلّما مرّ عليه جماعةٌ من قومه سخروا منه، وهو يُكمل عمله.",
+                  "en": "So Nuh began building the ship from planks and nails. Every time a group of his people passed by they laughed at him — and he kept on working."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "ماذا فعل نوحٌ حين سخر منه قومه وهو يصنع السفينة؟",
+          "en": "What did Nuh do when his people laughed at him while he built the ship?",
+          "options": [
+            {
+              "ar": "صبر وأكمل عمله كما أمره الله",
+              "en": "He was patient and finished the work Allah told him to do",
+              "correct": true
+            },
+            {
+              "ar": "ترك السفينة وغضب",
+              "en": "He left the ship and got angry"
+            },
+            {
+              "ar": "نام ولم يعمل",
+              "en": "He went to sleep and stopped working"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: كان نوحٌ صبورًا جدًّا…",
+            "en": "Remember: Nuh was very patient…"
+          },
+          "praise": {
+            "ar": "أحسنت! أكمل السفينة وتوكّل على الله.",
+            "en": "Well done! He finished the ship and trusted in Allah."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا ركب معه في السفينة؟",
+              "en": "Who went with him on the ship?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "ark_build",
+                  "ar": "لمّا جاء أمرُ الله، أمره أن يحمل فيها من كلّ نوعٍ من الحيوانات زوجين اثنين — ذكرًا وأنثى — وأهلَه، ومَن آمن معه.",
+                  "en": "When Allah’s command came, He told him to take on board a pair of every kind of animal — a male and a female — and his family, and those who believed with him."
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "ark_sea",
+                  "ar": "وقال لهم نوح: «اركبوا فيها، بسم الله مجراها ومُرساها» — يعني: باسم الله تسير السفينة، وباسم الله تقف.",
+                  "en": "And Nuh said: “Board it — in the name of Allah it sails and in the name of Allah it anchors.” Meaning: with Allah’s name the ship moves, and with Allah’s name it stops."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث بعد ذلك؟",
+              "en": "What happened next?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "ark_sea",
+                  "ar": "نزل المطرُ من السماء بغزارة، وتفجّرت الأرضُ عيونًا، فجرت السفينةُ بهم في موجٍ كالجبال، والله يحفظ مَن فيها.",
+                  "en": "Rain poured down from the sky and springs burst out of the earth, and the ship sailed with them through waves like mountains — with Allah protecting everyone on board."
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "ark_sea",
+                  "ar": "فأنجى الله نوحًا والمؤمنين معه، وأمّا الذين أصرّوا على العناد فلم ينجوا.",
+                  "en": "So Allah saved Nuh and the believers with him; those who stubbornly refused were not saved."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وأين وقفت السفينة؟",
+              "en": "Where did the ship stop?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "ark_judi",
+                  "ar": "أمر اللهُ الأرضَ أن تبلع ماءها، والسماءَ أن تُمسك مطرها، فنزل الماء، ورست السفينة على جبلٍ اسمه «الجوديّ».",
+                  "en": "Allah commanded the earth to swallow its water and the sky to hold back its rain. The water went down, and the ship came to rest on a mountain called al-Judi."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "ark_judi",
+                  "ar": "ونزل نوحٌ ومَن معه بسلامٍ وبركاتٍ من الله، وبدأت الحياة من جديد.",
+                  "en": "Nuh and those with him came down with peace and blessings from Allah, and life began again."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "ar": "تعالَ نسمع الآيتين اللتين فيهما ركوب السفينة، بصوت الشيخ.",
+          "en": "Come, let's hear the two verses about boarding the ship, in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "11:40",
+          "to": "11:41"
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "فماذا نتعلّم من قصة نوح عليه السلام؟",
+          "en": "So what do we learn from the story of Nuh?",
+          "options": [
+            {
+              "ar": "أن نصبر على فعل الخير ونطيع الله، والله ينجّي المؤمنين",
+              "en": "To keep doing good patiently and obey Allah — Allah saves the believers",
+              "correct": true
+            },
+            {
+              "ar": "أن نترك الخير إذا سخر منّا أحد",
+              "en": "To stop doing good if someone laughs at us"
+            },
+            {
+              "ar": "أنّ السفن لا تغرق أبدًا",
+              "en": "That ships never sink"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: هل ترك نوحٌ السفينة لمّا سخروا منه؟",
+            "en": "Remember: did Nuh stop building when they laughed at him?"
+          },
+          "praise": {
+            "ar": "ممتاز! وتذكّر أن تقول «بسم الله» حين تبدأ أيّ عمل.",
+            "en": "Excellent! And remember to say “Bismillah” whenever you begin something."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأقول «بسم الله»، وأصبر على الخير مثل نوح عليه السلام!",
+          "en": "I'll say “Bismillah” and keep doing good patiently, like Nuh, peace be upon him!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة نوح عليه السلام والسفينة.",
+        "en": "You learned the story of Nuh, peace be upon him, and the ark."
+      },
+      "narration": {
+        "ar": "روح للجدّ سالم والعمّ حمدان على شطّ النهر، شمال الغيطان جنب الكوبري.",
+        "en": "Go to Grandpa Salim and Uncle Hamdan on the riverbank, north of the fields near the bridge."
+      }
+    },
+    {
+      "id": "ibrahim-and-the-fire",
+      "category": "prophets",
+      "order": 2,
+      "area": "desert",
+      "requires": [
+        "nuh-and-the-ark"
+      ],
+      "title": {
+        "ar": "إبراهيم عليه السلام: النارُ الباردة",
+        "en": "Ibrahim (Abraham): The Fire Made Cool"
+      },
+      "host": "hamdan",
+      "characters": [
+        {
+          "id": "hamdan",
+          "name": {
+            "ar": "العمّ حمدان",
+            "en": "Uncle Hamdan"
+          },
+          "role": {
+            "ar": "التاجر",
+            "en": "The Trader"
+          },
+          "look": {
+            "robe": 3033695,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": 3813417,
+            "headwear": "keffiyeh",
+            "cloth": 15724527,
+            "band": 1710618,
+            "staff": true,
+            "height": 1.78
+          },
+          "model": "models/trader.glb",
+          "position": [
+            141.0,
+            -50.0
+          ],
+          "facing": -0.6,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            143.0,
+            -51.2
+          ],
+          "facing": -0.82,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الغيطان الشرقية على طريق الدار القديمة",
+          "العمّ حمدان والجدّ سالم ينتظرانك"
+        ],
+        "en": [
+          "Go to the Eastern Fields, on the road to the Old Homestead",
+          "Uncle Hamdan and Grandpa Salim are waiting"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا صغيري! هل تعرف قصة الفتى الذي لم يخَف إلا من الله؟",
+        "en": "Hello, little one! Do you know the story of the young man who feared no one but Allah?"
+      },
+      "locked": {
+        "ar": "أهلًا يا صغيري! اسمع أولًا قصة «نوح والسفينة» عند شاطئ النهر، ثم تعالَ إلينا.",
+        "en": "Hello, little one! First hear “Nuh and the Ark” by the riverbank, then come to us."
+      },
+      "after": {
+        "ar": "فكّر بعقلك، واعبد الله وحده، وتوكّل عليه.",
+        "en": "Think with your mind, worship Allah alone, and trust in Him."
+      },
+      "sources": [
+        "Qur'an 21:51–71",
+        "Qur'an 37:83–98",
+        "صحيح البخاري 4563 — ابن عباس: «حسبنا الله ونعم الوكيل» قالها إبراهيم عليه السلام حين أُلقي في النار (https://sunnah.com/bukhari:4563)",
+        "Tafsir Ibn Kathir — Surat al-Anbiya",
+        "Tafsir al-Muyassar — Surat al-Anbiya"
+      ],
+      "_note": "Qur'an retelling plus Bukhari 4563. 'A festival outside the town' is from tafsir of 37:88–90 (Ibn Kathir). His words «بل فعله كبيرهم هذا فاسألوهم إن كانوا ينطقون» are presented, as in tafsir, as a way to make them think — please review. The fire is told gently (no burning details); 21:68 «حرّقوه» is not played — only 21:69–70.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "أهلًا يا صغيري! قصتنا اليوم عن نبيّ الله إبراهيم عليه السلام، خليل الرحمن. كان فتًى ذكيًّا، يفكّر بعقله، ويحبّ الله.",
+          "en": "Hello, little one! Today's story is about Allah's prophet Ibrahim, peace be upon him, the friend of the Most Merciful. He was a clever young man who thought with his mind and loved Allah."
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "هل تعرف ماذا كان يعبد قومُه؟",
+          "en": "Do you know what his people worshipped?",
+          "options": [
+            {
+              "ar": "أصنامًا؟",
+              "en": "Idols?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "صحيح يا بُنيّ. كانوا ينحتون تماثيل بأيديهم، ثم يعبدونها!",
+                  "en": "Right, my son. They carved statues with their own hands — and then worshipped them!"
+                }
+              ]
+            },
+            {
+              "ar": "لا، ماذا؟",
+              "en": "No — what?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "كانوا ينحتون تماثيل بأيديهم، ثم يعبدونها!",
+                  "en": "They carved statues with their own hands — and then worshipped them!"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال لهم إبراهيم؟",
+              "en": "What did Ibrahim say to them?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "سألهم إبراهيم: «ما هذه التماثيلُ التي أنتم لها عاكفون؟» فقالوا: وجدنا آباءنا لها عابدين.",
+                  "en": "Ibrahim asked them: “What are these statues you are so devoted to?” They said: “We found our fathers worshipping them.”"
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "فقال لهم: ربُّكم هو ربُّ السماوات والأرض، الذي خلقهنّ، وهو وحده الذي يستحقّ العبادة.",
+                  "en": "He told them: your Lord is the Lord of the heavens and the earth, who created them — He alone deserves to be worshipped."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل سمعوا كلامه؟",
+              "en": "Did they listen?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "ar": "لا. فأراد إبراهيم أن يُريهم بعيونهم أنّ الأصنام لا تنفع شيئًا. فلمّا خرج قومُه من المدينة إلى عيدٍ لهم، ذهب إلى الأصنام…",
+                  "en": "No. So Ibrahim wanted to show them with their own eyes that idols are no use at all. When his people went out of town for a festival, he went to the idols…"
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "idols_broken",
+                  "ar": "فكسّرها قطعًا، إلا الصنمَ الكبير تركه، لعلّهم يرجعون إليه ويسألونه.",
+                  "en": "…and broke them to pieces — all except the biggest one, which he left, so that they might go back to it and ask."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا ترك الصنم الكبير؟",
+              "en": "Why did he leave the big idol?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "idols_broken",
+                  "ar": "لمّا رجعوا قالوا: مَن فعل هذا بآلهتنا؟ فجاؤوا بإبراهيم وسألوه. فقال: «بل فعله كبيرُهم هذا، فاسألوهم إن كانوا ينطقون».",
+                  "en": "When they came back they said: “Who did this to our gods?” They brought Ibrahim and asked him. He said: “Rather, this biggest one of them did it — so ask them, if they can speak!”"
+                },
+                {
+                  "speaker": "hamdan",
+                  "scene": "idols_broken",
+                  "ar": "أراد أن يجعلهم يفكّرون: كيف تعبدون شيئًا لا يتكلّم، ولا يدافع عن نفسه؟ فعرفوا في أنفسهم أنّ الأصنام لا تنطق.",
+                  "en": "He wanted them to think: how can you worship something that can't speak, and can't even protect itself? And deep down they knew the idols could not speak."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل آمنوا بعد ذلك؟",
+              "en": "Did they believe after that?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "للأسف لا. غضبوا وعاندوا، وقرّروا أن يُلقوا إبراهيم في نارٍ عظيمة.",
+                  "en": "Sadly, no. They got angry and stubborn, and decided to throw Ibrahim into a huge fire."
+                },
+                {
+                  "speaker": "hamdan",
+                  "ar": "لكنّ إبراهيم لم يخَف، وقال كلمةً عظيمة: «حسبُنا اللهُ ونِعمَ الوكيل» — يعني: الله يكفيني، وهو خيرُ مَن أعتمد عليه.",
+                  "en": "But Ibrahim was not afraid. He said great words: “Allah is enough for us, and He is the best to rely on.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعلت النار؟",
+              "en": "And what did the fire do?",
+              "reply": [
+                {
+                  "speaker": "hamdan",
+                  "scene": "cool_fire",
+                  "ar": "هنا المعجزة! قال الله: «يا نارُ كوني بَردًا وسلامًا على إبراهيم». فصارت النار باردةً لطيفة، لم تؤذه أبدًا!",
+                  "en": "Here is the miracle! Allah said: “O fire, be cool and safe for Ibrahim!” And the fire became cool and gentle — it did not hurt him at all!"
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "cool_fire",
+                  "ar": "فالنار لا تحرق إلا بإذن الله، لأنّ الله هو الذي خلقها. فخرج إبراهيم منها سالمًا، ونجّاه الله.",
+                  "en": "Fire only burns by Allah’s permission, because Allah created it. Ibrahim came out safe and sound — Allah saved him."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "ماذا قال الله للنار؟",
+          "en": "What did Allah say to the fire?",
+          "options": [
+            {
+              "ar": "كوني بردًا وسلامًا على إبراهيم",
+              "en": "Be cool and safe for Ibrahim",
+              "correct": true
+            },
+            {
+              "ar": "اشتعلي أكثر",
+              "en": "Burn even more"
+            },
+            {
+              "ar": "انطفئي غدًا",
+              "en": "Go out tomorrow"
+            }
+          ],
+          "hint": {
+            "ar": "كانت النار باردةً ولطيفة…",
+            "en": "The fire became cool and gentle…"
+          },
+          "praise": {
+            "ar": "أحسنت! الله على كلّ شيءٍ قدير.",
+            "en": "Well done! Allah has power over all things."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "hamdan",
+          "ar": "تعالَ نسمع الآيتين بصوت الشيخ.",
+          "en": "Come, let's hear the two verses in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "21:69",
+          "to": "21:70"
+        },
+        {
+          "type": "question",
+          "speaker": "hamdan",
+          "ar": "فماذا نتعلّم من قصة إبراهيم عليه السلام؟",
+          "en": "So what do we learn from the story of Ibrahim?",
+          "options": [
+            {
+              "ar": "أن نفكّر بعقولنا ونعبد الله وحده، ونتوكّل عليه",
+              "en": "To think with our minds, worship Allah alone and trust in Him",
+              "correct": true
+            },
+            {
+              "ar": "أن نفعل ما يفعله الناس دون تفكير",
+              "en": "To do whatever everyone does without thinking"
+            },
+            {
+              "ar": "أن نخاف من كلّ شيء",
+              "en": "To be afraid of everything"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: قال إبراهيم «حسبنا الله ونعم الوكيل»…",
+            "en": "Remember what Ibrahim said: “Allah is enough for us…”"
+          },
+          "praise": {
+            "ar": "ممتاز! وإذا خفتَ من شيء فقل: حسبنا الله ونعم الوكيل.",
+            "en": "Excellent! And whenever you are afraid, say: “Allah is enough for us, and He is the best to rely on.”"
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "حسبُنا اللهُ ونعم الوكيل!",
+          "en": "Allah is enough for us, and He is the best to rely on!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة إبراهيم عليه السلام والنار الباردة.",
+        "en": "You learned the story of Ibrahim, peace be upon him, and the fire made cool."
+      },
+      "narration": {
+        "ar": "روح للغيطان الشرقية على طريق الدار القديمة، العمّ حمدان والجدّ سالم مستنيينك.",
+        "en": "Go to the eastern fields on the road to the Old Homestead — Uncle Hamdan and Grandpa Salim are waiting for you."
+      }
+    },
+    {
+      "id": "musa-on-the-river",
+      "category": "prophets",
+      "order": 3,
+      "area": "fields",
+      "requires": [
+        "ibrahim-and-the-fire"
+      ],
+      "title": {
+        "ar": "موسى عليه السلام: الطفل في النهر",
+        "en": "Musa (Moses): The Baby on the River"
+      },
+      "host": "amina",
+      "characters": [
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            -41.8,
+            32.0
+          ],
+          "facing": 1.5708,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "props": [
+        {
+          "model": "basket",
+          "position": [
+            -41.9,
+            33.4
+          ],
+          "rot": 0.4
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر الجدّة آمنة عند الترعة الغربية بين الحقول",
+          "شمال غرب القرية"
+        ],
+        "en": [
+          "Visit Grandma Amina by the western canal in the fields",
+          "North-west of the village"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا حبيبي! انظر إلى ماء الترعة يجري… هذا الماء يأتي من النيل. تعالَ أحكِ لك عن طفلٍ حمله النيل.",
+        "en": "Hello, my darling! Look at the canal water flowing… it comes from the Nile. Come, let me tell you about a baby the Nile carried."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «إبراهيم والنار الباردة» في الغيطان الشرقية، ثم تعالَ إليّ.",
+        "en": "Hello, my darling! First hear “Ibrahim and the Fire Made Cool” in the eastern fields, then come back to me."
+      },
+      "after": {
+        "ar": "وعدُ الله حقّ، فلا تخف ولا تحزن.",
+        "en": "Allah's promise is true — so don't be afraid, and don't be sad."
+      },
+      "sources": [
+        "Qur'an 28:4–13",
+        "Qur'an 20:37–40",
+        "Tafsir Ibn Kathir — Surat al-Qasas (اليمّ: نهر النيل)",
+        "Tafsir al-Muyassar — Surat al-Qasas"
+      ],
+      "_note": "Qur'an-only retelling. Pharaoh's killing of baby boys (28:4) is told gently as 'ordered his soldiers to harm their little boys'. Pharaoh's wife's «لا تقتلوه» (28:9) is paraphrased as 'leave him with us'. 'In Egypt, on the Nile' follows tafsir (Ibn Kathir: اليم = النيل). Only 28:7 (the promise to Musa's mother) is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "أهلًا يا حبيبي! منذ زمنٍ بعيدٍ جدًّا، هنا في مصر، على شاطئ النيل، وُلد طفلٌ صغير صار نبيًّا عظيمًا: موسى عليه السلام.",
+          "en": "Hello, my darling! A very long time ago, here in Egypt, on the banks of the Nile, a little baby was born who became a great prophet: Musa, peace be upon him."
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "هل تعرف قصة موسى وهو رضيع؟",
+          "en": "Do you know the story of Musa as a baby?",
+          "options": [
+            {
+              "ar": "لا يا جدّتي، احكي لي!",
+              "en": "No, Grandma — tell me!",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "اسمع يا حبيبي. إنها قصةٌ عن أمٍّ تحبّ ابنها، وعن وعدٍ من الله.",
+                  "en": "Listen, my darling. It's a story about a mother who loved her son, and a promise from Allah."
+                }
+              ]
+            },
+            {
+              "ar": "سمعتُ عن صندوقٍ في النهر…",
+              "en": "I heard about a box on the river…",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "صحيح! اسمع القصة من أوّلها.",
+                  "en": "That's right! Listen to the story from the beginning."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولماذا كانت أمّ موسى خائفة؟",
+              "en": "Why was Musa's mother afraid?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "palace_nile",
+                  "ar": "كان في مصر ملكٌ ظالمٌ متكبّر اسمه فرعون. كان يظلم بني إسرائيل، ويأمر جنوده أن يؤذوا أولادهم الصغار.",
+                  "en": "Egypt had a cruel, proud king called Pharaoh. He was unjust to the Children of Israel and ordered his soldiers to harm their little boys."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعلت أمّ موسى؟",
+              "en": "What did Musa's mother do?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "nile_basket",
+                  "ar": "ألهمها الله — أي وضع في قلبها — أن تُرضعه، فإذا خافت عليه تضعه في صندوق، وتُلقيه في اليمّ — أي في النهر.",
+                  "en": "Allah inspired her — He put it in her heart — to nurse him, and when she feared for him, to put him in a box and place it on the river."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "nile_basket",
+                  "ar": "ووعدها الله وعدًا جميلًا: «ولا تخافي ولا تحزني، إنّا رادّوه إليكِ، وجاعلوه من المرسلين».",
+                  "en": "And Allah gave her a beautiful promise: “Do not fear and do not grieve — We will return him to you and make him one of the messengers.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل وضعته في النهر فعلًا؟",
+              "en": "Did she really put him on the river?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "nile_basket",
+                  "ar": "نعم، وضعته في الصندوق وتركته يجري على ماء النيل، والله يحرسه. وقالت لأخته: «قُصّيه» — أي امشي وراءه وانظري أين يذهب.",
+                  "en": "Yes. She put him in the box and let it float on the Nile, with Allah watching over him. And she told his sister: “Follow him” — walk after him and see where he goes."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "nile_basket",
+                  "ar": "فمشت أختُه على الشاطئ تراقبه من بعيد، ولم يشعر بها أحد.",
+                  "en": "So his sister walked along the bank, watching from far away, and no one noticed her."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وإلى أين أخذه الماء؟",
+              "en": "Where did the water take him?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "palace_nile",
+                  "ar": "أخذه الماء إلى قصر فرعون نفسه! فالتقطه أهلُ فرعون. ولكنّ الله ألقى عليه محبّةً منه، فكلّ مَن رآه أحبّه.",
+                  "en": "The water took him right to Pharaoh's own palace! Pharaoh's household picked him up. But Allah had placed love for him in people's hearts — everyone who saw him loved him."
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "palace_nile",
+                  "ar": "فقالت امرأةُ فرعون: هذا الطفل فرحةٌ لي ولك، اتركوه لنا، عسى أن ينفعنا أو نتّخذه ولدًا.",
+                  "en": "Pharaoh's wife said: “This child is a joy for me and for you. Leave him with us — perhaps he will benefit us, or we will adopt him as a son.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ومَن أرضعه في القصر؟",
+              "en": "Who fed him in the palace?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "هنا العجيبة! جعله الله يرفض أن يرضع من أيّ امرأة، فاحتار أهلُ القصر.",
+                  "en": "Here's the wonder! Allah made him refuse to nurse from any woman, and the palace people didn't know what to do."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "فجاءت أخته وقالت: هل أدلّكم على أهل بيتٍ يكفلونه لكم، ويعتنون به بإخلاص؟",
+                  "en": "Then his sister came and said: “Shall I show you a family who will look after him for you, and care for him sincerely?”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ورجع إلى أمّه؟!",
+              "en": "And he went back to his mother?!",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "نعم! ردّه الله إلى أمّه لترضعه، فقرّت عينُها ولم تحزن، وعلمت أنّ وعدَ الله حقّ.",
+                  "en": "Yes! Allah returned him to his mother so she could nurse him. She was comforted, her sadness gone, and she knew Allah's promise is true."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "ثم كبر موسى، وجعله الله نبيًّا من أولي العزم من الرسل، كما وعد.",
+                  "en": "Then Musa grew up, and Allah made him one of the five greatest messengers — just as He had promised."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "مَن حفظ موسى وهو صغيرٌ في النهر؟",
+          "en": "Who protected baby Musa on the river?",
+          "options": [
+            {
+              "ar": "الله سبحانه وتعالى",
+              "en": "Allah, the Most High",
+              "correct": true
+            },
+            {
+              "ar": "فرعون",
+              "en": "Pharaoh"
+            },
+            {
+              "ar": "الصندوق وحده",
+              "en": "Just the box"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر وعدَ الله لأمّه: «إنّا رادّوه إليكِ»…",
+            "en": "Remember Allah's promise to his mother: “We will return him to you”…"
+          },
+          "praise": {
+            "ar": "أحسنت! الله حفظه، وردّه إلى أمّه كما وعد.",
+            "en": "Well done! Allah protected him and returned him to his mother, just as He promised."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "تعالَ نسمع الآية التي فيها وعدُ الله لأمّ موسى، بصوت الشيخ.",
+          "en": "Come, let's hear the verse with Allah's promise to Musa's mother, in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "28:7",
+          "to": "28:7"
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من هذه القصة؟",
+          "en": "So what do we learn from this story?",
+          "options": [
+            {
+              "ar": "أنّ وعدَ الله حقّ، وأنّ الله يحفظ مَن يتوكّل عليه",
+              "en": "Allah's promise is true, and Allah protects those who trust Him",
+              "correct": true
+            },
+            {
+              "ar": "أنّ فرعون كان رحيمًا",
+              "en": "That Pharaoh was kind"
+            },
+            {
+              "ar": "أن نخاف دائمًا",
+              "en": "To always be afraid"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: هل تحقّق وعدُ الله لأمّ موسى؟",
+            "en": "Remember: did Allah's promise to Musa's mother come true?"
+          },
+          "praise": {
+            "ar": "ممتاز! وتذكّر حبَّ أمّك لك، فقد كانت أمّ موسى تحبّه كثيرًا.",
+            "en": "Excellent! And remember how much your mother loves you — just as Musa's mother loved him."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأتوكّل على الله، وأحبّ أمّي وأطيعها!",
+          "en": "I'll trust in Allah, and love and obey my mother!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة موسى عليه السلام الطفل في النهر.",
+        "en": "You learned the story of baby Musa, peace be upon him, on the river."
+      },
+      "narration": {
+        "ar": "زور الجدّة آمنة جنب الترعة الغربية وسط الغيطان، شمال غرب القرية.",
+        "en": "Visit Grandma Amina by the western canal among the fields, north-west of the village."
+      }
+    },
+    {
+      "id": "isa-in-the-cradle",
+      "category": "prophets",
+      "order": 4,
+      "area": "oasis",
+      "requires": [
+        "musa-on-the-river"
+      ],
+      "title": {
+        "ar": "عيسى عليه السلام: الكلامُ في المهد",
+        "en": "Isa (Jesus): Speaking from the Cradle"
+      },
+      "host": "grandma",
+      "characters": [
+        {
+          "id": "grandma",
+          "name": {
+            "ar": "الجدّة زينب",
+            "en": "Grandma Zainab"
+          },
+          "role": {
+            "ar": "جدّتك",
+            "en": "Your Grandmother"
+          },
+          "look": {
+            "robe": 2433074,
+            "inner": 14140072,
+            "skin": 10582104,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 2105376,
+            "staff": false,
+            "height": 1.58
+          },
+          "model": "models/grandma_zainab.glb",
+          "position": [
+            -93.0,
+            -8.1
+          ],
+          "facing": 0.0,
+          "pose": "sit",
+          "yOffset": -0.15,
+          "seat": 0.3
+        }
+      ],
+      "stage": {
+        "distance": 2.3,
+        "talkRadius": 3.6
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر الجدّة زينب تحت عريشة النخيل في الواحة",
+          "تجلس على المقعد في الظلّ"
+        ],
+        "en": [
+          "Visit Grandma Zainab under the palm shelter at the oasis",
+          "She's sitting on the bench in the shade"
+        ]
+      },
+      "greeting": {
+        "ar": "تعالَ يا حبيبي، اقعد قدّامي في الظلّ تحت النخيل. عندي لك حكاية عن نخلةٍ مباركة.",
+        "en": "Come, my darling, sit in front of me in the shade of the palms. I have a story for you about a blessed palm tree."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «موسى الطفل في النهر» عند الترعة الغربية، ثم تعالَ إليّ.",
+        "en": "Hello, my darling! First hear “Baby Musa on the River” by the western canal, then come back to me."
+      },
+      "after": {
+        "ar": "عيسى عليه السلام عبدُ الله ورسوله، فأحِبَّ الأنبياءَ كلَّهم.",
+        "en": "Isa, peace be upon him, is the servant and messenger of Allah — love all of Allah’s prophets."
+      },
+      "sources": [
+        "Qur'an 19:16–36",
+        "Qur'an 3:42–47",
+        "Qur'an 3:59",
+        "Tafsir Ibn Kathir — Surat Maryam",
+        "Tafsir al-Muyassar — Surat Maryam"
+      ],
+      "_note": "Qur'an-only retelling. For children, Maryam's question (19:20) is given as 'how can I have a son when I have no husband?' and the people's words (19:27–28) only as 'they said words blaming her'. Who called her 'from beneath her' (19:24) is left unnamed (tafsir differs: Jibril or Isa). Verses 19:30–33 are played. Grandma Zainab (sit-only model) sits on the rug bench of the oasis shelter (arish) — needs an in-game visual check (bench top ≈0.30 m vs mastaba 0.45 m, hence yOffset −0.15).",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "grandma",
+          "ar": "أهلًا يا حبيبي! اقعد هنا في الظلّ. هل ترى النخل والرطب؟ في القرآن سورةٌ اسمها سورة «مريم»، فيها قصةٌ عن نخلةٍ مباركة.",
+          "en": "Hello, my darling! Sit here in the shade. Can you see the palm trees and the fresh dates? In the Quran there is a surah called “Maryam”, with a story about a blessed palm tree."
+        },
+        {
+          "type": "choice",
+          "speaker": "grandma",
+          "ar": "هل تعرف مَن هي مريم؟",
+          "en": "Do you know who Maryam was?",
+          "options": [
+            {
+              "ar": "أمّ عيسى عليه السلام؟",
+              "en": "The mother of Isa, peace be upon him?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "أحسنت يا حبيبي! مريم ابنةُ عمران، امرأةٌ صالحةٌ طاهرة، تعبد الله كثيرًا. اختارها الله وطهّرها.",
+                  "en": "Well done, my darling! Maryam, the daughter of Imran — a good, pure woman who worshipped Allah a great deal. Allah chose her and purified her."
+                }
+              ]
+            },
+            {
+              "ar": "لا، مَن هي؟",
+              "en": "No — who was she?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "هي مريم ابنةُ عمران، أمّ نبيّ الله عيسى عليه السلام، امرأةٌ صالحةٌ طاهرة، اختارها الله وطهّرها.",
+                  "en": "She was Maryam, the daughter of Imran, mother of Allah's prophet Isa, peace be upon him — a good, pure woman whom Allah chose and purified."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث لمريم؟",
+              "en": "What happened to Maryam?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "بينما كانت مريم وحدها في مكانٍ بعيدٍ عن أهلها، أرسل الله إليها المَلَك جبريل عليه السلام، فبشّرها بأنّ الله سيهب لها ولدًا طاهرًا.",
+                  "en": "While Maryam was alone, in a place away from her family, Allah sent the angel Jibril, peace be upon him, with good news: Allah would give her a pure son."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "ولد؟ وليس لها زوج؟",
+              "en": "A son? But she had no husband?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "هذا ما قالته مريم نفسها: كيف يكون لي ولدٌ وليس لي زوج؟ فقال لها: كذلك قال ربّكِ، هو عليّ هيّن.",
+                  "en": "That is exactly what Maryam asked: “How can I have a son when I have no husband?” He said: “So it will be — your Lord says: it is easy for Me.”"
+                },
+                {
+                  "speaker": "grandma",
+                  "ar": "فالله قادرٌ على كلّ شيء: خلق آدمَ من غير أبٍ ولا أمّ، وخلق عيسى من أمٍّ بلا أب. وإذا أراد شيئًا قال له: كن، فيكون.",
+                  "en": "Allah can do anything: He created Adam with no father and no mother, and created Isa from a mother with no father. When He wants something, He says to it “Be!” — and it is."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وأين وُلد عيسى عليه السلام؟",
+              "en": "Where was Isa, peace be upon him, born?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "scene": "palm_stream",
+                  "ar": "ذهبت مريم إلى مكانٍ بعيد، وجاءتها الولادة عند جذع نخلة، وكانت متعبةً وحزينة.",
+                  "en": "Maryam went to a far-away place, and the birth came to her by the trunk of a palm tree. She was tired and sad."
+                },
+                {
+                  "speaker": "grandma",
+                  "scene": "palm_stream",
+                  "ar": "فناداها منادٍ من تحتها: لا تحزني! قد جعل ربُّكِ تحتكِ جدولَ ماء، وهُزّي إليكِ بجذع النخلة تتساقط عليكِ رطبًا طازجًا.",
+                  "en": "Then a voice called to her from below: “Do not be sad! Your Lord has put a little stream beneath you. And shake the trunk of the palm towards you — fresh ripe dates will fall down for you.”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "رطب؟ مثل رطب الواحة؟",
+              "en": "Dates? Like the dates here at the oasis?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "scene": "palm_stream",
+                  "ar": "نعم يا حبيبي! فأكلت مريم من الرطب، وشربت من الماء، وقرّت عينُها — أي فرحت واطمأنّت.",
+                  "en": "Yes, my darling! Maryam ate the dates and drank the water, and she was comforted and at peace."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال الناس لمّا رأوها مع الطفل؟",
+              "en": "What did people say when they saw her with the baby?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "رجعت مريم إلى قومها تحمل الطفل، فتعجّبوا وقالوا كلامًا يلومونها فيه، لأنّهم لم يعرفوا المعجزة.",
+                  "en": "Maryam came back to her people carrying the baby. They were amazed and said words blaming her, because they didn't know about the miracle."
+                },
+                {
+                  "speaker": "grandma",
+                  "ar": "وكانت مريم قد نذرت لله أن تصوم عن الكلام ذلك اليوم، فلم تتكلّم، وأشارت إلى الطفل.",
+                  "en": "Maryam had promised Allah to fast from speaking that day, so she didn't speak — she pointed to the baby."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "إلى الطفل؟! وهل يتكلّم الرضيع؟",
+              "en": "To the baby?! Can a baby talk?",
+              "reply": [
+                {
+                  "speaker": "grandma",
+                  "ar": "قالوا: كيف نكلّم طفلًا في المهد؟ فأنطق الله عيسى وهو رضيع، فقال: «إنّي عبدُ الله، آتانيَ الكتابَ وجعلني نبيًّا».",
+                  "en": "They said: “How can we talk to a baby in the cradle?” Then Allah made baby Isa speak, and he said: “I am the servant of Allah. He has given me the Book and made me a prophet.”"
+                },
+                {
+                  "speaker": "grandma",
+                  "ar": "وقال: «وجعلني مباركًا أينما كنت… وبَرًّا بوالدتي» — يعني: يُحسن إلى أمّه ويطيعها.",
+                  "en": "And he said: “He has made me blessed wherever I am… and kind to my mother” — meaning he was good to his mother and obeyed her."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "grandma",
+          "ar": "ما أوّل ما قاله عيسى عليه السلام في المهد؟",
+          "en": "What were the first words Isa, peace be upon him, said in the cradle?",
+          "options": [
+            {
+              "ar": "إنّي عبدُ الله",
+              "en": "I am the servant of Allah",
+              "correct": true
+            },
+            {
+              "ar": "أنا ملك",
+              "en": "I am a king"
+            },
+            {
+              "ar": "أنا جائع",
+              "en": "I am hungry"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: أوّل ما قاله أنّه عبدٌ لـ…",
+            "en": "Remember: the first thing he said was that he is the servant of…"
+          },
+          "praise": {
+            "ar": "أحسنت! عيسى عليه السلام عبدُ الله ورسوله، والله واحدٌ لا شريك له.",
+            "en": "Well done! Isa, peace be upon him, is the servant and messenger of Allah — and Allah is One, with no partner."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "grandma",
+          "ar": "تعالَ نسمع كلام عيسى عليه السلام في القرآن، بصوت الشيخ.",
+          "en": "Come, let's hear Isa's words, peace be upon him, from the Quran, in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "19:30",
+          "to": "19:33"
+        },
+        {
+          "type": "question",
+          "speaker": "grandma",
+          "ar": "فماذا نتعلّم من قصة مريم وعيسى عليهما السلام؟",
+          "en": "So what do we learn from the story of Maryam and Isa, peace be upon them?",
+          "options": [
+            {
+              "ar": "أنّ الله قادرٌ على كلّ شيء، وأن نبرّ أمّهاتنا كما كان عيسى بارًّا بأمّه",
+              "en": "Allah can do anything — and we should be kind to our mothers, as Isa was to his",
+              "correct": true
+            },
+            {
+              "ar": "أنّ الأطفال لا يحبّون أمّهاتهم",
+              "en": "That children don't love their mothers"
+            },
+            {
+              "ar": "أنّ المعجزات لا تحدث",
+              "en": "That miracles never happen"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: قال عيسى «وبَرًّا بوالدتي»…",
+            "en": "Remember: Isa said “and kind to my mother”…"
+          },
+          "praise": {
+            "ar": "ممتاز! برُّ الوالدين من أحبّ الأعمال إلى الله.",
+            "en": "Excellent! Being good to your parents is one of the deeds Allah loves most."
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأكون بارًّا بأمّي، وأحبّ كلّ أنبياء الله!",
+          "en": "I'll be good to my mother, and love all of Allah's prophets!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة عيسى عليه السلام والكلام في المهد.",
+        "en": "You learned the story of Isa, peace be upon him, speaking from the cradle."
+      },
+      "narration": {
+        "ar": "روح لعريشة النخيل في الواحة، الجدّة زينب قاعدة في الظلّ مستنياك.",
+        "en": "Go to the palm shelter at the oasis — Grandma Zainab is sitting in the shade, waiting for you."
+      }
+    },
+    {
+      "id": "muhammad-the-trustworthy",
+      "category": "prophets",
+      "order": 5,
+      "area": "mountains",
+      "requires": [
+        "isa-in-the-cradle"
+      ],
+      "title": {
+        "ar": "محمد ﷺ: الصادق الأمين",
+        "en": "Muhammad ﷺ: The Truthful, the Trustworthy"
+      },
+      "host": "farmer",
+      "characters": [
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            5.0,
+            125.0
+          ],
+          "facing": 3.1416,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            7.6,
+            125.6
+          ],
+          "facing": -2.41,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me"
+        },
+        "role": {
+          "ar": "",
+          "en": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى سفح التلال شمال النهر",
+          "الجدّ سالم والجدّة آمنة ينتظرانك"
+        ],
+        "en": [
+          "Go to the foot of the hills, north of the river",
+          "Grandpa Salim and Grandma Amina are waiting"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا بُنيّ! ما أجملَ الهدوء عند التلال… تعالَ نحكي لك عن أحبّ الناس إلينا.",
+        "en": "Hello, my son! How peaceful it is by the hills… come, we will tell you about the person we love most."
+      },
+      "locked": {
+        "ar": "أهلًا يا بُنيّ! اسمع أولًا قصة «عيسى والكلام في المهد» في الواحة، ثم تعالَ إلينا.",
+        "en": "Hello, my son! First hear “Isa: Speaking from the Cradle” at the oasis, then come to us."
+      },
+      "after": {
+        "ar": "صلِّ على النبيّ ﷺ، واصدُق دائمًا، وارحم مَن حولك.",
+        "en": "Send blessings on the Prophet ﷺ, always tell the truth, and be kind to those around you."
+      },
+      "sources": [
+        "Qur'an 96:1–5",
+        "Qur'an 21:107",
+        "Qur'an 68:4",
+        "Qur'an 33:21",
+        "صحيح البخاري 3 — حديث عائشة رضي الله عنها في بدء الوحي (https://sunnah.com/bukhari:3)",
+        "صحيح البخاري 4770 — «ما جرّبنا عليك إلا صدقًا» (https://sunnah.com/bukhari:4770)",
+        "صحيح البخاري 5997 — «مَن لا يَرحم لا يُرحم» (https://sunnah.com/bukhari:5997)",
+        "صحيح البخاري 516 — حمله أُمامة في الصلاة (https://sunnah.com/bukhari:516)",
+        "سيرة ابن هشام — تلقيب قريش له ﷺ «الأمين» قبل البعثة"
+      ],
+      "_note": "The Prophet ﷺ is only narrated about. In Hira, the angel pressing him (غطّني حتى بلغ مني الجهد) is left out; 'his heart trembling' and «زمّلوني» are from Bukhari 3. The Safa gathering (Bukhari 4770) is used only up to «ما جربنا عليك إلا صدقا» (Abu Lahab's reply left out). 'Al-Amin' before prophethood is from Ibn Ishaq; the pairing «الصادق الأمين» is the popular phrase — please review. Verses 96:1–5 are played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "farmer",
+          "scene": "year",
+          "ar": "أهلًا يا بُنيّ! هل تذكر قصة أصحاب الفيل؟ في ذلك العام نفسه وُلد في مكة طفلٌ مبارك: محمد ﷺ، خاتمُ الأنبياء والمرسلين.",
+          "en": "Hello, my son! Do you remember the story of the People of the Elephant? In that very year a blessed child was born in Makkah: Muhammad ﷺ, the last of the prophets and messengers."
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "هل تعرف بماذا كان يلقّبه أهلُ مكة قبل أن يصير نبيًّا؟",
+          "en": "Do you know what the people of Makkah called him before he became a prophet?",
+          "options": [
+            {
+              "ar": "الصادق الأمين!",
+              "en": "The Truthful, the Trustworthy!",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "أحسنت يا حبيبي! كانوا يسمّونه «الأمين»، لأنّه لا يكذب أبدًا، ولا يخون الأمانة.",
+                  "en": "Well done, my darling! They called him “al-Amin”, the Trustworthy, because he never lied and never broke a trust."
+                }
+              ]
+            },
+            {
+              "ar": "لا، بماذا؟",
+              "en": "No — what?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "كانوا يسمّونه «الأمين»، لأنّه لا يكذب أبدًا، ولا يخون الأمانة.",
+                  "en": "They called him “al-Amin”, the Trustworthy, because he never lied and never broke a trust."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل كانوا يصدّقونه حقًّا؟",
+              "en": "Did they really believe him?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "kaaba",
+                  "ar": "نعم! جمعهم مرّةً عند جبل الصفا وقال: أرأيتم لو أخبرتكم أنّ خيلًا بالوادي تريد أن تُغير عليكم، أكنتم مصدّقيّ؟",
+                  "en": "Yes! Once he gathered them at the hill of Safa and said: “If I told you there were horsemen in the valley about to attack you, would you believe me?”"
+                },
+                {
+                  "speaker": "amina",
+                  "scene": "kaaba",
+                  "ar": "فقالوا: نعم، «ما جرّبنا عليك إلا صدقًا». يعني: لم يكذب علينا يومًا واحدًا.",
+                  "en": "They said: “Yes — we have never known you to say anything but the truth.” He had never lied to them, not even once."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف نزل عليه الوحي؟",
+              "en": "How did the revelation first come to him?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "scene": "hira_cave",
+                  "ar": "كان ﷺ يحبّ أن يخلو بنفسه في غارٍ في جبلٍ اسمه «حِراء»، يتعبّد فيه ليالي كثيرة.",
+                  "en": "He ﷺ loved to be alone in a cave on a mountain called Hira, worshipping Allah there for many nights."
+                },
+                {
+                  "speaker": "farmer",
+                  "scene": "hira_cave",
+                  "ar": "وفي رمضان، جاءه المَلَك جبريل عليه السلام في الغار، فقال له: «اقرأ».",
+                  "en": "Then in Ramadan, the angel Jibril, peace be upon him, came to him in the cave and said: “Read!”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل كان يعرف القراءة؟",
+              "en": "Could he read?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "scene": "hira_cave",
+                  "ar": "لا! كان ﷺ أمّيًّا لا يقرأ ولا يكتب، فقال: «ما أنا بقارئ». فعلّمه جبريل أوّلَ ما نزل من القرآن: «اقرأ باسم ربّك الذي خلق».",
+                  "en": "No! He ﷺ could not read or write, so he said: “I cannot read.” Then Jibril taught him the first words of the Quran ever revealed: “Read in the name of your Lord who created.”"
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "فرجع ﷺ إلى بيته وقلبه يرتجف من عِظَم ما رأى، فقال لزوجته خديجة رضي الله عنها: «زمّلوني، زمّلوني» — أي غطّوني.",
+                  "en": "He ﷺ went home, his heart trembling at the greatness of what he had seen, and said to his wife Khadijah, may Allah be pleased with her: “Cover me, cover me!”"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قالت له خديجة؟",
+              "en": "What did Khadijah say to him?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "طمأنته وقالت: «كلّا واللهِ ما يُخزيك اللهُ أبدًا؛ إنّك لتصلُ الرحم، وتحملُ الكَلّ، وتُكسبُ المعدوم، وتَقري الضيف، وتُعين على نوائب الحقّ».",
+                  "en": "She comforted him and said: “No, by Allah, Allah will never let you down. You keep ties with your relatives, you carry the burdens of the weak, you give to those who have nothing, you honour your guests, and you help people through hard times.”"
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "يعني: أنت تصل أقاربك، وتساعد الضعيف، وتعطي الفقير، وتُكرم الضيف، وتقف مع الناس في المصائب — فالله لن يتركك.",
+                  "en": "In other words: someone who does all this good — Allah will never abandon him."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "ما أوّل كلمةٍ نزلت من القرآن؟",
+          "en": "What was the first word of the Quran to be revealed?",
+          "options": [
+            {
+              "ar": "اقرأ",
+              "en": "Read",
+              "correct": true
+            },
+            {
+              "ar": "اكتب",
+              "en": "Write"
+            },
+            {
+              "ar": "نَم",
+              "en": "Sleep"
+            }
+          ],
+          "hint": {
+            "ar": "كان جبريل يقول له: … باسم ربّك الذي خلق",
+            "en": "Jibril said to him: “… in the name of your Lord who created”"
+          },
+          "praise": {
+            "ar": "أحسنت! «اقرأ» — ولهذا يحبّ المسلمون العلم والقراءة.",
+            "en": "Well done! “Read” — that is why Muslims love knowledge and reading."
+          }
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف كان يعامل الأطفال؟",
+              "en": "How did he treat children?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "كان رحيمًا بالأطفال جدًّا. قبّل مرّةً حفيدَه الحسن، فقال رجل: عندي عشرةٌ من الأولاد ما قبّلتُ منهم أحدًا! فقال النبيّ ﷺ: «مَن لا يَرحم لا يُرحم».",
+                  "en": "He was very gentle with children. Once he kissed his grandson al-Hasan, and a man said: “I have ten children and I have never kissed any of them!” The Prophet ﷺ said: “Whoever does not show mercy will not be shown mercy.”"
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "وكان ﷺ يصلّي وهو يحمل حفيدته أُمامة؛ فإذا سجد وضعها، وإذا قام حملها.",
+                  "en": "And he ﷺ would pray carrying his granddaughter Umamah: when he bowed down to the ground he put her down, and when he stood up he picked her up again."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "لماذا أرسله الله؟",
+              "en": "Why did Allah send him?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "أرسله الله رحمةً للعالمين، أي للناس جميعًا وللخلق كلّهم. ووصفه الله بأنّه على خُلُقٍ عظيم.",
+                  "en": "Allah sent him as a mercy to all the worlds — to all people and all creation. And Allah describes him as having a truly great character."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "ولهذا كلّما ذكرنا اسمه نقول: صلّى الله عليه وسلّم.",
+                  "en": "That is why every time we say his name, we say: “sallallahu alayhi wa sallam” — may Allah send blessings and peace upon him."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "تعالَ نسمع أوّلَ ما نزل من القرآن، بصوت الشيخ.",
+          "en": "Come, let's hear the very first verses of the Quran, in the sheikh's voice."
+        },
+        {
+          "type": "verses",
+          "from": "96:1",
+          "to": "96:5"
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من سيرة نبيّنا محمد ﷺ؟",
+          "en": "So what do we learn from the life of our Prophet Muhammad ﷺ?",
+          "options": [
+            {
+              "ar": "أن نكون صادقين أمناء، ونحبّ العلم، ونرحم الناس",
+              "en": "To be truthful and trustworthy, love learning, and be merciful to people",
+              "correct": true
+            },
+            {
+              "ar": "أن نكذب إذا خفنا",
+              "en": "To lie when we're scared"
+            },
+            {
+              "ar": "أن نترك القراءة",
+              "en": "To give up reading"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: بماذا لقّبه أهل مكة؟ وما أوّل كلمةٍ نزلت؟",
+            "en": "Remember what the people of Makkah called him — and the first word revealed."
+          },
+          "praise": {
+            "ar": "ممتاز! قال الله: «لقد كان لكم في رسول الله أسوةٌ حسنة».",
+            "en": "Excellent! Allah says: “In the Messenger of Allah you have an excellent example.”"
+          }
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "اللهمّ صلِّ وسلّم على نبيّنا محمد! سأكون صادقًا أمينًا.",
+          "en": "O Allah, send blessings and peace upon our Prophet Muhammad! I will be truthful and trustworthy."
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت عن نبيّنا محمد ﷺ الصادق الأمين.",
+        "en": "You learned about our Prophet Muhammad ﷺ, the Truthful, the Trustworthy."
+      },
+      "narration": {
+        "ar": "روح لسفح التلال شمال النهر، الجدّ سالم والجدّة آمنة مستنيينك.",
+        "en": "Go to the foot of the hills north of the river — Grandpa Salim and Grandma Amina are waiting for you."
       }
     }
   ],

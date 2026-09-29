@@ -10,7 +10,7 @@ const STUCK_S = 2;          // no progress for this long → nudge onward; twice
 
 export function createAutowalk({ player, guide, onChange }) {
   const aim = new THREE.Vector3();
-  let active = false, best = Infinity, stuckT = 0, nudges = 0, nudgeT = 0, lostT = 0, version = -1;
+  let active = false, best = Infinity, stuckT = 0, nudges = 0, nudgeT = 0, lostT = 0, endT = 0, version = -1;
 
   function stop(why = 'manual') {
     if (!active) return;
@@ -33,13 +33,19 @@ export function createAutowalk({ player, guide, onChange }) {
     if (!npc) return stop('none');
     const r = npc.rig.root.position, px = player.pos.x, pz = player.pos.z;
     const d = Math.hypot(r.x - px, r.z - pz), talkR = npc.enc.stage?.talkRadius ?? 3.4;
-    if (d < Math.min(2.2, talkR - 0.6)) return stop('arrived');
+    const toCoin = !!guide.goalKey;          // the story is still locked: the route leads coin to coin
+    if (d < Math.min(2.2, talkR - 0.6) && !toCoin) return stop('arrived');
     // the route is being rebuilt (target changed): wait for it, don't wander off
     if (!route) { player.target = null; if ((lostT += dt) > 5) stop('lost'); return; }
     lostT = 0;
     if (guide.version !== version) { version = guide.version; best = Infinity; stuckT = 0; }   // re-routed: start measuring again
     const end = route.n - 1, prog = guide.progress, left = (end - prog) * 0.5;
-    if (prog >= end - 1 && Math.hypot(route.x[end] - px, route.z[end] - pz) < 0.7) return stop(d < talkR ? 'arrived' : 'end');
+    if (prog >= end - 1 && Math.hypot(route.x[end] - px, route.z[end] - pz) < 0.7) {
+      if (!toCoin) return stop(d < talkR ? 'arrived' : 'end');
+      player.target = null; if ((endT += dt) > 4) stop('stuck');   // at the coin: the next leg is on its way
+      return;
+    }
+    endT = 0;
     if (left < best - 0.25) { best = left; stuckT = 0; nudges = nudgeT > 0 ? nudges : 0; }
     else if ((stuckT += dt) > STUCK_S) {
       if (++nudges > 2) return stop('stuck');

@@ -78,6 +78,19 @@ export const Sound = {
       o.connect(g).connect(out); o.start(s); o.stop(s + 0.5);
     });
   },
+  // a story just opened (its coin share reached): a bright rising fanfare over a warm chord
+  unlock() {
+    if (!ctx) return;
+    const t = ctx.currentTime, out = ctx.createGain(); out.gain.value = 0.16; out.connect(master);
+    const notes = [[523.25, 0], [659.25, 0.09], [783.99, 0.18], [1046.5, 0.27], [1318.5, 0.42], [1568, 0.42]];
+    for (const [fr, d] of notes) for (const [type, mul, v] of [['triangle', 1, 1], ['sine', 2, 0.3]]) {
+      const o = ctx.createOscillator(), g = ctx.createGain(), s = t + d, len = d > 0.4 ? 1.1 : 0.4;
+      o.type = type; o.frequency.value = fr * mul;
+      g.gain.setValueAtTime(0, s); g.gain.linearRampToValueAtTime(v, s + 0.012); g.gain.exponentialRampToValueAtTime(0.001, s + len);
+      o.connect(g).connect(out); o.start(s); o.stop(s + len + 0.05);
+    }
+    setTimeout(() => this.combo(0.8), 520);
+  },
   setWater(dist) { if (ctx) water.gain.setTargetAtTime(0.35 * (1 - smooth(3, 28, dist)), ctx.currentTime, 0.5); },
   // explore: full ambience · dialogue: softened · quran: silence so only the recitation is heard
   mode(m) {

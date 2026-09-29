@@ -73,4 +73,26 @@
   <path d="M9.8 6.8h6.4M9.8 10.4h6.4M9.8 14h4.4" stroke="#000" stroke-opacity=".38" stroke-width="1.5" stroke-linecap="round"/>
   <path d="M19.6 10.2a3.4 3.4 0 0 1 3.4 3.4c0 2.5-3.4 6-3.4 6s-3.4-3.5-3.4-6a3.4 3.4 0 0 1 3.4-3.4z" stroke="#0f2a33" stroke-width="1.1"/><circle cx="19.6" cy="13.6" r="1.2" fill="#000" fill-opacity=".45"/>
 </symbol>
+<symbol id="i-coin" viewBox="0 0 24 24" fill="currentColor">
+  <circle cx="12" cy="12" r="10"/>
+  <circle cx="12" cy="12" r="7.4" fill="none" stroke="#000" stroke-opacity=".28" stroke-width="1.4"/>
+  <path d="M13.6 7.6a4.6 4.6 0 1 0 0 8.8 3.8 3.8 0 1 1 0-8.8z" fill="#000" fill-opacity=".38"/>
+  <path d="M15.6 10.2l.5 1.1 1.2.1-.9.8.3 1.2-1.1-.6-1 .6.2-1.2-.9-.8 1.2-.1z" fill="#000" fill-opacity=".38"/>
+</symbol>
+<symbol id="i-prophets" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M12 1.2v2.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M7.4 7.2L12 3.4l4.6 3.8z"/>
+  <path d="M7 8.2h10a1 1 0 0 1 1 1v8.6a1 1 0 0 1-1 1H7a1 1 0 0 1-1-1V9.2a1 1 0 0 1 1-1z"/>
+  <path d="M9 10.4a3 3 0 0 1 6 0v6.6H9z" fill="#000" fill-opacity=".38"/>
+  <path d="M12 11.6c1.3 1.4 1.5 2.6 0 4-1.5-1.4-1.3-2.6 0-4z" fill="#fff" fill-opacity=".75"/>
+  <path d="M8 20.2h8l-1.2 2.4H9.2z"/>
+</symbol>
+<symbol id="i-companions" viewBox="0 0 24 24" fill="currentColor">
+  <path d="M11.3 9.6h1.6l.9 11.8h-3.4z"/>
+  <path d="M12.1 9.2C9.9 5.8 6.2 5.4 2.6 7.3c3.3-.3 6 .6 8.1 2.6-2.8-.9-5.8.2-7.7 2.9 2.9-1.6 5.6-2 8.3-1.6z"/>
+  <path d="M12.1 9.2c2.2-3.4 5.9-3.8 9.5-1.9-3.3-.3-6 .6-8.1 2.6 2.8-.9 5.8.2 7.7 2.9-2.9-1.6-5.6-2-8.3-1.6z"/>
+  <path d="M12.1 9.4c-.6-3 .6-5.6 3.2-7.2-1.4 2.1-1.8 4.3-1.6 6.8z"/>
+  <circle cx="10.6" cy="11.4" r=".9" fill="#000" fill-opacity=".4"/><circle cx="13.4" cy="11.6" r=".9" fill="#000" fill-opacity=".4"/>
+  <path d="M5 21.6h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+</symbol>
 </svg>

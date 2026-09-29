@@ -10,8 +10,9 @@ import { toonMaterial, outlineMaterial } from '../shaders/toon.js';
 import { Sound } from '../systems/audio.js';
 import { noReflect } from '../systems/layers.js';
 import { refs } from '../systems/refs.js';
+import { createSearch, buildRoute } from '../systems/guide.js';
 
-const ROUTE_MAX = 60, PICK2 = 0.9 * 0.9, ROUTE_ID = 1e8, STATIC_ID = 2e8, STAR_ID = 3e8;
+const PICK2 = 0.9 * 0.9, ROUTE_ID = 1e8, STATIC_ID = 2e8, STAR_ID = 3e8;
 const IDLE = 1, POP = 2, GONE = 3;
 
 function starShape(R, r, n = 5, cx = 0, cy = 0, rot = Math.PI / 2) {
@@ -108,14 +109,14 @@ function sparkles() {
 }
 
 // Deterministic exploration layout: clusters (rows, rings, little arches) and big-star spots.
-function layout(grid, avoid, low) {
+// Every quality level gets the same layout (coin ids and the story coin sets depend on it).
+function layout(grid, avoid) {
   const r = rng(4242), coins = [], stars = [];
   const free = (x, z) => grid.walkable(x, z) && !avoid.some(([ax, az]) => Math.hypot(ax - x, az - z) < 3.2);
   let cluster = 0;
   const add = (pts) => {
     cluster++;
-    if (low && cluster % 2 === 0) return;                  // Low: half the clusters
-    for (const [x, z, h = 0] of pts) if (free(x, z)) coins.push([x, z, h]);
+    for (const [x, z, h = 0] of pts) if (free(x, z)) coins.push([x, z, h, cluster]);
   };
   const row = (x, z, dx, dz, n = 5, gap = 1.3, arch = false) => add(Array.from({ length: n }, (_, i) => {
     const t = i - (n - 1) / 2; return [x + dx * t * gap, z + dz * t * gap, arch ? 0.6 * Math.sin(Math.PI * i / (n - 1)) : 0];
@@ -153,18 +154,30 @@ function layout(grid, avoid, low) {
   return { coins, stars };
 }
 
-export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S, detailLow, lite = false }) {
-  const avoid = npcs.flatMap(n => n.members.map(m => [m.def.position[0], m.def.position[1]]));
-  const L = layout(grid, avoid, detailLow);
-  const routeCap = detailLow ? 36 : ROUTE_MAX;
-  const nStatic = L.coins.length, nStar = L.stars.length, total = ROUTE_MAX + nStatic + nStar;
-  const X = new Float32Array(total), Y = new Float32Array(total), Z = new Float32Array(total), Hh = new Float32Array(total);
-  const ID = new Float64Array(total), ST = new Uint8Array(total), T0 = new Float32Array(total), BIG = new Uint8Array(total);
-  L.coins.forEach(([x, z, h], k) => { const i = ROUTE_MAX + k; X[i] = x; Z[i] = z; Hh[i] = h; Y[i] = groundAt(x, z); ID[i] = STATIC_ID + k; });
-  L.stars.forEach(([x, z], k) => { const i = ROUTE_MAX + nStatic + k; X[i] = x; Z[i] = z; Y[i] = groundAt(x, z); ID[i] = STAR_ID + k; BIG[i] = 1; });
+// ---- story coin sets ------------------------------------------------------------------------
+// Every story owns a deterministic set of coins: a line along the walkable (A*) route from the
+// previous story of its category (or the spawn) to its storyteller, plus the exploration clusters
+// and big stars that lie close to that route, topped up with little side arches on short routes.
+// Route coins have string ids "<story>:<k>"; cluster coins/stars keep their numeric ids and may
+// belong to several sets. Sets are computed a few ms per frame (title screen included) and
+// cached in localStorage (they only depend on the world and the endpoints).
+const SET_VERSION = 2, CACHE_KEY = 'quran-journey-coinsets', SLOTS = 64;
+const MIN_SET = 20, ROUTE_COINS_MAX = 30, EXTRA_MAX = 14, NEAR_CLUSTER = 6, NEAR_STAR = 12;
+// the story order of the old breadcrumb ids (ROUTE_ID + index·1e6 + cell) in saves before sets
+const OLD_ORDER = ['people-of-the-elephant', 'quraysh-journeys', 'yusuf-dream', 'threads-of-dawn', 'qays-the-fasting-farmer', 'best-dates', 'houses-by-their-doors', 'the-new-qibla', 'the-guest-and-the-lamp'];
 
-  const coinMesh = new THREE.InstancedMesh(coinGeometry(lite ? 10 : 18), goldMaterial('coin_gold', 0x4a3000), ROUTE_MAX + nStatic);
-  const coinInk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.29, 0.29, 0.1, 14).rotateX(Math.PI / 2), outlineMaterial('env'), ROUTE_MAX + nStatic);
+export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S, lite = false, endpoints, onCollect, onBuilt }) {
+  const avoid = npcs.flatMap(n => n.members.map(m => [m.def.position[0], m.def.position[1]]));
+  const L = layout(grid, avoid);
+  const nStatic = L.coins.length, nStar = L.stars.length, S0 = nStatic + nStar, total = S0 + SLOTS;
+  const X = new Float32Array(total), Y = new Float32Array(total), Z = new Float32Array(total), Hh = new Float32Array(total);
+  const KEY = new Array(total), ST = new Uint8Array(total), T0 = new Float32Array(total), BIG = new Uint8Array(total);
+  L.coins.forEach(([x, z, h], k) => { X[k] = x; Z[k] = z; Hh[k] = h; Y[k] = groundAt(x, z); KEY[k] = STATIC_ID + k; });
+  L.stars.forEach(([x, z], k) => { const i = nStatic + k; X[i] = x; Z[i] = z; Y[i] = groundAt(x, z); KEY[i] = STAR_ID + k; BIG[i] = 1; });
+  const slotOfId = id => (id >= STAR_ID ? nStatic + (id - STAR_ID) : id - STATIC_ID);
+
+  const coinMesh = new THREE.InstancedMesh(coinGeometry(lite ? 10 : 18), goldMaterial('coin_gold', 0x4a3000), nStatic + SLOTS);
+  const coinInk = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.29, 0.29, 0.1, 14).rotateX(Math.PI / 2), outlineMaterial('env'), nStatic + SLOTS);
   const starMesh = new THREE.InstancedMesh(starGeometry(), goldMaterial('coin_star', 0x6a4400), Math.max(1, nStar));
   const starInk = new THREE.InstancedMesh(new THREE.ExtrudeGeometry(starShape(0.5, 0.25), { depth: 0.22, bevelEnabled: false }).translate(0, 0, -0.11), outlineMaterial('env'), Math.max(1, nStar));
   coinInk.instanceMatrix = coinMesh.instanceMatrix; starInk.instanceMatrix = starMesh.instanceMatrix;   // hulls share the matrices
@@ -175,54 +188,175 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
   coinMesh.name = 'coins'; starMesh.name = 'big-stars'; coinInk.name = 'coins-ink'; starInk.name = 'big-stars-ink';
   const fx = sparkles(); fx.object.name = 'sparkles'; scene.add(fx.object);
 
-  let collected = new Set(), combo = 0, lastPick = -9, dirty = false, lastSave = 0, routeVersion = -1, collectedCount = 0;
+  let collected = new Set(), combo = 0, lastPick = -9, dirty = false, lastSave = 0, collectedCount = 0, shown = undefined, setsVersion = 0, shownVersion = -1;
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0), _v = new THREE.Vector3();
-  const routeKey = (t, qx, qz) => ROUTE_ID + t * 1e6 + (qx + 150) * 1000 + (qz + 150);
+
+  // ---- set building (time-sliced A*, cached) ----
+  const sig = `${SET_VERSION}/${nStatic}/${nStar}`;
+  let cache = { sig, sets: {} };
+  try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c?.sig === sig && c.sets) cache = c; } catch { /* private mode */ }
+  const writeCache = () => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch { /* full / private */ } };
+  const sets = new Map(), queue = [], search = createSearch(grid);
+  let job = null;
+  const near = (a, b) => a && b && Math.hypot(a[0] - b[0], a[1] - b[1]) < 0.3;
+  const okAt = (x, z) => grid.walkable(x, z) && !avoid.some(([ax, az]) => Math.hypot(ax - x, az - z) < 2.2);
+  // the nearest walkable spot (storytellers sit against walls: start the search just outside)
+  const snap = ([x, z]) => {
+    if (grid.walkable(x, z)) return [x, z];
+    for (let rad = 1; rad <= 6; rad += 0.75) for (let a = 0; a < 16; a++) {
+      const px = x + Math.cos(a * Math.PI / 8) * rad, pz = z + Math.sin(a * Math.PI / 8) * rad;
+      if (grid.walkable(px, pz)) return [px, pz];
+    }
+    return [x, z];
+  };
+
+  function placeSet(id, route, ep) {
+    const pts = [], path = [];
+    const dist = (x, z) => { let m = Infinity; for (const [px, pz] of path) m = Math.min(m, Math.hypot(px - x, pz - z)); return m; };
+    const taken = (x, z, r = 1.2) => pts.some(p => Math.hypot(p[0] - x, p[1] - z) < r);
+    if (route) {
+      for (let i = 0; i < route.n; i += 2) path.push([route.x[i], route.z[i]]);
+      path.push([route.x[route.n - 1], route.z[route.n - 1]]);
+      const L0 = 4, span = Math.max(0, route.len - 3.5 - L0);
+      const n = Math.max(1, Math.min(ROUTE_COINS_MAX, Math.round(span / 4.5) + 1, Math.floor(span / 2) + 1)), gap = n > 1 ? span / (n - 1) : 0;
+      for (let m = 0; m < n; m++) {
+        const s = L0 + gap * m, i = Math.min(route.n - 2, Math.floor(s / 0.5)), a = Math.max(0, i - 2), b = Math.min(route.n - 1, i + 2);
+        let tx = route.x[b] - route.x[a], tz = route.z[b] - route.z[a]; const tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;
+        const g = Math.floor(m / 6), j = m % 6, pat = g % 3, w = Math.sin(Math.PI * j / 5);
+        let x = route.x[i], z = route.z[i];
+        const lat = pat === 1 ? 0.7 * w * (g % 2 ? 1 : -1) : 0, h = pat === 2 ? 0.55 * w : 0;
+        if (lat && okAt(x - tz * lat, z + tx * lat)) { x -= tz * lat; z += tx * lat; }
+        if (!okAt(x, z) || taken(x, z, 1.6)) continue;
+        pts.push([x, z, h]);
+      }
+    } else path.push(ep.to);
+    // exploration clusters and big stars close to the route
+    const extra = [], clusters = new Map();
+    L.coins.forEach(([x, z, , c], k) => { const d = dist(x, z); const cl = clusters.get(c) ?? { d: Infinity, ks: [] }; cl.d = Math.min(cl.d, d); cl.ks.push(k); clusters.set(c, cl); });
+    for (const cl of [...clusters.values()].filter(c => c.d < NEAR_CLUSTER).sort((a, b) => a.d - b.d)) {
+      if (extra.length + cl.ks.length > EXTRA_MAX) continue;
+      for (const k of cl.ks) extra.push(STATIC_ID + k);
+    }
+    L.stars.map(([x, z], k) => [dist(x, z), k]).filter(([d]) => d < NEAR_STAR).sort((a, b) => a[0] - b[0]).slice(0, 2).forEach(([, k]) => extra.push(STAR_ID + k));
+    // no route coin right on top of a cluster coin
+    for (let q = pts.length - 1; q >= 0; q--) if (extra.some(e => e < STAR_ID && Math.hypot(X[slotOfId(e)] - pts[q][0], Z[slotOfId(e)] - pts[q][1]) < 1.2)) pts.splice(q, 1);
+    // short routes: little side arches just off the way, so exploring pays off
+    for (const f of [0.35, 0.7, 0.15, 0.55, 0.85]) {
+      if (pts.length + extra.length >= MIN_SET) break;
+      let cx, cz, tx = 1, tz = 0;
+      if (route) {
+        const i = Math.min(route.n - 3, Math.floor(f * (route.n - 1))), a = Math.max(0, i - 3), b = Math.min(route.n - 1, i + 3);
+        tx = route.x[b] - route.x[a]; tz = route.z[b] - route.z[a]; const tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;
+        cx = route.x[i]; cz = route.z[i];
+      } else { const a = f * Math.PI * 2; cx = ep.to[0] + Math.cos(a) * 7; cz = ep.to[1] + Math.sin(a) * 7; tx = -Math.sin(a); tz = Math.cos(a); }
+      for (const off of [4, -4, 5.5, -5.5]) {
+        const ox = cx - tz * off, oz = cz + tx * off, row = [];
+        for (let q = 0; q < 5; q++) { const t = (q - 2) * 1.3; row.push([ox + tx * t, oz + tz * t, 0.6 * Math.sin(Math.PI * q / 4)]); }
+        if (row.every(([x, z]) => okAt(x, z) && !taken(x, z))) { pts.push(...row); break; }
+      }
+    }
+    const r2 = v => Math.round(v * 100) / 100;
+    return { from: ep.from, to: ep.to, len: route ? +route.len.toFixed(1) : 0, reached: route ? !!route.reached : false,
+      route: pts.map(([x, z, h]) => [r2(x), r2(z), r2(h)]), extra, path: path.map(([x, z]) => [r2(x), r2(z)]) };
+  }
+  // saves from before coin sets: breadcrumb coins collected on the way to a story count for its set
+  function migrate(id, keys, def) {
+    const save = getSave(), t = OLD_ORDER.indexOf(id);
+    if (t < 0 || !Array.isArray(save.coins)) return;
+    let added = 0;
+    for (const n of save.coins) {
+      if (typeof n !== 'number' || n < ROUTE_ID || n >= STATIC_ID || Math.floor((n - ROUTE_ID) / 1e6) !== t) continue;
+      const r = (n - ROUTE_ID) % 1e6, x = (Math.floor(r / 1000) - 150) * 2.5, z = (r % 1000 - 150) * 2.5;
+      let best = -1, bd = 3;
+      def.route.forEach(([px, pz], k) => { const d = Math.hypot(px - x, pz - z); if (d < bd && !collected.has(keys[k])) { bd = d; best = k; } });
+      if (best >= 0) { collected.add(keys[best]); save.coins.push(keys[best]); added++; }
+    }
+    if (added) dirty = true;
+  }
+  function finish(id, def) {
+    const keys = def.route.map((_, k) => `${id}:${k}`).concat(def.extra);
+    sets.set(id, { ...def, keys });
+    migrate(id, keys, def);
+    setsVersion++;
+    onBuilt?.(id);
+  }
+  function want(ids, front = false) {
+    for (const id of ids) {
+      if (sets.has(id) || job?.id === id) continue;
+      const q = queue.indexOf(id);
+      if (q >= 0) { if (front) { queue.splice(q, 1); queue.unshift(id); } }
+      else front ? queue.unshift(id) : queue.push(id);
+    }
+  }
+  function build(ms) {
+    if (!job) {
+      while (queue.length && !job) {
+        const id = queue.shift(); if (sets.has(id)) continue;
+        const ep = endpoints(id); if (!ep) continue;
+        const c = cache.sets[id];
+        if (c && near(c.from, ep.from) && near(c.to, ep.to)) { finish(id, c); continue; }
+        const s = snap(ep.from);
+        search.start(s[0], s[1], ep.to[0], ep.to[1], ep.r);
+        job = { id, ep, s };
+      }
+      if (!job) return;
+    }
+    const cells = search.step(ms);
+    if (!cells) return;
+    const { id, ep, s } = job; job = null;
+    const route = cells.length > 1 ? buildRoute(grid, cells, s[0], s[1]) : null;
+    if (route) route.reached = cells.reached;
+    const def = placeSet(id, route, ep);
+    cache.sets[id] = def; writeCache();
+    finish(id, def);
+  }
 
   function load() {
     const save = getSave();
     if (!Array.isArray(save.coins)) save.coins = [];
     collected = new Set(save.coins);
-    for (let i = ROUTE_MAX; i < total; i++) ST[i] = collected.has(ID[i]) ? GONE : IDLE;
-    for (let i = 0; i < ROUTE_MAX; i++) ST[i] = 0;
-    routeVersion = -1;
+    for (let i = 0; i < S0; i++) ST[i] = collected.has(KEY[i]) ? GONE : IDLE;
+    for (let i = S0; i < total; i++) ST[i] = 0;
+    shown = undefined;
+    for (const [id, set] of sets) migrate(id, set.keys, set);
   }
-  // breadcrumb coins every 2.5 m along the route, in little patterns (straight, a gentle S, a
-  // low arch); a spot stays empty once collected for this story, even when the route shifts
-  function placeRoute(route, tIdx) {
-    for (let i = 0; i < ROUTE_MAX; i++) if (ST[i] !== POP) ST[i] = 0;
-    if (!route || tIdx < 0) return;
-    const used = new Set();
-    let slot = 0, m = 0;
-    for (let s = 4; s < route.len - 3.5 && slot < ROUTE_MAX; s += 2.5, m++) {
-      if (m >= routeCap) break;
-      const i = Math.min(route.n - 2, Math.floor(s / 0.5)), a = Math.max(0, i - 2), b = Math.min(route.n - 1, i + 2);
-      let tx = route.x[b] - route.x[a], tz = route.z[b] - route.z[a]; const tl = Math.hypot(tx, tz) || 1; tx /= tl; tz /= tl;
-      const g = Math.floor(m / 6), j = m % 6, pat = g % 3, w = Math.sin(Math.PI * j / 5);
-      let x = route.x[i], z = route.z[i];
-      const lat = pat === 1 ? 0.7 * w * (g % 2 ? 1 : -1) : 0, h = pat === 2 ? 0.55 * w : 0;
-      if (lat && grid.walkable(x - tz * lat, z + tx * lat)) { x -= tz * lat; z += tx * lat; }
-      const qx = Math.round(x / 2.5), qz = Math.round(z / 2.5), key = routeKey(tIdx, qx, qz);
-      let skip = used.has(key);
-      for (let u = -1; u <= 1 && !skip; u++) for (let v = -1; v <= 1 && !skip; v++) if (collected.has(routeKey(tIdx, qx + u, qz + v))) skip = true;
-      if (skip) continue;
-      used.add(key);
-      while (slot < ROUTE_MAX && ST[slot] === POP) slot++;
-      if (slot >= ROUTE_MAX) break;
-      X[slot] = x; Z[slot] = z; Y[slot] = groundAt(x, z); Hh[slot] = h; ID[slot] = key; ST[slot] = IDLE; slot++;
-    }
+  // lay out the route coins of one story's set (the current target), in the pool slots
+  function show(id) {
+    shown = id; shownVersion = setsVersion;
+    for (let i = S0; i < total; i++) if (ST[i] !== POP) ST[i] = 0;
+    const set = id ? sets.get(id) : null;
+    if (!set) return;
+    set.route.forEach(([x, z, h], k) => {
+      const i = S0 + k; if (i >= total || ST[i] === POP) return;
+      X[i] = x; Z[i] = z; Y[i] = groundAt(x, z); Hh[i] = h; KEY[i] = set.keys[k]; ST[i] = collected.has(KEY[i]) ? GONE : IDLE;
+    });
   }
-  // drop the breadcrumb ids of finished stories (their routes never come back)
-  function prune(doneIdx) {
-    const save = getSave();
-    save.coins = save.coins.filter(id => !(id >= ROUTE_ID && id < STATIC_ID && doneIdx.includes(Math.floor((id - ROUTE_ID) / 1e6))));
-    collected = new Set(save.coins); dirty = true;
+  // {have, total} of a story's set, or null while it is still being worked out
+  function progress(id) {
+    const set = sets.get(id); if (!set) return null;
+    let have = 0; for (const k of set.keys) if (collected.has(k)) have++;
+    return { have, total: set.keys.length };
+  }
+  // where the golden trail leads while a story is still locked: the nearest coin of its set that
+  // is still lying there (kept until picked up unless another is clearly closer)
+  function nextCoin(id, px, pz, keepKey = null) {
+    const set = sets.get(id); if (!set) return null;
+    let best = null, bd = Infinity, keep = null;
+    const consider = (key, x, z) => {
+      if (collected.has(key)) return;
+      const d = Math.hypot(x - px, z - pz);
+      if (key === keepKey) keep = { key, x, z, d };
+      if (d < bd) { bd = d; best = { key, x, z, d }; }
+    };
+    set.route.forEach(([x, z], k) => consider(set.keys[k], x, z));
+    for (const e of set.extra) { const i = slotOfId(e); consider(e, X[i], Z[i]); }
+    return keep && keep.d < bd + 8 ? keep : best;
   }
 
   function collect(i, now, preset) {
-    const save = getSave(), big = BIG[i] === 1, value = big ? 5 : 1;
+    const save = getSave(), big = BIG[i] === 1, value = big ? 5 : 1, key = KEY[i];
     ST[i] = POP; T0[i] = now;
-    save.points += value; save.coins.push(ID[i]); collected.add(ID[i]); dirty = true; collectedCount++;
+    save.points += value; save.coins.push(key); collected.add(key); dirty = true; collectedCount++;
     combo = now - lastPick < 1.6 ? combo + 1 : 1; lastPick = now;
     Sound.coin(Math.min(combo - 1, 10), big);
     _v.set(X[i], Y[i] + (big ? 0.9 : 0.55) + Hh[i], Z[i]).project(camera);
@@ -235,10 +369,12 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
       setTimeout(() => Sound.combo(), 120);
       ui.floatText(innerWidth / 2, innerHeight * 0.32, `${S().combo} +5`, true);
     }
+    onCollect?.(key);
   }
 
-  function update(dt, now, { explore, player, route, version, tIdx, preset }) {
-    if (version !== routeVersion) { routeVersion = version; placeRoute(route, tIdx); }
+  function update(dt, now, { explore, player, show: showId = null, preset }) {
+    build(explore ? 3 : 6);
+    if (showId !== shown || (showId && shownVersion !== setsVersion)) show(showId);
     const px = player.pos.x, pz = player.pos.z, py = player.pos.y;
     const vd = refs.view.dist, R = 55 + vd * 1.6, RR = R * R, k = 1 + Math.max(0, vd - 10) / 25;
     let nc = 0, ns = 0;
@@ -248,7 +384,7 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
       if (st === IDLE && explore && d2 < PICK2 && Math.abs(Y[i] - py) < 2) collect(i, now, preset);
       if (d2 > RR) continue;
       const big = BIG[i] === 1;
-      let y = Y[i] + (big ? 0.95 : 0.55) + Hh[i] + Math.sin(now * 2.4 + i) * (big ? 0.1 : 0.06), spin = now * (big ? 1.6 : 2.6) + i * 0.7, sc = k * (big ? 1 : 1);
+      let y = Y[i] + (big ? 0.95 : 0.55) + Hh[i] + Math.sin(now * 2.4 + i) * (big ? 0.1 : 0.06), spin = now * (big ? 1.6 : 2.6) + i * 0.7, sc = k;
       if (ST[i] === POP) {
         const a = (now - T0[i]) / 0.4;
         if (a >= 1) { ST[i] = GONE; continue; }
@@ -266,6 +402,30 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
     fx.update(dt, innerHeight / (2 * Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2)));
     if (dirty && now - lastSave > 1) { dirty = false; lastSave = now; persist(); }
   }
-  return { load, prune, update, get total() { return total; }, get collectedCount() { return collectedCount; },
-    debug: () => ({ static: nStatic, stars: nStar, route: Array.from(ST.subarray(0, ROUTE_MAX)).filter(s => s === IDLE).length, positions: { X, Z, ST, BIG } }) };
+
+  // balance check (console / tests): size of every set, its route, and that every coin can be
+  // reached on foot from the route (A* from the coin back to the nearest route point)
+  function balance({ verify = false } = {}) {
+    const rows = [], check = verify ? createSearch(grid) : null;
+    for (const [id, set] of sets) {
+      const coords = set.route.map(([x, z]) => [x, z]).concat(set.extra.map(e => [X[slotOfId(e)], Z[slotOfId(e)]]));
+      let off = 0, bad = 0, unreachable = 0;
+      for (const [x, z] of coords) {
+        let d = Infinity, nx = 0, nz = 0;
+        for (const [px, pz] of set.path) { const q = Math.hypot(px - x, pz - z); if (q < d) { d = q; nx = px; nz = pz; } }
+        off = Math.max(off, d);
+        if (!grid.walkable(x, z)) bad++;
+        if (check && d > 1.5) { check.start(x, z, nx, nz, 1.2); const c = check.step(1e9); if (!c?.reached) unreachable++; }
+      }
+      const N = set.keys.length;
+      rows.push({ id, route_m: set.len, reached: set.reached, coins: N, routeCoins: set.route.length, clusterCoins: set.extra.filter(e => e < STAR_ID).length,
+        stars: set.extra.filter(e => e >= STAR_ID).length, easy: Math.ceil(0.2 * N - 1e-9), medium: Math.ceil(0.5 * N - 1e-9), hard: Math.ceil(0.9 * N - 1e-9),
+        maxOffRoute_m: +off.toFixed(1), notWalkable: bad, ...(verify ? { unreachable } : {}) });
+    }
+    return rows;
+  }
+
+  return { load, update, want, progress, nextCoin, balance, sets, get building() { return !!job || queue.length > 0; },
+    get total() { return total; }, get collectedCount() { return collectedCount; },
+    debug: () => ({ static: nStatic, stars: nStar, shown, slots: Array.from(ST.subarray(S0)).filter(s => s === IDLE).length, positions: { X, Z, ST, BIG, KEY } }) };
 }

@@ -3,6 +3,7 @@ import { toMap, HALF, SIZE } from '../terrain/heightfield.js';
 import { QuranService } from '../systems/quran.js';
 import { PAINTED, illustrationURL } from './scenes.js';
 import { pwa, downloadAllStories } from '../../pwa/pwa.js';
+import { categoryIcon, DIFF_KEYS } from '../systems/progress.js';
 
 // ---- UI kit assets (public/ui) -------------------------------------------------------------
 // The icon + ornament sprites are injected inline so <use href="#i-…"> works everywhere and
@@ -52,6 +53,11 @@ export const STR = {
     dlAll: 'تنزيل كل القصص للّعب بدون إنترنت', dlBusy: 'جارٍ التنزيل…', dlDone: 'تم! كل القصص تعمل الآن بدون إنترنت', dlSome: 'تعذّر تنزيل بعض الملفات — حاول مرة أخرى وأنت متصل', dlNeedNet: 'تحتاج اتصالًا بالإنترنت للتنزيل', dlHint: 'الآيات والتلاوات من Quran.com لكل القصص (بضعة ميغابايت)',
     offlineVerse: 'هذه الآيات تحتاج اتصالًا بالإنترنت أول مرة. سنكمل القصة الآن، ويمكنك الاستماع إليها لاحقًا من دفتر المعرفة.', close: 'إغلاق', partOf: 'جزء من الآية', simple: 'شرح مبسّط', noVoice: 'لا يوجد صوت عربي مثبّت في المتصفح — سيظهر الكلام مكتوبًا.', showPath: 'إظهار الطريق إلى القصة التالية', combo: 'رائع!',
     walk: 'امشِ إلى القصة', stories: 'القصص', storiesSub: 'اختر القصة التي تريد أن تذهب إليها — أي قصة تحبّ!', stDone: 'أنهيتها', stOpen: 'متاحة', stLocked: 'لم تُفتح بعد', stCurrent: 'وجهتك الآن', headingTo: 'وجهتك', surah: 'سورة', meters: 'م', mapPick: 'اضغط على علامة قصة لتذهب إليها', walkStuck: 'تعذّر إكمال الطريق — امشِ قليلًا ثم جرّب مرة أخرى', controlsTouch: 'استخدم العصا تحت لتمشي · اسحب في أي مكان لتلفّ الكاميرا · 👣 يمشي بك إلى القصة',
+    diffTitle: 'اختر مستوى الرحلة', diffHint: 'لكل قصة عملات ذهبية على الطريق إليها. يجمع طفلك نسبة منها لتُفتح القصة — اختاروا ما يناسب عمره، ويمكن تغييره لاحقًا من الإعدادات.',
+    easy: 'سهل', medium: 'متوسط', hard: 'صعب', easySub: 'اجمع ٢٠٪ من عملات كل قصة', mediumSub: 'اجمع ٥٠٪ من عملات كل قصة', hardSub: 'اجمع ٩٠٪ من عملات كل قصة', back: 'رجوع',
+    difficulty: 'مستوى الصعوبة', diffNote: 'يُطبَّق على القصص التي لم تُفتح بعد', gateObj: 'اجمع العملات', gatePrep: 'نجهّز العملات على الطريق…', gateOpen: 'فتحت القصة! 🎉',
+    gateLine: n => `اجمع ${n === 1 ? 'عملة واحدة أخرى' : n === 2 ? 'عملتين أخريين' : n <= 10 ? `${arDigits(n)} عملات أخرى` : `${arDigits(n)} عملة أخرى`} على الطريق لتفتح القصة!`,
+    stGated: 'اجمع العملات', stChain: 'بعد القصة السابقة', catEmpty: 'قصص هذا القسم قريبًا إن شاء الله', coinsWord: 'عملة',
   },
   en: {
     title: 'Quran Journey', alt: 'رحلة القرآن', tagline: 'Explore · Listen · Learn · Grow', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Continue', newGame: 'New Journey', settings: 'Settings',
@@ -69,13 +75,18 @@ export const STR = {
     dlAll: 'Download all stories for offline play', dlBusy: 'Downloading…', dlDone: 'Done! Every story now works offline', dlSome: 'Some files could not be downloaded — try again while online', dlNeedNet: 'You need the internet to download', dlHint: 'Verses and recitations from Quran.com for every story (a few MB)',
     offlineVerse: 'These verses need the internet the first time. The story continues now — you can listen to them later from the Journal.', close: 'Close', partOf: 'Part of verse', simple: 'Simple explanation', noVoice: 'No English voice installed — lines will show as text.', showPath: 'Show the path to the next story', combo: 'Great!',
     walk: 'Walk to the story', stories: 'Stories', storiesSub: 'Choose the story you want to go to — any one you like!', stDone: 'Done', stOpen: 'Open', stLocked: 'Not yet', stCurrent: 'Heading here', headingTo: 'Heading to', surah: 'Surah', meters: 'm', mapPick: 'Tap a story marker to go there', walkStuck: 'Couldn’t finish the walk — move a little and try again', controlsTouch: 'Use the stick at the bottom to walk · drag anywhere to turn the camera · 👣 walks you to the story',
+    diffTitle: 'Choose the journey level', diffHint: 'Every story has gold coins on the way to it. Your child collects a share of them to open the story — pick what suits their age (you can change it later in Settings).',
+    easy: 'Easy', medium: 'Medium', hard: 'Hard', easySub: 'Collect 20% of each story’s coins', mediumSub: 'Collect 50% of each story’s coins', hardSub: 'Collect 90% of each story’s coins', back: 'Back',
+    difficulty: 'Difficulty', diffNote: 'Applies to the stories that are not open yet', gateObj: 'Collect coins', gatePrep: 'Laying out the coins on the way…', gateOpen: 'Story unlocked! 🎉',
+    gateLine: n => `Collect ${n} more coin${n === 1 ? '' : 's'} on the way to open the story!`,
+    stGated: 'Collect coins', stChain: 'After the previous story', catEmpty: 'Stories for this section are coming soon, in sha Allah', coinsWord: 'coins',
   },
 };
 
 const $ = id => document.getElementById(id);
 // surah names for the verse references on the story cards (fallback: the number)
 const SURAHS = { 2: ['البقرة', 'Al-Baqarah'], 12: ['يوسف', 'Yusuf'], 59: ['الحشر', 'Al-Hashr'], 105: ['الفيل', 'Al-Fil'], 106: ['قريش', 'Quraysh'] };
-const arDigits = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+export const arDigits = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 // the painted illustration that stands for a story on its card: its first painted scene, else a stand-in
 const THUMBS = { 'people-of-the-elephant': 'elephant', 'the-guest-and-the-lamp': 'guest_meal' };   // a painting that reads better small
 const storyThumb = e => THUMBS[e.id] ?? e.steps.map(s => s.scene).find(n => PAINTED.includes(n)) ?? null;
@@ -111,7 +122,9 @@ export class UI {
   // ---- HUD --------------------------------------------------------------
   showHud(on) { $('hud').hidden = !on; }
   objective(lines) {
-    const o = $('objective'); o.querySelector('b').textContent = lines[0]; o.querySelector('small').textContent = lines[1] ?? '';
+    const o = $('objective'), key = `${lines[0]}|${lines[1] ?? ''}`;
+    if (o.dataset.key === key) return;                        // unchanged: no pulse
+    o.dataset.key = key; o.querySelector('b').textContent = lines[0]; o.querySelector('small').textContent = lines[1] ?? '';
     o.classList.remove('pulse'); void o.offsetWidth; o.classList.add('pulse');
   }
   setPoints() { $('points').querySelector('b').textContent = this.save.points; $('points').title = this.S.points; }
@@ -160,6 +173,7 @@ export class UI {
     b.hidden = false;
     // keep the whole bubble on screen (phones): slide it in and point the tail at the speaker
     const half = Math.min(b.offsetWidth, innerWidth - 16) / 2 + 8, x = Math.min(Math.max(screen.x, half), innerWidth - half);
+    screen = { x: screen.x, y: Math.max(screen.y, $('objective').getBoundingClientRect().bottom + 10 + b.offsetHeight) };   // never under the objective chip
     b.style.setProperty('--ax', `${Math.max(-half + 22, Math.min(half - 22, screen.x - x)).toFixed(0)}px`);
     b.style.transform = `translate(${x}px, ${screen.y}px) translate(-50%, -100%)`;
   }
@@ -191,6 +205,12 @@ export class UI {
       if (npc.state === 'locked') continue;
       const [x, y] = toMap(npc.x, npc.z, n);
       ctx.save(); ctx.translate(x, y); ctx.rotate(-rot); ctx.scale(1 / k, 1 / k);
+      if (npc.state === 'gated') {                  // waiting for coins: a dark disc with a gold progress arc
+        const f = npc.gate ? Math.min(1, npc.gate.have / Math.max(1, npc.gate.need)) : 0;
+        ctx.fillStyle = '#0f2a33'; ctx.strokeStyle = '#3a2a14'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 7, 0, 7); ctx.fill(); ctx.stroke();
+        ctx.strokeStyle = '#ffc94a'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, 5, -Math.PI / 2, -Math.PI / 2 + f * Math.PI * 2); ctx.stroke();
+        ctx.restore(); continue;
+      }
       ctx.fillStyle = npc.state === 'open' ? '#ffc94a' : '#e8e2d0'; ctx.strokeStyle = '#3a2a14'; ctx.lineWidth = 2;
       ctx.beginPath(); ctx.arc(0, 0, 7, 0, 7); ctx.fill(); ctx.stroke();
       ctx.fillStyle = '#3a2a14'; ctx.font = 'bold 11px Nunito, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -266,7 +286,7 @@ export class UI {
     }
     for (const npc of npcs) {
       const m = document.createElement(onPick ? 'button' : 'div'); m.className = `npc badge ${npc.state}`;
-      m.innerHTML = icon(npc.state === 'open' ? 'alert' : npc.state === 'done' ? 'check' : 'lock');
+      m.innerHTML = icon(npc.state === 'open' ? 'alert' : npc.state === 'done' ? 'check' : npc.state === 'gated' ? 'coin' : 'lock');
       if (onPick) {                                   // tap a story marker: go there (like the story picker)
         m.type = 'button'; m.title = this.t(npc.enc.title); m.setAttribute('aria-label', m.title);
         m.addEventListener('pointerdown', e => e.stopPropagation());   // not a map drag
@@ -336,17 +356,34 @@ export class UI {
     return this.openPanel(S.map, wrap);
   }
 
-  // Story picker: every story as a card (painting, title, storytellers, place, verses, status,
-  // distance). Tapping one hands its id to onPick and closes the sheet.
-  stories(player, npcs, current, onPick) {
+  // Story picker: category tabs (Qur'an · Prophets · Companions — from encounters.json), each
+  // listing its stories in order as cards (painting, title, storytellers, place, verses, status,
+  // distance). Status: ✓ done · ! open · coin progress (its turn, collecting coins) · 🔒 until
+  // the story before it is done. Tapping a card hands its id to onPick and closes the sheet; a
+  // tab left open on close is handed to opts.onCategory.
+  stories(player, npcs, current, onPick, opts = {}) {
     const S = this.S, lang = this.save.settings.lang, ar = lang === 'ar', wrap = document.createElement('div'); wrap.className = 'stories';
+    const prog = opts.prog ?? this.prog;
+    const cats = prog?.categories ?? [{ id: 'quran', title: { ar: 'القصص', en: 'Stories' }, ids: this.data.encounters.map(e => e.id) }];
     const sub = document.createElement('p'); sub.className = 'sub'; sub.textContent = S.storiesSub; wrap.append(sub);
-    const list = document.createElement('div'); list.className = 'st-list'; wrap.append(list);
     const num = n => (ar ? arDigits(n) : String(n));
-    for (const e of this.data.encounters) {
-      const npc = npcs.find(n => n.enc === e || n.enc.id === e.id); if (!npc) continue;
-      const status = this.save.done.includes(e.id) ? 'done' : npc.state === 'locked' ? 'locked' : 'open';
-      const v = e.steps.find(s => s.type === 'verses');
+    const tt = o => (typeof o === 'string' ? o : this.t(o));
+    let active = cats.find(c => c.id === opts.category)?.id ?? cats[0]?.id;
+    const tabs = document.createElement('div'); tabs.className = 'st-tabs'; tabs.setAttribute('role', 'tablist');
+    const list = document.createElement('div'); list.className = 'st-list';
+    if (cats.length > 1) wrap.append(tabs);
+    wrap.append(list);
+    for (const c of cats) {
+      const done = c.ids.filter(id => this.save.done.includes(id)).length, ic = categoryIcon(c);
+      const b = document.createElement('button'); b.type = 'button'; b.className = 'st-tab'; b.dataset.cat = c.id; b.setAttribute('role', 'tab');
+      b.innerHTML = `${ic.sprite ? icon(ic.sprite) : `<span class="emo">${esc(ic.text)}</span>`}<span class="nm">${esc(tt(c.title))}</span><small>${num(done)} / ${num(c.ids.length)}</small>`;
+      b.onclick = () => { active = c.id; render(); };
+      tabs.append(b);
+    }
+    const card = e => {
+      const npc = npcs.find(n => n.enc === e || n.enc.id === e.id); if (!npc) return null;
+      const status = this.save.done.includes(e.id) ? 'done' : npc.state === 'locked' ? 'locked' : npc.state === 'gated' ? 'gated' : 'open';
+      const v = e.steps?.find(s => s.type === 'verses');
       let ref = '';
       if (v) {
         const [su, a0] = v.from.split(':'), a1 = v.to.split(':')[1], name = SURAHS[su]?.[ar ? 0 : 1];
@@ -360,21 +397,52 @@ export class UI {
       const names = cast.map(c => esc(this.t(c.name))).join(' · ');
       const thumb = storyThumb(e);
       const other = e.title?.[ar ? 'en' : 'ar'];
+      const g = npc.gate, pct = g ? Math.min(100, Math.round(g.have / Math.max(1, g.need) * 100)) : 0;
+      const frac = g ? `${num(g.have)} / ${num(g.need)}` : '…';
+      const label = e.id === current ? S.stCurrent : status === 'gated' ? frac : S[status === 'done' ? 'stDone' : status === 'open' ? 'stOpen' : 'stChain'];
       const b = document.createElement('button'); b.type = 'button';
       b.className = `story ${status}${e.id === current ? ' current' : ''}`;
       b.innerHTML = `<span class="thumb">${thumb ? `<img alt="" loading="lazy" decoding="async" src="${illustrationURL(thumb)}">` : ''}<svg class="orn" viewBox="0 0 200 124" aria-hidden="true"><use href="#o-emblem"/></svg></span>
         <span class="info"><b class="ttl">${esc(this.t(e.title))}</b>${other ? `<small class="alt" lang="${ar ? 'en' : 'ar'}">${esc(other)}</small>` : ''}
           <span class="who"><span class="faces">${faces}</span><span>${names}</span></span>
-          <span class="meta"><span>${icon('compass')}${esc(place)}</span>${ref ? `<span>${icon('quran')}${esc(ref)}</span>` : ''}<span class="dist">≈ ${dist} ${esc(S.meters)}</span></span></span>
-        <span class="st">${icon(status === 'done' ? 'check' : status === 'open' ? 'alert' : 'lock')}<em>${esc(e.id === current ? S.stCurrent : S[status === 'done' ? 'stDone' : status === 'open' ? 'stOpen' : 'stLocked'])}</em></span>`;
+          <span class="meta"><span>${icon('compass')}${esc(place)}</span>${ref ? `<span>${icon('quran')}${esc(ref)}</span>` : ''}<span class="dist">≈ ${dist} ${esc(S.meters)}</span></span>
+          ${status === 'gated' ? `<span class="gate"><i style="width:${pct}%"></i><em>${icon('coin')}${g ? `${frac} · ${esc(S.stGated)}` : '…'}</em></span>` : ''}</span>
+        <span class="st">${icon(status === 'done' ? 'check' : status === 'open' ? 'alert' : status === 'gated' ? 'coin' : 'lock')}<em>${esc(label)}</em></span>`;
       const img = b.querySelector('img');
       if (img) { img.onload = () => b.querySelector('.thumb').classList.add('ok'); img.onerror = () => img.remove(); }
       b.onclick = () => { onPick(e.id); this.closePanel?.(); };
-      list.append(b);
-    }
+      return b;
+    };
+    const render = () => {
+      for (const b of tabs.children) { const on = b.dataset.cat === active; b.classList.toggle('on', on); b.setAttribute('aria-selected', on); }
+      list.innerHTML = '';
+      const c = cats.find(k => k.id === active);
+      const encs = (c?.ids ?? []).map(id => this.data.encounters.find(e => e.id === id)).filter(Boolean);
+      for (const e of encs) { const b = card(e); if (b) list.append(b); }
+      if (!list.children.length) list.innerHTML = `<p class="empty">${esc(S.catEmpty)}</p>`;
+      list.scrollTop = 0;
+      requestAnimationFrame(() => (list.querySelector('.current') ?? tabs.querySelector('.on'))?.scrollIntoView({ block: 'nearest', inline: 'nearest' }));
+    };
+    render();
     const p = this.openPanel(S.stories, wrap);
-    requestAnimationFrame(() => list.querySelector('.current')?.scrollIntoView({ block: 'nearest' }));
-    return p;
+    return p.then(() => { opts.onCategory?.(active); });
+  }
+
+  // New Journey: three big level buttons over the title screen with a line for parents
+  difficultyPicker(onPick) {
+    const S = this.S, host = $('title');
+    let el = $('difficulty');
+    if (!el) { el = document.createElement('div'); el.id = 'difficulty'; host.append(el); }
+    const cur = this.save.difficulty ?? 'easy';
+    el.innerHTML = `<div class="card" role="dialog" aria-modal="true"><h2>${esc(S.diffTitle)}</h2><p class="hint">${esc(S.diffHint)}</p>
+      <div class="opts">${DIFF_KEYS.map((d, i) => `<button type="button" data-d="${d}" class="lv ${d}${d === cur ? ' cur' : ''}"><span class="stars">${'★'.repeat(i + 1)}</span><b>${esc(S[d])}</b><em>${this.save.settings.lang === 'ar' ? arDigits([20, 50, 90][i]) + '٪' : [20, 50, 90][i] + '%'}</em><small>${esc(S[d + 'Sub'])}</small></button>`).join('')}</div>
+      <button type="button" class="back">${esc(S.back)}</button></div>`;
+    el.hidden = false; requestAnimationFrame(() => el.classList.add('show'));
+    const close = () => { el.classList.remove('show'); setTimeout(() => { el.hidden = true; }, 200); };
+    el.querySelector('.back').onclick = close;
+    el.onclick = e => { if (e.target === el) close(); };
+    for (const b of el.querySelectorAll('.opts button')) b.onclick = () => { close(); onPick(b.dataset.d); };
+    el.querySelector('.cur')?.focus?.();
   }
 
   journal(onReplay) {
@@ -397,6 +465,7 @@ export class UI {
     f.innerHTML = `
       <label>${esc(S.lang)}<select name="lang"><option value="ar">العربية</option><option value="en">English</option></select></label>
       <label>${esc(S.reciter)}<select name="reciter"><option value="${st.reciter}">…</option></select></label>
+      <label>${esc(S.difficulty)}<select name="difficulty">${DIFF_KEYS.map(d => `<option value="${d}">${esc(S[d])} · ${esc(S[d + 'Sub'])}</option>`).join('')}</select><small class="note">${esc(S.diffNote)}</small></label>
       <label>${esc(S.quality)}<select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="lite">${esc(S.qLite)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>
       <label class="row"><input type="checkbox" name="voice"> ${esc(S.voice)}</label>
       <label class="row"><input type="checkbox" name="meaning"> ${esc(S.meaning)}</label>
@@ -406,6 +475,7 @@ export class UI {
       <label class="row"><input type="checkbox" name="music"> ${esc(S.music)}</label>
       ${pwa.supported ? `<div class="offline-dl"><button type="button" class="dl">${icon('stories')}${esc(S.dlAll)}</button><small>${esc(S.dlHint)}</small><div class="dl-bar" hidden><i></i></div><small class="dl-status" aria-live="polite"></small></div>` : ''}
       <button type="button" class="danger">${esc(S.reset)}</button>`;
+    f.difficulty.value = this.save.difficulty ?? 'easy';
     f.lang.value = st.lang; f.quality.value = st.quality ?? 'auto'; f.voice.checked = st.voice; f.meaning.checked = st.meaning; f.auto.checked = st.auto !== false; f.path.checked = st.path !== false; f.volume.value = st.volume; f.music.checked = st.music;
     QuranService.getReciters().then(rs => {
       f.reciter.innerHTML = rs.map(r => `<option value="${r.id}">${esc(r.name)}${r.style ? ' — ' + esc(r.style) : ''}</option>`).join('');
@@ -413,6 +483,7 @@ export class UI {
     }).catch(e => { f.reciter.innerHTML = `<option value="${st.reciter}">${esc(e.message)}</option>`; });
     f.onchange = () => {
       Object.assign(st, { lang: f.lang.value, reciter: +f.reciter.value, voice: f.voice.checked, meaning: f.meaning.checked, auto: f.auto.checked, path: f.path.checked, volume: +f.volume.value, music: f.music.checked, quality: f.quality.value });
+      this.save.difficulty = f.difficulty.value;
       this.persist(); this.onSettings();
     };
     f.querySelector('.danger').onclick = () => { if (confirm(S.resetQ)) onReset(); };

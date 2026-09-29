@@ -530,3 +530,53 @@ body.touch .worldmap .npc { width: 30px; height: 30px; margin: -15px 0 0 -15px; 
   body.touch #zoom { bottom: 72px; right: 12px; } body.touch #talk { bottom: 72px; right: 78px; } }
 @media (max-width: 380px) { body.touch #dock { gap: 6px; right: 10px; } body.touch #dock button { width: 42px; height: 42px; font-size: 21px; }
   body.touch #hud > #stick { left: 10px; bottom: 14px; width: 116px; height: 116px; } body.touch #zoom { bottom: 66px; } body.touch #talk { bottom: 66px; } }
+
+/* ---- difficulty + coin-gated stories + categories ------------------------------------------- */
+/* New Journey: level picker over the title screen */
+#difficulty { position: absolute; inset: 0; z-index: 5; display: grid; place-items: center; padding: max(16px, var(--sa-t)) 16px max(16px, var(--sa-b));
+  background: rgba(8, 20, 26, .55); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); opacity: 0; transition: opacity .2s; }
+#difficulty.show { opacity: 1; }
+#difficulty .card { width: min(560px, 100%); max-height: 100%; overflow: auto; padding: 20px 22px 16px; border-radius: 22px; background: var(--glass-2); border: 1px solid var(--line); box-shadow: var(--glow); text-align: center; }
+#difficulty h2 { margin: 0 0 6px; font: 700 26px var(--display); background: var(--gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
+#difficulty .hint { margin: 0 0 14px; color: var(--ink-dim); font-size: 14px; line-height: 1.55; }
+#difficulty .opts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+#difficulty .lv { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 12px 8px; border-radius: 18px; background: rgba(255, 255, 255, .05);
+  border: 1px solid var(--line-soft); transition: transform .12s, background .15s, border-color .15s; }
+#difficulty .lv:hover, #difficulty .lv:focus-visible { background: rgba(244, 199, 102, .12); border-color: var(--sun); transform: translateY(-2px); }
+#difficulty .lv.cur { border-color: var(--line); }
+#difficulty .lv .stars { color: var(--sun); letter-spacing: 2px; font-size: 15px; }
+#difficulty .lv b { font-size: 22px; color: #fff4dc; }
+#difficulty .lv em { font: 800 20px Nunito, sans-serif; font-style: normal; color: var(--gold-2); }
+#difficulty .lv small { color: var(--ink-dim); font-size: 12px; line-height: 1.35; }
+#difficulty .lv.easy .stars { color: #9fe0a8; } #difficulty .lv.hard .stars { color: #ffb070; }
+#difficulty .back { margin-top: 12px; padding: 6px 18px; border-radius: 999px; color: var(--ink-dim); }
+#difficulty .back:hover { color: var(--gold-2); }
+@media (max-width: 430px), (max-height: 420px) {
+  #difficulty .card { padding: 14px 12px 10px; } #difficulty h2 { font-size: 21px; } #difficulty .hint { font-size: 12.5px; margin-bottom: 10px; }
+  #difficulty .opts { gap: 7px; } #difficulty .lv { padding: 9px 4px; } #difficulty .lv b { font-size: 18px; } #difficulty .lv em { font-size: 17px; } #difficulty .lv small { font-size: 11px; }
+}
+.settings small.note { font-weight: 500; color: var(--ink-dim); font-size: 12px; }
+/* story sheet: category tabs */
+.st-tabs { display: flex; gap: 8px; margin: 0 0 12px; overflow-x: auto; scrollbar-width: none; padding: 2px; }
+.st-tabs::-webkit-scrollbar { display: none; }
+.st-tab { flex: 1 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 8px 14px; border-radius: 999px; white-space: nowrap;
+  background: rgba(255, 255, 255, .05); border: 1px solid var(--line-soft); color: var(--ink-dim); font-weight: 700; font-size: 15px; transition: background .15s, color .15s, border-color .15s; }
+.st-tab .ic { width: 22px; height: 22px; color: var(--sun); } .st-tab .emo { font-size: 18px; }
+.st-tab small { font: 800 12px Nunito, sans-serif; padding: 1px 7px; border-radius: 999px; background: rgba(0, 0, 0, .3); color: var(--gold-2); }
+.st-tab:hover { color: var(--ink); border-color: var(--line); }
+.st-tab.on { color: #3a2408; background: var(--gold-grad); border-color: transparent; box-shadow: 0 0 14px rgba(244, 199, 102, .35); }
+.st-tab.on .ic { color: #6a4410; } .st-tab.on small { background: rgba(58, 36, 8, .18); color: #3a2408; }
+.stories .empty { color: var(--ink-dim); text-align: center; padding: 24px 8px; }
+/* a story waiting for its coins */
+.story .gate { position: relative; display: block; height: 20px; margin-top: 3px; border-radius: 999px; background: rgba(0, 0, 0, .35); overflow: hidden; border: 1px solid var(--line-soft); max-width: 260px; }
+.story .gate i { position: absolute; inset: 0 auto 0 0; background: var(--gold-grad); border-radius: 999px; }
+html[dir="rtl"] .story .gate i { inset: 0 0 0 auto; }
+.story .gate em { position: relative; display: flex; align-items: center; justify-content: center; gap: 5px; height: 100%; font: 800 12px var(--ui); font-style: normal; color: #fff4dc; text-shadow: 0 1px 3px rgba(0, 0, 0, .8); }
+.story .gate .ic { width: 13px; height: 13px; color: #ffd25e; }
+.story.gated .st .ic { color: #6a4410; background: radial-gradient(circle at 35% 30%, #fff1c2, #edb136 55%, #b87a1e); box-shadow: 0 0 10px rgba(237, 177, 54, .5); }
+.story.gated .st em { color: var(--gold-2); }
+.worldmap .npc.gated { color: #6a4410; background: radial-gradient(circle at 35% 30%, #fff1c2, #edb136 55%, #b87a1e); }
+@media (max-width: 520px) { /* phones: three equal columns, icon over name over count */
+  .st-tabs { gap: 6px; overflow: visible; }
+  .st-tab { flex: 1 1 0; min-width: 0; flex-direction: column; gap: 2px; padding: 6px 4px; border-radius: 14px; font-size: 12.5px; line-height: 1.2; white-space: normal; text-align: center; }
+  .st-tab .ic { width: 20px; height: 20px; } .st-tab small { font-size: 11px; } }

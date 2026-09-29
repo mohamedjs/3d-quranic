@@ -59,7 +59,7 @@ export function createNavGrid(colliders) {
 
 // ---- time-sliced A* ----------------------------------------------------------------------
 const DX = [1, -1, 0, 0, 1, 1, -1, -1], DZ = [0, 0, 1, -1, 1, -1, 1, -1], DL = [1, 1, 1, 1, Math.SQRT2, Math.SQRT2, Math.SQRT2, Math.SQRT2];
-function createSearch(grid) {
+export function createSearch(grid) {
   const g = new Float32Array(NN), parent = new Int32Array(NN), seen = new Uint32Array(NN), closed = new Uint32Array(NN);
   const CAP = NN * 2, heapI = new Int32Array(CAP), heapF = new Float32Array(CAP);
   let size = 0, id = 0, goalX = 0, goalZ = 0, goalR2 = 0, best = -1, bestH = Infinity, expanded = 0, found = -1, startI = 0, active = false;
@@ -134,9 +134,10 @@ function createSearch(grid) {
 // cells → smooth polyline: string-pull (only across cells no costlier than the ends, so the
 // route stays on the street instead of cutting over fields), two rounds of Chaikin, then
 // resampled every 0.5 m with ground heights
-function buildRoute(grid, cells, sx, sz) {
+export function buildRoute(grid, cells, sx, sz, end = null) {
   const P = cells.map(i => [cellX(i % N), cellX((i / N) | 0)]);
   P[0] = [sx, sz];
+  if (end && P.length > 1) P[P.length - 1] = end;             // a waypoint (coin): end right on it, not on its cell
   const los = (a, b) => {
     const limit = Math.max(grid.costAt(a[0], a[1]), grid.costAt(b[0], b[1])) + 0.05;
     const d = Math.hypot(b[0] - a[0], b[1] - a[1]), n = Math.ceil(d / 0.5);
@@ -255,17 +256,21 @@ export function createGuide({ scene, colliders }) {
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
 
   let route = null, routeTarget = null, pendingTarget = null, pendingFrom = [0, 0], lastReq = -9, prog = 0, stray = 0, version = 0;
+  // goal: an optional waypoint {x, z, key} the route leads to instead of the storyteller (the next
+  // coin of a story that is still locked behind its coins); the beacon stays over the storyteller
+  let routeGoal = null, pendingGoal = null, pendingEnd = null;
   const api = {
     grid, get route() { return route; }, get progress() { return prog; }, get version() { return version; }, get target() { return routeTarget; },
+    get goalKey() { return routeGoal; },
     get searching() { return search.active; },
     // route for the minimap / world map (null when hidden)
     mapRoute: null,
   };
 
-  function request(target, px, pz, now) {
-    const r = (target.enc.stage?.talkRadius ?? 3.4) * 0.8;
-    search.start(px, pz, target.x, target.z, r);
-    pendingTarget = target; pendingFrom = [px, pz]; lastReq = now;
+  function request(target, px, pz, now, goal) {
+    if (goal) search.start(px, pz, goal.x, goal.z, 1.2);          // ≥ a cell's half-diagonal, or it never arrives
+    else search.start(px, pz, target.x, target.z, (target.enc.stage?.talkRadius ?? 3.4) * 0.8);
+    pendingTarget = target; pendingGoal = goal?.key ?? null; pendingEnd = goal ? [goal.x, goal.z] : null; pendingFrom = [px, pz]; lastReq = now;
   }
   function track(px, pz) {
     if (!route) return;
@@ -278,18 +283,19 @@ export function createGuide({ scene, colliders }) {
   }
 
   // show: the path setting and the mode allow drawing · target: the npc the objective points at
-  api.update = (dt, now, { explore, show, target, player, outlines = true }) => {
-    const px = player.pos.x, pz = player.pos.z;
+  api.update = (dt, now, { explore, show, target, player, outlines = true, goal = null }) => {
+    const px = player.pos.x, pz = player.pos.z, gk = goal?.key ?? null;
     if (explore) {
-      if (!target) { if (route || search.active) { route = null; routeTarget = null; search.cancel(); version++; } }
-      else if (target !== routeTarget && target !== pendingTarget) request(target, px, pz, now);
-      else if (!search.active && now - lastReq > 1.5 && (!route || stray > 6)) request(target, px, pz, now);
+      if (!target) { if (route || search.active) { route = null; routeTarget = null; routeGoal = null; pendingTarget = null; search.cancel(); version++; } }
+      else if ((target !== routeTarget || gk !== routeGoal) && !(search.active && target === pendingTarget && gk === pendingGoal)) request(target, px, pz, now, goal);
+      else if (!search.active && now - lastReq > 1.5 && (!route || stray > 6)) request(target, px, pz, now, goal);
       if (search.active) {
         const cells = search.step(3);
         if (cells) {
-          const t = pendingTarget; pendingTarget = null;
-          if (cells.length > 1) { route = buildRoute(grid, cells, pendingFrom[0], pendingFrom[1]); route.reached = cells.reached; routeTarget = t; prog = 0; stray = 0; version++; }
-          else if (t !== routeTarget) { route = null; routeTarget = t; version++; }
+          const t = pendingTarget, g = pendingGoal; pendingTarget = null; pendingGoal = null;
+          if (cells.length === 1 && pendingEnd) cells.push(cells[0]);   // the coin is in the child's own cell: a straight step to it
+          if (cells.length > 1) { route = buildRoute(grid, cells, pendingFrom[0], pendingFrom[1], cells.reached ? pendingEnd : null); route.reached = cells.reached; routeTarget = t; routeGoal = g; prog = 0; stray = 0; version++; }
+          else if (t !== routeTarget || g !== routeGoal) { route = null; routeTarget = t; routeGoal = g; version++; }
         }
       }
       track(px, pz);
@@ -301,7 +307,8 @@ export function createGuide({ scene, colliders }) {
       const k = Math.max(1, refs.view.dist / 9), host = target.host, r = target.rig.root.position;
       bc.pillar.position.set(r.x, groundAt(r.x, r.z), r.z); bc.pillar.scale.set(0.8 * k, 6 * k, 0.8 * k);
       bc.pillar.material.uniforms.uTime.value = now;
-      bc.arrow.position.set(r.x, host.headY + 1.3 * k + Math.sin(now * 3) * 0.12 * k, r.z);
+      const over = ((target.markerScale ?? 1) - 1) * 0.6 * k * 1.3;           // clear of a bigger (coin-gate) marker
+      bc.arrow.position.set(r.x, host.headY + 1.3 * k + over + Math.sin(now * 3) * 0.12 * k, r.z);
       bc.arrow.scale.setScalar(k); bc.arrow.rotation.y = now * 1.5;
       const rr = (target.enc.stage?.talkRadius ?? 3.4) * 0.75;
       bc.ring.position.set(target.x, groundAt(target.x, target.z) + 0.12, target.z); bc.ring.scale.setScalar(rr * (0.92 + 0.08 * Math.sin(now * 3)));

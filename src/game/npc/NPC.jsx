@@ -102,8 +102,8 @@ export function NPC({ encounter }) {
       if (m.rig.hulls) { const ink = preset.outlines && d < Math.max(28, preset.outlineDist * 1.6); for (const h of m.rig.hulls) h.visible = ink; }
     }
     const k = Math.max(1, refs.view.dist / 9);
-    npc.marker.scale.setScalar(0.6 * k);
-    npc.marker.position.set(r.position.x, npc.host.headY + 0.6 * k + Math.sin(t * 2 + npc.x) * 0.06 * k, r.position.z);
+    npc.marker.scale.setScalar(0.6 * k * (npc.markerScale ?? 1));   // the coin-gate marker is bigger
+    npc.marker.position.set(r.position.x, npc.host.headY + 0.6 * k * (npc.markerScale ?? 1) + Math.sin(t * 2 + npc.x) * 0.06 * k, r.position.z);
     for (const c of npc.camels) { c.visible = anyShown; if (anyShown) c.userData.animate(t); }
   });
   return (

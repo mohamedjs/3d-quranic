@@ -19,3 +19,10 @@ coins up to «فتحت القصة! 🎉» (1.4× speed), arriving at grandma Zai
 screen. It crops the status bar and home band, inpaints the AssistiveTouch dot (OpenCV), upscales to 640 px and
 sharpens → `clips/<name>/%04d.jpg` at 30 fps. `index.html` shows them in clay phone frames (`phone()`), and the
 scene order follows the game: logo → pick a level → walk & collect → villagers → categories → Quran → play.
+
+## English / Russian cuts
+`index.html#v-en`, `#h-en`, `#v-ru`, `#h-ru` switch the text (Nunito for Latin/Cyrillic, left-to-right; long lines
+auto-fit). `voices_i18n.py` designs our own OmniVoice narrator / grandpa / boy per language (3 takes, Whisper-checked)
+and clones every line in `lines_i18n.json`. Then per language:
+`VOFILES=… TIMING=… python3 timing.py` → `TIMING=… CUES=… python3 render.py v-en video 30 0 end` →
+`TIMING=… CUES=… MIXOUT=… python3 mix.py` → ffmpeg. (Grandma's greeting in the footage stays in Arabic.)

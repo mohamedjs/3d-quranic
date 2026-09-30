@@ -151,7 +151,7 @@ export const Voice = {
   async speak(text, lang) {
     this.cancel();
     if (!this.enabled) return false;
-    const my0 = token, file = lang === 'ar' ? await this.recorded(text) : null;
+    const my0 = token, file = await this.recorded(text);
     if (my0 !== token) return false;                             // a newer line started meanwhile
     if (file) {
       voiceAudio.src = './' + file; voiceAudio.playbackRate = 1;
@@ -160,7 +160,7 @@ export const Voice = {
         return await new Promise(r => { voiceAudio.onended = () => r(my0 === token); voiceAudio.onpause = () => r(false); });
       } catch (e) { /* autoplay blocked / missing → fall back */ }
     }
-    const clean = text.replace(/ﷺ/g, lang === 'ar' ? 'صلى الله عليه وسلم' : 'peace be upon him');
+    const clean = text.replace(/ﷺ/g, lang === 'ar' ? 'صلى الله عليه وسلم' : lang === 'ru' ? 'мир ему' : 'peace be upon him');
     const v = this.system(lang);
     if (v && window.speechSynthesis) {
       const u = new SpeechSynthesisUtterance(clean); u.voice = v; u.lang = v.lang; u.rate = 0.92;

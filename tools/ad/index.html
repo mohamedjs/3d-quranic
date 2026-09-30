@@ -10,6 +10,18 @@
 @font-face { font-family: Taj; src: url(fonts/tajawal-latin-700-normal.woff2); font-weight: 700; }
 @font-face { font-family: Taj; src: url(fonts/tajawal-latin-800-normal.woff2); font-weight: 800; }
 @font-face { font-family: Ruqaa; src: url(fonts/aref-ruqaa-arabic-700-normal.woff2); font-weight: 700; }
+@font-face { font-family: Nun; src: url(fonts/nunito-latin-700-normal.woff2); font-weight: 700; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: Nun; src: url(fonts/nunito-latin-800-normal.woff2); font-weight: 800; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: Nun; src: url(fonts/nunito-latin-900-normal.woff2); font-weight: 900; unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+@font-face { font-family: Nun; src: url(fonts/nunito-cyrillic-700-normal.woff2); font-weight: 700; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: Nun; src: url(fonts/nunito-cyrillic-800-normal.woff2); font-weight: 800; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+@font-face { font-family: Nun; src: url(fonts/nunito-cyrillic-900-normal.woff2); font-weight: 900; unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116; }
+/* English / Russian cut: Nunito (Latin + Cyrillic), left-to-right */
+.lat #stage { font-family: Nun, Taj, sans-serif; }
+.lat #s1title, .lat #t7 { font-family: Nun, sans-serif !important; font-weight: 900 !important; letter-spacing: -.01em; }
+.lat #s1en { font-family: Ruqaa, serif; letter-spacing: 0 !important; font-size: 72px; }
+.lat .who .nm { font-size: 40px; padding: 10px 26px; }
+.lat #qcard .t1 { font-family: Nun, sans-serif; font-weight: 900; }
 :root {
   --bg: #fff4e2; --bg2: #fdebd0; --tile: #fffaf1; --ink: #3d2a17; --dim: #85694b;
   --teal: #3db4a7; --teal-d: #1f8277; --gold: #ffc54d; --gold-d: #d98e0b; --coral: #ff8c6a; --coral-d: #d4583a;
@@ -124,7 +136,7 @@ svg.ic { width: 1em; height: 1em; fill: currentColor; display: block; }
       <svg id="crest" class="abs" viewBox="0 0 200 124"><use href="#o-emblem"/></svg>
       <div id="s1title" class="abs">رحلة مع القرآن</div>
       <div id="s1en" class="abs en">QURAN JOURNEY</div>
-      <div id="s1tag" class="abs">استكشف · اسمع · اتعلّم · انمو</div>
+      <div id="s1tag" class="abs">استكشف · استمع · تعلّم · انمُ</div>
     </div>
   </div>
 
@@ -135,8 +147,8 @@ svg.ic { width: 1em; height: 1em; fill: currentColor; display: block; }
     <div id="s2chevs" class="fill" style="display:none"></div>
     <div id="ph2" class="phone"><img></div>
     <div id="tag2" class="tagc abs"><span class="ib" style="background:var(--gold);color:#6a4410"><svg class="ic"><use href="#r-copper-coin"/></svg></span>عملات على الطريق</div>
-    <div id="unlock" class="abs"><span class="ib"><svg class="ic"><use href="#r-star"/></svg></span>فتحت القصة! 🎉</div>
-    <div id="s2cap" class="cap"><b>امشِ ورا <span class="hl2">السهم الدهبي</span></b><small>واجمع العملات اللي على الطريق</small></div>
+    <div id="unlock" class="abs"><span class="ib"><svg class="ic"><use href="#r-star"/></svg></span>فُتحت القصة! 🎉</div>
+    <div id="s2cap" class="cap"><b>اتبع <span class="hl2">السهم الذهبي</span></b><small>واجمع العملات في طريقك</small></div>
     <div id="counter" class="abs clay pill"><span class="cc"><svg class="ic"><use href="#r-copper-coin"/></svg></span><span id="cnt">٠</span></div>
     <div id="s2coins" class="fill"></div>
   </div>
@@ -144,7 +156,7 @@ svg.ic { width: 1em; height: 1em; fill: currentColor; display: block; }
   <!-- S3 villagers -->
   <div id="s3" class="scene">
     <div id="ph3" class="phone"><img></div>
-    <div id="s3cap" class="cap"><b>أهل القرية <span class="hl">مستنيينك</span></b><small>كل واحد عنده حكاية</small></div>
+    <div id="s3cap" class="cap"><b>أهل القرية <span class="hl">ينتظرونك</span></b><small>لكلّ واحدٍ منهم قصة</small></div>
     <div id="w1" class="who"><div class="ph"><svg viewBox="0 0 64 64"><use href="#p-farmer"/></svg></div><div class="nm" style="background:var(--teal)">الجدّ سالم</div></div>
     <div id="w2" class="who"><div class="ph"><svg viewBox="0 0 64 64"><use href="#p-grandma"/></svg></div><div class="nm" style="background:var(--coral)">الجدّة زينب</div></div>
     <div id="w3" class="who"><div class="ph"><svg viewBox="0 0 64 64"><use href="#p-player"/></svg></div><div class="nm" style="background:var(--gold);color:#4a2e05">أنا</div></div>
@@ -179,7 +191,7 @@ svg.ic { width: 1em; height: 1em; fill: currentColor; display: block; }
   <!-- S6 features -->
   <div id="s6" class="scene">
     <div id="ph6" class="phone"><img></div>
-    <div id="s6t" class="abs big-t">اختار <span class="hl3">مستواك</span></div>
+    <div id="s6t" class="abs big-t">اختر <span class="hl3">مستواك</span></div>
     <div id="l1" class="lv" style="background:#e3f6e7"><span class="st" style="color:var(--green-d)">★</span>سهل</div>
     <div id="l2" class="lv" style="background:#fff0cc"><span class="st" style="color:var(--gold-d)">★★</span>متوسط</div>
     <div id="l3" class="lv" style="background:#ffe2d8"><span class="st" style="color:var(--coral-d)">★★★</span>صعب</div>
@@ -192,8 +204,8 @@ svg.ic { width: 1em; height: 1em; fill: currentColor; display: block; }
     <div class="abs" id="s7wrap" style="left:0;top:0;width:0;height:0">
       <svg id="crest2" class="abs" viewBox="0 0 200 124" style="width:360px;height:223px;filter:drop-shadow(0 18px 30px rgba(140,80,20,.45))"><use href="#o-emblem"/></svg>
       <div id="t7" class="abs" style="font:700 var(--t7, 170px)/1.2 Ruqaa,serif;white-space:nowrap;text-shadow:0 6px 0 #fff,0 18px 40px rgba(120,70,20,.35)">رحلة مع القرآن</div>
-      <div id="cta" class="abs"><span class="ib"><svg class="ic"><use href="#r-play"/></svg></span>العبها دلوقتي</div>
-      <div id="url" class="abs en">mohamedjs.github.io/3d-quranic</div>
+      <div id="cta" class="abs"><span class="ib"><svg class="ic"><use href="#r-play"/></svg></span>العبها الآن</div>
+      <div id="url" class="abs en">rehla-ma3-alquran.up.railway.app</div>
     </div>
     <div id="s7coins" class="fill"></div>
   </div>
@@ -202,13 +214,15 @@ svg.ic { width: 1em; height: 1em; fill: currentColor; display: block; }
 </div>
 <script>
 const $ = id => document.getElementById(id);
-const V = !location.hash.startsWith('#h'); document.documentElement.className = V ? 'v' : 'h';
+const V = !location.hash.startsWith('#h'), LG = location.hash.split('-')[1] || 'ar';
+document.documentElement.className = (V ? 'v' : 'h') + (LG === 'ar' ? '' : ' lat');
+if (LG !== 'ar') { document.documentElement.lang = LG; document.documentElement.dir = 'ltr'; }
 const W = V ? 1080 : 1920, H = V ? 1920 : 1080;
 const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
 const P = (t, a, b) => clamp((t - a) / (b - a));
 const eo = x => 1 - Math.pow(1 - x, 3), eio = x => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
 const back = x => { const c1 = 1.9, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
-const ar = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
+const ar = n => (LG === 'ar' ? String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]) : String(n));
 const set = (el, o) => { if (typeof el === 'string') el = $(el); Object.assign(el.style, o); };
 const tf = (el, x, y, s = 1, r = 0, o = 1) => set(el, { transform: `translate(${x}px, ${y}px) scale(${s}) rotate(${r}deg)`, opacity: o });
 
@@ -265,6 +279,40 @@ function mkCoins(host, n) { const a = []; for (let i = 0; i < n; i++) { const c 
 const S1C = mkCoins('s1', 10), S2C = mkCoins('s2coins', 9), S2U = mkCoins('s2coins', 14), S7C = mkCoins('s7coins', 16);
 for (let i = 0; i < 9; i++) $('eq').append(document.createElement('i'));
 
+
+// ---- translations (the Arabic cut is the markup itself)
+const IC = n => `<svg class="ic"><use href="#r-${n}"/></svg>`;
+const STR = {
+  en: { s1title: 'Quran Journey', s1en: 'رحلة مع القرآن', s1tag: 'Explore · Listen · Learn · Grow',
+    s6t: 'Pick your <span class="hl3">level</span>', l1: ['★', 'Easy'], l2: ['★★', 'Medium'], l3: ['★★★', 'Hard'],
+    s2cap: '<b>Follow the <span class="hl2">golden arrow</span></b><small>and collect the coins along the way</small>', tag2: 'Coins on the way', unlock: 'Story unlocked! 🎉',
+    s3cap: '<b>The villagers are <span class="hl">waiting</span></b><small>each one has a story</small>', w1: 'Grandpa Salim', w2: 'Grandma Zainab', w3: 'Me', story: 'The People of the Elephant',
+    b1: 'The story of the Elephant! Have you heard it, my son?', b2: 'I heard about a big elephant… but what’s the story?',
+    s4t: '3 categories<br><span class="hl">18 stories</span>', c1: ['Stories from the Quran', 'stories'], c2: ['Stories of the Prophets', 'stories'], c3: ['Stories of the Companions', 'stories'],
+    t1: 'Verses of the Holy Quran', t2: 'recited by Sheikh Mohamed Siddiq al-Minshawi', mean: 'With simple meanings for kids', t7: 'Quran Journey', cta: 'Play now' },
+  ru: { s1title: 'Путешествие с Кораном', s1en: 'رحلة مع القرآن', s1tag: 'Исследуй · Слушай · Учись · Расти',
+    s6t: 'Выбери <span class="hl3">уровень</span>', l1: ['★', 'Лёгкий'], l2: ['★★', 'Средний'], l3: ['★★★', 'Сложный'],
+    s2cap: '<b>Иди за <span class="hl2">золотой стрелкой</span></b><small>и собирай монеты по пути</small>', tag2: 'Монеты на пути', unlock: 'История открыта! 🎉',
+    s3cap: '<b>Жители деревни <span class="hl">ждут</span></b><small>у каждого своя история</small>', w1: 'Дедушка Салим', w2: 'Бабушка Зейнаб', w3: 'Я', story: 'Люди слона',
+    b1: 'История о слоне! Ты слышал её, сынок?', b2: 'Я слышал о большом слоне… но что это за история?',
+    s4t: '3 раздела<br><span class="hl">18 историй</span>', c1: ['Истории из Корана', 'историй'], c2: ['Истории пророков', 'историй'], c3: ['Истории сподвижников', 'истории'],
+    t1: 'Аяты Священного Корана', t2: 'в чтении шейха Мухаммада Сиддика аль-Миншави', mean: 'С простым объяснением для детей', t7: 'Путешествие с Кораном', cta: 'Играть сейчас' },
+};
+function applyLang() {
+  const T = STR[LG]; if (!T) return;
+  for (const k of ['s1title', 's1en', 's1tag', 's6t', 'tag2', 'unlock', 's2cap', 's3cap', 'b1', 'b2', 's4t', 'mean', 't7', 'cta']) {
+    const el = $(k); if (!el) continue;
+    const icon = el.querySelector(':scope > .ib'); el.innerHTML = T[k]; if (icon) el.prepend(icon);
+  }
+  ['l1', 'l2', 'l3'].forEach(k => { const st = $(k).querySelector('.st'); $(k).textContent = ' ' + T[k][1]; $(k).prepend(st); st.textContent = T[k][0]; });
+  ['w1', 'w2', 'w3'].forEach(k => { $(k).querySelector('.nm').textContent = T[k]; });
+  $('storycard').querySelector('.tag').textContent = T.story;
+  [['c1', 9], ['c2', 5], ['c3', 4]].forEach(([k, n], i) => { const c = $(k); c.querySelector('b').textContent = T[k][0]; c.querySelector('small').innerHTML = `<span id="n${i + 1}">${n}</span> ${T[k][1]}`; });
+  document.querySelector('#qcard .t1').textContent = T.t1; document.querySelector('#qcard .t2').textContent = T.t2;
+}
+// long lines (Russian) are scaled down to fit the frame
+function fit(id, maxW) { const el = $(id), r = el.getBoundingClientRect(); if (r.width > maxW) { el.style.zoom = ((parseFloat(getComputedStyle(el).zoom) || 1) * maxW / r.width).toFixed(3); } }
+
 let ready = false;
 async function init() {
   for (const f of ['ornaments.svg', 'icons.svg']) $('sprites').insertAdjacentHTML('beforeend', await (await fetch(f)).text());
@@ -273,6 +321,9 @@ async function init() {
   $('s7shot').style.backgroundImage = `url(img/${V ? 'v' : 'h'}_clean_far.png)`;
   await document.fonts.ready; await Promise.all([...document.images].map(i => i.decode().catch(() => {})));
   document.querySelectorAll('.scene').forEach(s => { s.style.display = 'block'; });
+  applyLang(); await document.fonts.ready;
+  for (const id of ['s1title', 's1en', 's1tag', 's2cap', 's3cap', 'b1', 'b2', 's4t', 'c1', 'c2', 'c3', 'mean', 's6t', 't7', 'cta', 'unlock', 'tag2']) { $(id).style.left = '0px'; fit(id, id === 's1title' ? (V ? 900 : 1500) : id === 't7' ? (V ? 900 : 1000) : (V ? W : (['s2cap', 's3cap', 'c1', 'c2', 'c3'].includes(id) ? 1000 : W)) - 90); }
+  document.querySelectorAll('.who .nm').forEach(n => { n.style.left = '0px'; const r = n.getBoundingClientRect(); if (r.width > 270) n.style.zoom = (270 / r.width).toFixed(3); });
   for (const id of ['s1title', 's1en', 's1tag', 'crest', 's2cap', 'counter', 'tag2', 'unlock', 's3cap', 'w1', 'w2', 'w3', 'storycard', 'b1', 'b2', 's4t', 'c1', 'c2', 'c3', 'mean', 's6t', 'l1', 'l2', 'l3', 'crest2', 't7', 'cta', 'url']) anchorC(id);
   for (const [id, k] of [['ph6', 's6'], ['ph2', 's2'], ['ph3', 's3'], ['ph7', 's7']]) { const [, , h] = L[k].ph; set(id, { width: h * PH_AR + 'px', height: h + 'px' }); $(id)._w = h * PH_AR; $(id)._h = h; }
   const [x, y, w, h] = L.s5.card; set('qcard', { left: x + 'px', top: y + 'px', width: w + 'px', height: h + 'px' });

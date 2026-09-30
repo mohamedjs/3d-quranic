@@ -5,6 +5,7 @@ export const API = 'https://api.quran.com/api/v4';
 const AUDIO_CDN = 'https://verses.quran.com/';
 export const DEFAULT_RECITER = 9;  // Mohamed Siddiq al-Minshawi — Murattal
 export const TRANSLATION_EN = 20;  // Saheeh International
+export const TRANSLATION_RU = 45;  // Elmir Kuliev (Russian meaning)
 export const TAFSIR_AR = 16;       // Tafsir al-Muyassar
 
 const cache = new Map();
@@ -24,6 +25,7 @@ const plain = html => {
   d.querySelectorAll('sup').forEach(s => s.remove());
   return d.body.textContent.replace(/\s+/g, ' ').trim();
 };
+const tr = (v, id) => { const t = v.translations?.find(x => x.resource_id === id) ?? (id === TRANSLATION_EN ? v.translations?.[0] : null); return t ? plain(t.text) : ''; };
 const absolute = u => /^https?:/.test(u) ? u : u.startsWith('//') ? 'https:' + u : AUDIO_CDN + u;
 
 // Per-verse word timings. Quran.com returns [wordIdx, wordIdx + 1, startMs, endMs] (0-based),
@@ -57,12 +59,12 @@ export const QuranService = {
     return { number: c.id, nameArabic: c.name_arabic, nameSimple: c.name_simple, nameTranslated: c.translated_name?.name, verses: c.verses_count, place: c.revelation_place };
   },
   async getVerse(key, reciter = DEFAULT_RECITER) {
-    const j = await get(`/verses/by_key/${key}?words=true&word_fields=text_uthmani&fields=text_uthmani&translations=${TRANSLATION_EN}&audio=${reciter}`);
+    const j = await get(`/verses/by_key/${key}?words=true&word_fields=text_uthmani&fields=text_uthmani&translations=${TRANSLATION_EN},${TRANSLATION_RU}&audio=${reciter}`);
     const v = j.verse, words = v.words.filter(w => w.char_type_name === 'word').map(w => w.text_uthmani);
     return {
       key: v.verse_key, surah: +key.split(':')[0], verse: v.verse_number, arabicText: v.text_uthmani, words,
       end: v.words.find(w => w.char_type_name === 'end')?.text_uthmani ?? String(v.verse_number),
-      translation: v.translations?.[0] ? plain(v.translations[0].text) : '',
+      translation: tr(v, TRANSLATION_EN), translationRu: tr(v, TRANSLATION_RU),
       audioUrl: v.audio?.url ? absolute(v.audio.url) : null,
       timing: normalizeSegments(v.audio?.segments, words.length), reciter,
     };

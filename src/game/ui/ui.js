@@ -82,6 +82,28 @@ export const STR = {
     gateLine: n => `Collect ${n} more coin${n === 1 ? '' : 's'} on the way to open the story!`,
     stGated: 'Collect coins', stChain: 'After the previous story', catEmpty: 'Stories for this section are coming soon, in sha Allah', coinsWord: 'coins',
   },
+  ru: {
+    title: 'Путешествие с Кораном', alt: 'رحلة مع القرآن', tagline: 'Исследуй · Слушай · Учись · Расти', tagline2: 'استكشف · استمع · تعلّم · انمُ', cont: 'Продолжить путешествие', newGame: 'Новое путешествие', settings: 'Настройки',
+    talk: 'Поговорить', journal: 'Книга знаний', map: 'Карта мира', mapSub: 'Открой новые истории из Корана', unlocked: 'Ты открыл сокровище знаний!', unlockedAlt: 'فتحتَ كنزًا من المعرفة', lesson: 'Чему мы учимся?', here: 'Ты здесь',
+    points: 'Очки знаний', continue: 'Дальше', nextStory: 'Доступна новая история', discovered: 'Новое место', explore: 'Исследуй мир',
+    exploreSub: 'Скоро новые истории, ин ша Аллах', soon: 'Скоро', empty: 'Ты ещё не открыл ни одной истории. Погуляй и поговори с жителями деревни!',
+    listenAgain: 'Послушать ещё раз', lang: 'Язык', reciter: 'Чтец', voice: 'Голоса персонажей (синтез речи)', meaning: 'Показывать смысл под аятом', auto: 'Диалог идёт автоматически',
+    volume: 'Звуки природы', music: 'Спокойный фон (по умолчанию выключен)', reset: 'Сбросить прогресс', resetQ: 'Стереть весь прогресс?',
+    controls: 'Иди стрелками или WASD · F ведёт тебя к истории · тяни, чтобы поворачивать камеру · нажми на землю, чтобы пойти туда · колёсико, + / − или два пальца — приблизить или подняться выше', zoomIn: 'Приблизить', zoomOut: 'Отдалить (вид сверху)', centerMe: 'Где я?', mapZoom: 'Тяни, чтобы двигать карту · колёсико или два пальца — масштаб', loading: 'Загружаем аяты с Quran.com…',
+    offline: 'Не удалось связаться с Quran.com. Проверь подключение к интернету и попробуй ещё раз.', noAudio: 'У этого чтеца нет записи этих аятов. Выбери другого чтеца в настройках.',
+    audioErr: 'Не удалось включить чтение Корана.', tapToPlay: 'Нажми «Попробовать ещё раз», чтобы включить чтение.', retry: 'Попробовать ещё раз', skip: 'Пропустить', reciting: 'Читает',
+    verse: 'Аят', of: 'из', tafsir: 'Тафсир «аль-Муяссар»', translation: 'Перевод смыслов', sources: 'Источники', building: 'Строим мир…', you: 'Ты',
+    voiceDl: 'Готовим арабский голос персонажей (только в первый раз)', voiceReady: 'Голос персонажей готов', voiceFail: 'Не удалось загрузить арабский голос — реплики будут показаны текстом.', quality: 'Качество графики', qAuto: 'Авто', qLite: 'Облегчённое · Lite',
+    install: 'Установить игру', installTitle: 'Установи «Путешествие с Кораном» на своё устройство', installText: 'Открывай её одним касанием с главного экрана и играй без интернета.', installNow: 'Установить сейчас', installed: 'Игра установлена на это устройство ✓', installRow: 'Установить игру', iosHint: 'Чтобы установить: нажми кнопку «Поделиться» ⬆︎ в Safari, затем «На экран „Домой“».', updateReady: 'Доступна новая версия — нажми, чтобы обновить', offlineReady: 'Игра готова к игре без интернета',
+    dlAll: 'Скачать все истории для игры без интернета', dlBusy: 'Скачиваем…', dlDone: 'Готово! Все истории теперь работают без интернета', dlSome: 'Некоторые файлы не скачались — попробуй ещё раз, когда будет интернет', dlNeedNet: 'Для скачивания нужен интернет', dlHint: 'Аяты и чтение Корана с Quran.com для всех историй (несколько МБ)',
+    offlineVerse: 'В первый раз для этих аятов нужен интернет. История продолжается, а послушать их можно позже в Книге знаний.', close: 'Закрыть', partOf: 'Часть аята', simple: 'Простое объяснение', noVoice: 'Русский голос не установлен — реплики будут показаны текстом.', showPath: 'Показать дорогу к следующей истории', combo: 'Здорово!',
+    walk: 'Идти к истории', stories: 'Истории', storiesSub: 'Выбери историю, к которой хочешь пойти, — любую, какая нравится!', stDone: 'Пройдена', stOpen: 'Открыта', stLocked: 'Пока закрыта', stCurrent: 'Идём сюда', headingTo: 'Идём к', surah: 'Сура', meters: 'м', mapPick: 'Нажми на значок истории, чтобы пойти туда', walkStuck: 'Не получилось дойти — отойди немного и попробуй ещё раз', controlsTouch: 'Двигай джойстик внизу, чтобы идти · тяни в любом месте, чтобы повернуть камеру · 👣 ведёт тебя к истории',
+    diffTitle: 'Выбери уровень путешествия', diffHint: 'На пути к каждой истории лежат золотые монеты. Чтобы открыть историю, ребёнок собирает часть из них — выберите уровень по возрасту (потом его можно изменить в настройках).',
+    easy: 'Лёгкий', medium: 'Средний', hard: 'Сложный', easySub: 'Собери 20% монет каждой истории', mediumSub: 'Собери 50% монет каждой истории', hardSub: 'Собери 90% монет каждой истории', back: 'Назад',
+    difficulty: 'Уровень сложности', diffNote: 'Действует для историй, которые ещё не открыты', gateObj: 'Собери монеты', gatePrep: 'Раскладываем монеты на пути…', gateOpen: 'История открыта! 🎉',
+    gateLine: n => `Собери ещё ${n} ${n % 10 === 1 && n % 100 !== 11 ? 'монету' : n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 12 || n % 100 > 14) ? 'монеты' : 'монет'} на пути, чтобы открыть историю!`,
+    stGated: 'Собери монеты', stChain: 'После предыдущей истории', catEmpty: 'Истории этого раздела скоро появятся, ин ша Аллах', coinsWord: 'монет',
+  },
 };
 
 const $ = id => document.getElementById(id);
@@ -104,7 +126,7 @@ export class UI {
 
   applyLang() {
     const ar = this.save.settings.lang === 'ar';
-    document.documentElement.lang = ar ? 'ar' : 'en'; document.documentElement.dir = ar ? 'rtl' : 'ltr';
+    document.documentElement.lang = this.save.settings.lang; document.documentElement.dir = ar ? 'rtl' : 'ltr';
     const S = this.S;
     $('title').querySelector('h1').textContent = S.title;
     $('title').querySelector('.tagline').textContent = S.tagline;
@@ -464,7 +486,7 @@ export class UI {
   settings(onReset) {
     const S = this.S, st = this.save.settings, f = document.createElement('form'); f.className = 'settings';
     f.innerHTML = `
-      <label>${si('translate', 'sky')}<span class="lb">${esc(S.lang)}</span><select name="lang"><option value="ar">العربية</option><option value="en">English</option></select></label>
+      <label>${si('translate', 'sky')}<span class="lb">${esc(S.lang)}</span><select name="lang"><option value="ar">العربية</option><option value="en">English</option><option value="ru">Русский</option></select></label>
       <label>${si('mic', 'teal')}<span class="lb">${esc(S.reciter)}</span><select name="reciter"><option value="${st.reciter}">…</option></select></label>
       <label>${si('medal', 'gold')}<span class="lb">${esc(S.difficulty)}</span><select name="difficulty">${DIFF_KEYS.map(d => `<option value="${d}">${esc(S[d])} · ${esc(S[d + 'Sub'])}</option>`).join('')}</select><small class="note">${esc(S.diffNote)}</small></label>
       <label>${si('quality', 'violet')}<span class="lb">${esc(S.quality)}</span><select name="quality"><option value="auto">${esc(S.qAuto)}</option><option value="lite">${esc(S.qLite)}</option><option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option><option value="ultra">Ultra</option></select></label>

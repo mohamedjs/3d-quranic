@@ -15,7 +15,7 @@ import { createGuide } from './guide.js';
 import { createCoins } from '../world/coins.js';
 import { createAutowalk } from './autowalk.js';
 import { PRESETS } from './quality.js';
-import { trackStory } from '../../telemetry.js';
+import { trackStory, trackStart } from '../../telemetry.js';
 import { initPWA } from '../../pwa/pwa.js';
 import { createProgress, gateMarker, needFor, DIFFICULTY } from './progress.js';
 
@@ -259,6 +259,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     if (npc.state === 'gated') { ui.toast(gateLine(npc), 4000); npc.rig.wave?.(now); return; }   // friendly nudge, story stays closed
     if (npc.state !== 'open') return;
     setMode('dialogue'); player.enabled = false; player.target = null; player.vel.set(0, 0, 0);
+    trackStart(npc.enc.id, { done: save.done.length, lang: save.settings.lang, difficulty: save.difficulty });
     ui.talk(false); ui.bubble(null); ui.showHud(false); ui.letterbox(true); $('toast').classList.remove('show');
     Sound.mode('dialogue'); timeTarget = 0.6;
     // stand the child in front of the group (the way the seated/standing cast faces),

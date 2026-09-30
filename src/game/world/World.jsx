@@ -1,3 +1,4 @@
+import { trackReady } from '../../telemetry.js';
 // The scene graph. Suspends until the Blender models and story data are loaded, then
 // builds everything once; the game loop starts when it mounts.
 import { use, useMemo, useEffect, useRef, useState, lazy, Suspense } from 'react';
@@ -126,7 +127,7 @@ function GameSystem({ world, data }) {
     let alive = true;
     (async () => {
       const l = document.getElementById('loading'), msg = l?.querySelector('p');
-      if (msg) msg.textContent = 'نجهّز كل حاجة… · Getting everything ready…';
+      if (msg) msg.textContent = 'نجهّز كل شيء… · Getting everything ready…';
       try { await (gl.compileAsync ? gl.compileAsync(scene, camera) : gl.compile(scene, camera)); } catch (e) { console.warn('[warm-up] compile', e); }
       const t0 = performance.now();
       await new Promise(done => {
@@ -140,7 +141,7 @@ function GameSystem({ world, data }) {
         check();
       });
       if (window.__game) window.__game.warmup = +(performance.now() - t0).toFixed(0);
-      l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900);
+      l.classList.add('gone'); setTimeout(() => { l.hidden = true; }, 900); trackReady();
     })();
     return () => { alive = false; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps

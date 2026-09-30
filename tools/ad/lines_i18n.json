@@ -1,0 +1,116 @@
+{
+ "en": {
+  "n1": [
+   "narrator",
+   "Let's start a new adventure!"
+  ],
+  "n6": [
+   "narrator",
+   "Pick the level that suits you... easy, medium, or hard."
+  ],
+  "n2": [
+   "narrator",
+   "Follow the golden arrow, and collect the coins along the way!"
+  ],
+  "n3": [
+   "narrator",
+   "The villagers are waiting for you... each one has a story."
+  ],
+  "farmer": [
+   "farmer",
+   "The story of the Elephant! Have you heard it, my son?"
+  ],
+  "player": [
+   "player",
+   "I heard about a big elephant... but what's the story?"
+  ],
+  "n4": [
+   "narrator",
+   "Stories from the Quran, stories of the Prophets, and stories of the Companions."
+  ],
+  "n5": [
+   "narrator",
+   "Listen to the verses recited by Sheikh al-Minshawi, with their meaning made simple."
+  ],
+  "n7": [
+   "narrator",
+   "Quran Journey... play it now!"
+  ]
+ },
+ "ru": {
+  "n1": [
+   "narrator",
+   "Давай начнём новое приключение!"
+  ],
+  "n6": [
+   "narrator",
+   "Выбери свой уровень... лёгкий, средний или сложный."
+  ],
+  "n2": [
+   "narrator",
+   "Иди за золотой стрелкой и собирай монеты по пути!"
+  ],
+  "n3": [
+   "narrator",
+   "Жители деревни ждут тебя... у каждого есть своя история."
+  ],
+  "farmer": [
+   "farmer",
+   "История о слоне! Ты слышал её, сынок?"
+  ],
+  "player": [
+   "player",
+   "Я слышал о большом слоне... но что это за история?"
+  ],
+  "n4": [
+   "narrator",
+   "Истории из Корана, истории пророков и истории сподвижников."
+  ],
+  "n5": [
+   "narrator",
+   "Слушай аяты в чтении шейха аль-Миншави, с простым объяснением."
+  ],
+  "n7": [
+   "narrator",
+   "Путешествие с Кораном... играй прямо сейчас!"
+  ]
+ },
+ "ar": {
+  "n1": [
+   "narrator",
+   "هيا نبدأ مغامرةً جديدة!"
+  ],
+  "n6": [
+   "narrator",
+   "اختر المستوى الذي يناسبك… سهل، أو متوسط، أو صعب."
+  ],
+  "n2": [
+   "narrator",
+   "اتبع السهم الذهبي، واجمع العملات في طريقك!"
+  ],
+  "n3": [
+   "narrator",
+   "أهل القرية ينتظرونك… ولكلّ واحدٍ منهم قصة."
+  ],
+  "farmer": [
+   "farmer",
+   "قصة أصحاب الفيل! هل سمعتَ بها يا بُنيّ؟"
+  ],
+  "player": [
+   "player",
+   "سمعتُ عن فيلٍ كبير… لكن ما القصة؟"
+  ],
+  "n4": [
+   "narrator",
+   "قصصٌ من القرآن، وقصص الأنبياء، وقصص الصحابة."
+  ],
+  "n5": [
+   "narrator",
+   "استمع إلى الآيات بصوت الشيخ المنشاوي، مع معناها بأسلوبٍ بسيط."
+  ],
+  "n7": [
+   "narrator",
+   "رحلة مع القرآن… العبها الآن!"
+  ]
+ }
+}

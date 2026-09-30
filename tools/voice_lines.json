@@ -1,9 +1,9 @@
 [
 {
-"id": "people-of-the-elephant/zainab-1c838e9fce",
+"id": "people-of-the-elephant/zainab-292f5fd83b",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "تعالَ يا حبيبي! اقعد معنا، عندنا لك حكاية."
+"text": "تعالَ يا حبيبي! اجلس معنا، فعندنا لك حكاية."
 },
 {
 "id": "people-of-the-elephant/zainab-99423973ed",
@@ -12,10 +12,10 @@
 "text": "بارك الله فيك يا حبيبي. تذكّر: الله أقوى من كل شيء، فتوكّل عليه."
 },
 {
-"id": "people-of-the-elephant/zainab-475f279350",
+"id": "people-of-the-elephant/zainab-236c272e5a",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "أهلًا بحبيبي! تعالَ، اقعد قدّامنا هنا عند المصطبة. كنتُ أنا وجدّك سالم نتذكّر قصةً عظيمة حكاها الله لنا في القرآن."
+"text": "أهلًا بحبيبي! تعالَ، اجلس أمامنا هنا عند المصطبة. كنتُ أنا وجدّك سالم نتذكّر قصةً عظيمة حكاها الله لنا في القرآن."
 },
 {
 "id": "people-of-the-elephant/farmer-dff74b1eaf",
@@ -30,10 +30,10 @@
 "text": "لا، احكيا لي من فضلكما!"
 },
 {
-"id": "people-of-the-elephant/zainab-39799d6135",
+"id": "people-of-the-elephant/zainab-b6ea07b4ca",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "من عينيّ! اسمع جيدًا، وكلّما أردتَ أن تسأل، فاسأل."
+"text": "بكلّ سرور! اسمع جيدًا، وكلّما أردتَ أن تسأل، فاسأل."
 },
 {
 "id": "people-of-the-elephant/player-3c82e4c9ac",
@@ -42,10 +42,10 @@
 "text": "سمعتُ عن فيلٍ كبير… لكن ما القصة؟"
 },
 {
-"id": "people-of-the-elephant/zainab-a8ed9bfedf",
+"id": "people-of-the-elephant/zainab-e40cdf98d2",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "صحيح، كان فيه فيلٌ كبير! اسمع القصة من أولها، واسألنا عمّا تريد."
+"text": "صحيح، كان هناك فيلٌ كبير! اسمع القصة من أولها، واسألنا عمّا تريد."
 },
 {
 "id": "people-of-the-elephant/zainab-ed04ee6ea3",
@@ -72,16 +72,16 @@
 "text": "ولماذا أراد أن يهدم الكعبة؟"
 },
 {
-"id": "people-of-the-elephant/zainab-f1bda3fbba",
+"id": "people-of-the-elephant/zainab-03481a8bf0",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "لأن العرب ظلّوا يحبّون الكعبة ويقصدونها، ولم يتركوها من أجل كنيسته. فغضب أبرهة غضبًا شديدًا، وأقسم أن يسير إلى مكة ويهدمها."
+"text": "لأن العرب ظلّوا يحبّون الكعبة ويقصدونها، ولم يتركوها من أجل كنيسته. فغضب أبرهة غضبًا شديدًا، وعزم أن يسير إلى مكة ويهدمها."
 },
 {
-"id": "people-of-the-elephant/farmer-3da05e7eef",
+"id": "people-of-the-elephant/farmer-64c25d856e",
 "enc": "people-of-the-elephant",
 "speaker": "farmer",
-"text": "فخرج بجيشٍ عظيم، ومعه فيلٌ ضخم اسمه «محمود». ولمّا اقتربوا من مكة، أخذ جنودُه إبلَ أهلها، ومنها مئتا بعيرٍ لعبد المطّلب، جدّ النبي ﷺ وسيّد قريش."
+"text": "فخرج بجيشٍ عظيم، ومعه فيلٌ ضخم. ولمّا اقتربوا من مكة، أخذ جنودُه إبلَ أهلها، ومنها إبلٌ لعبد المطّلب، جدّ النبي ﷺ وسيّد قريش."
 },
 {
 "id": "people-of-the-elephant/player-2224d11ec2",
@@ -102,16 +102,16 @@
 "text": "فقال عبد المطّلب: «أنا ربُّ الإبل، وللبيت ربٌّ يحميه». يعني: أنا صاحب الإبل، أمّا الكعبة فلها ربٌّ يحفظها، وهو الله. ثم أمر أهلَ مكة أن يحتموا في الجبال، ووقف عند باب الكعبة يدعو الله."
 },
 {
-"id": "people-of-the-elephant/player-626d6a8981",
+"id": "people-of-the-elephant/player-803692cad8",
 "enc": "people-of-the-elephant",
 "speaker": "player",
-"text": "وماذا فعل الفيل محمود لمّا وجّهوه نحو مكة؟"
+"text": "وماذا فعل الفيل لمّا وجّهوه نحو مكة؟"
 },
 {
-"id": "people-of-the-elephant/farmer-6eaf1e942a",
+"id": "people-of-the-elephant/farmer-499f3d2ae1",
 "enc": "people-of-the-elephant",
 "speaker": "farmer",
-"text": "في الصباح جهّزوه ووجّهوه نحو مكة، فبَرَك على الأرض ولم يتحرّك! ضربوه ليقوم فأبى. فإذا وجّهوه نحو اليمن قام يُسرع، وإذا وجّهوه نحو مكة برك من جديد."
+"text": "في الصباح وجّهوه نحو مكة، فبَرَك على الأرض ولم يتقدّم! لقد حبسه الله عن مكة، كما أخبرنا النبيّ ﷺ."
 },
 {
 "id": "people-of-the-elephant/zainab-cfc4682c46",
@@ -138,16 +138,16 @@
 "text": "وما هي الطير الأبابيل يا جدّتي؟"
 },
 {
-"id": "people-of-the-elephant/zainab-7663c96068",
+"id": "people-of-the-elephant/zainab-15be11b5e5",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "أرسل الله عليهم من ناحية البحر طيورًا كثيرة، جماعاتٍ وراء جماعات — وهذا معنى «أبابيل». مع كل طائرٍ ثلاثة أحجار صغيرة: حجرٌ في منقاره، وحجران في رجليه، مثل حبّ الحمّص والعدس."
+"text": "أرسل الله عليهم طيورًا كثيرة، جماعاتٍ وراء جماعات — وهذا معنى «أبابيل». وكانت تحمل حجارةً صغيرة."
 },
 {
-"id": "people-of-the-elephant/farmer-828071d3ef",
+"id": "people-of-the-elephant/farmer-09445499f8",
 "enc": "people-of-the-elephant",
 "speaker": "farmer",
-"text": "وكانت الحجارة «من سِجّيل»، أي من طينٍ متحجّر. فرمتهم الطير بها، فلا يُصيب حجرٌ أحدًا منهم إلا هلك، وأصاب أبرهةَ أيضًا فهلك. ولم يصلوا إلى الكعبة أبدًا."
+"text": "وكانت الحجارة «من سِجّيل»، أي من طينٍ متحجّر. فرمتهم الطير بها، فأهلكهم الله، ولم يصلوا إلى الكعبة أبدًا."
 },
 {
 "id": "people-of-the-elephant/player-d6643f656f",
@@ -156,10 +156,10 @@
 "text": "وما معنى «كعصفٍ مأكول»؟"
 },
 {
-"id": "people-of-the-elephant/zainab-c04437e6d6",
+"id": "people-of-the-elephant/zainab-7dda899402",
 "enc": "people-of-the-elephant",
 "speaker": "zainab",
-"text": "العَصْف هو ورق الزرع وقشّه اليابس، مثل التبن الذي تأكله البهائم في الغيط. فصار الجيش مثل القشّ الذي أكلته الدوابّ ورمته مُفتّتًا. هكذا أفسد الله كيدهم."
+"text": "العَصْف هو ورق الزرع وقشّه اليابس، مثل التبن الذي تأكله البهائم في الحقل. فصار الجيش مثل القشّ الذي أكلته الدوابّ ورمته مُفتّتًا. هكذا أفسد الله كيدهم."
 },
 {
 "id": "people-of-the-elephant/player-9b9a6245e8",
@@ -180,10 +180,10 @@
 "text": "وقد حكى الله لنا هذه القصة في سورةٍ قصيرة اسمها سورة الفيل. تعالَ نسمع الآيات بصوت الشيخ."
 },
 {
-"id": "people-of-the-elephant/farmer-aae848a1b7",
+"id": "people-of-the-elephant/farmer-06a3458471",
 "enc": "people-of-the-elephant",
 "speaker": "farmer",
-"text": "رأيتَ يا بُنيّ؟ الله يحمي بيته، ولا أحدَ أقوى من الله، مهما كان جيشه كبيرًا وفيله ضخمًا."
+"text": "رأيتَ يا بُنيّ؟ الله يحمي بيته، ولا أحدَ أقوى من الله، مهما كان الجيش كبيرًا والفيل ضخمًا."
 },
 {
 "id": "people-of-the-elephant/zainab-fb96e8306f",
@@ -210,10 +210,10 @@
 "text": "سأتذكّر دائمًا: الله أقوى من كل شيء!"
 },
 {
-"id": "quraysh-journeys/hamdan-5facc285a2",
+"id": "quraysh-journeys/hamdan-2881e3aa03",
 "enc": "quraysh-journeys",
 "speaker": "hamdan",
-"text": "أهلًا وسهلًا! رجعتُ للتوّ من سفر طويل مع جملي."
+"text": "أهلًا وسهلًا! عدتُ للتوّ من سفرٍ طويل مع جملي."
 },
 {
 "id": "quraysh-journeys/hamdan-f0a263c3ad",
@@ -576,10 +576,10 @@
 "text": "سأنظر إلى الأفق عند الفجر لأرى الخيط الأبيض!"
 },
 {
-"id": "qays-the-fasting-farmer/farmer-3fab7368b0",
+"id": "qays-the-fasting-farmer/farmer-b7335ce39f",
 "enc": "qays-the-fasting-farmer",
 "speaker": "farmer",
-"text": "أهلًا يا بُنيّ! تعبتُ اليوم في الغيط… تعالَ، أحكي لك عن فلاحٍ صائمٍ مثلي."
+"text": "أهلًا يا بُنيّ! تعبتُ اليوم في الحقل… تعالَ، أحكِ لك عن فلاحٍ صائمٍ مثلي."
 },
 {
 "id": "qays-the-fasting-farmer/farmer-56c0ae793e",
@@ -708,10 +708,10 @@
 "text": "أحسنت! فنزلت: «وكلوا واشربوا حتى يتبيّن لكم الخيطُ الأبيض من الخيطِ الأسود»."
 },
 {
-"id": "qays-the-fasting-farmer/farmer-58ad09b4af",
+"id": "qays-the-fasting-farmer/farmer-3fce320bb8",
 "enc": "qays-the-fasting-farmer",
 "speaker": "farmer",
-"text": "قال البراء رضي الله عنه: ففرحوا بها فرحًا شديدًا. فصار الصائم يأكل ويشرب في الليل كلّه — حتى لو نام ثم استيقظ — إلى أن يطلع الفجر."
+"text": "قال البراء رضي الله عنه: ففرحوا بذلك فرحًا شديدًا. فصار الصائم يأكل ويشرب في الليل كلّه — حتى لو نام ثم استيقظ — إلى أن يطلع الفجر."
 },
 {
 "id": "qays-the-fasting-farmer/farmer-b67898837c",
@@ -966,10 +966,10 @@
 "text": "أحسنت! لكن هل تصدّق أنّ ناسًا في الماضي كانوا في وقتٍ من الأوقات لا يدخلون من الباب؟"
 },
 {
-"id": "houses-by-their-doors/player-c3af168735",
+"id": "houses-by-their-doors/player-8d6c91e1ea",
 "enc": "houses-by-their-doors",
 "speaker": "player",
-"text": "من الشبّاك!"
+"text": "من النافذة!"
 },
 {
 "id": "houses-by-their-doors/hamdan-6f588cd24f",
@@ -1578,10 +1578,10 @@
 "text": "نعم، خرج أناسٌ من مكة يبحثون عنهما، حتى وقفوا فوق الغار! فقال أبو بكر رضي الله عنه: يا رسول الله، لو أنّ أحدهم نظر تحت قدميه لرآنا."
 },
 {
-"id": "abu-bakr-the-cave/hamdan-539a7349a3",
+"id": "abu-bakr-the-cave/hamdan-801fb5bea0",
 "enc": "abu-bakr-the-cave",
 "speaker": "hamdan",
-"text": "فقال النبيّ ﷺ بطمأنينة: «ما ظنُّك يا أبا بكر باثنين اللهُ ثالثُهما؟» يعني: لا تخف، فالله معنا يحفظنا."
+"text": "فقال النبيّ ﷺ: «ما ظنُّك يا أبا بكر باثنين اللهُ ثالثُهما؟» يعني: لا تخف، فالله معنا يحفظنا."
 },
 {
 "id": "abu-bakr-the-cave/hamdan-c1ce45fb55",
@@ -1692,10 +1692,10 @@
 "text": "وكيف كان مع الناس؟"
 },
 {
-"id": "umar-and-the-widow/amina-3064b4c559",
+"id": "umar-and-the-widow/amina-8c8f6b9c3d",
 "enc": "umar-and-the-widow",
 "speaker": "amina",
-"text": "كان قويًّا في الحقّ، رحيمًا بالضعفاء، يخاف الله كثيرًا، ويشعر أنّه مسؤولٌ عن كلّ واحدٍ من الناس."
+"text": "كان قويًّا في الحقّ، رحيمًا بالضعفاء، يخاف الله كثيرًا، ويعلم أنّه مسؤولٌ أمام الله عن الناس."
 },
 {
 "id": "umar-and-the-widow/player-effae53d45",
@@ -1830,10 +1830,10 @@
 "text": "ما تُنفقه في الخير يكبر عند الله، مثل حبّة القمح."
 },
 {
-"id": "uthman-and-the-well/farmer-58d7ead59a",
+"id": "uthman-and-the-well/farmer-cdbbd2e1ce",
 "enc": "uthman-and-the-well",
 "speaker": "farmer",
-"text": "أهلًا يا بُنيّ! نحن في القرية نحمد الله على هذا البئر؛ منه نشرب ونسقي. تخيّل مدينةً كاملة ليس فيها ماءٌ عذبٌ إلا بئرٌ واحدة!"
+"text": "أهلًا يا بُنيّ! نحن في القرية نحمد الله على هذه البئر؛ منها نشرب ونسقي. تخيّل مدينةً كاملة ليس فيها ماءٌ عذبٌ إلا بئرٌ واحدة!"
 },
 {
 "id": "uthman-and-the-well/farmer-7e7fc3da94",
@@ -1872,10 +1872,10 @@
 "text": "ولماذا كانت هذه البئر مهمّة؟"
 },
 {
-"id": "uthman-and-the-well/farmer-43fbd850a2",
+"id": "uthman-and-the-well/farmer-c706cda7a7",
 "enc": "uthman-and-the-well",
 "speaker": "farmer",
-"text": "لمّا قدم النبيّ ﷺ المدينة، لم يكن فيها ماءٌ عذبٌ طيّب إلا بئر رومة، وكانت ملكًا لرجل، والناس يحتاجون إلى مائها."
+"text": "لمّا قدم النبيّ ﷺ المدينة، لم يكن فيها ماءٌ عذبٌ طيّب إلا بئر رومة، ولم تكن ملكًا للمسلمين، والناس يحتاجون إلى مائها."
 },
 {
 "id": "uthman-and-the-well/player-bdfa15ed8d",
@@ -2088,10 +2088,10 @@
 "text": "ألم يخف عليّ؟"
 },
 {
-"id": "ali-and-the-trusts/amina-e079d59e4d",
+"id": "ali-and-the-trusts/amina-ff46f7431b",
 "enc": "ali-and-the-trusts",
 "speaker": "amina",
-"text": "كان عليٌّ رضي الله عنه شجاعًا، يحبّ النبيَّ ﷺ ويثق بكلامه. فنام في فراشه مطمئنًّا، وخرج النبيّ ﷺ سالمًا، وحفظه الله."
+"text": "كان عليٌّ رضي الله عنه شجاعًا، يحبّ النبيَّ ﷺ ويثق بكلامه. فنام في فراشه كما أمره، وخرج النبيّ ﷺ سالمًا، وحفظه الله."
 },
 {
 "id": "ali-and-the-trusts/amina-f85ebb2648",
@@ -2220,10 +2220,10 @@
 "text": "لا، احكيا لي!"
 },
 {
-"id": "nuh-and-the-ark/farmer-7ee2ff0787",
+"id": "nuh-and-the-ark/farmer-ac05e8ffe1",
 "enc": "nuh-and-the-ark",
 "speaker": "farmer",
-"text": "من عينيّ! هو أوّل رسولٍ أرسله الله إلى أهل الأرض، ومن أولي العزم من الرسل. اسمع يا بُنيّ."
+"text": "بكلّ سرور! هو أوّل رسولٍ أرسله الله إلى أهل الأرض، ومن أولي العزم من الرسل. اسمع يا بُنيّ."
 },
 {
 "id": "nuh-and-the-ark/player-7196315106",
@@ -2484,10 +2484,10 @@
 "text": "للأسف لا. غضبوا وعاندوا، وقرّروا أن يُلقوا إبراهيم في نارٍ عظيمة."
 },
 {
-"id": "ibrahim-and-the-fire/hamdan-ccacc469a9",
+"id": "ibrahim-and-the-fire/hamdan-9dc66b86eb",
 "enc": "ibrahim-and-the-fire",
 "speaker": "hamdan",
-"text": "لكنّ إبراهيم لم يخَف، وقال كلمةً عظيمة: «حسبُنا اللهُ ونِعمَ الوكيل» — يعني: الله يكفيني، وهو خيرُ مَن أعتمد عليه."
+"text": "لكنّ إبراهيم توكّل على الله، وقال كلمةً عظيمة: «حسبُنا اللهُ ونِعمَ الوكيل» — يعني: الله يكفينا، وهو خيرُ مَن نعتمد عليه."
 },
 {
 "id": "ibrahim-and-the-fire/player-140e3df5d5",
@@ -2748,10 +2748,10 @@
 "text": "سأتوكّل على الله، وأحبّ أمّي وأطيعها!"
 },
 {
-"id": "isa-in-the-cradle/zainab-07b0160312",
+"id": "isa-in-the-cradle/zainab-ff18363dfd",
 "enc": "isa-in-the-cradle",
 "speaker": "zainab",
-"text": "تعالَ يا حبيبي، اقعد قدّامي في الظلّ تحت النخيل. عندي لك حكاية عن نخلةٍ مباركة."
+"text": "تعالَ يا حبيبي، اجلس أمامي في الظلّ تحت النخيل. عندي لك حكاية عن نخلةٍ مباركة."
 },
 {
 "id": "isa-in-the-cradle/zainab-4c46b6db11",
@@ -2760,10 +2760,10 @@
 "text": "عيسى عليه السلام عبدُ الله ورسوله، فأحِبَّ الأنبياءَ كلَّهم."
 },
 {
-"id": "isa-in-the-cradle/zainab-cba7c02007",
+"id": "isa-in-the-cradle/zainab-94dfaf4fdb",
 "enc": "isa-in-the-cradle",
 "speaker": "zainab",
-"text": "أهلًا يا حبيبي! اقعد هنا في الظلّ. هل ترى النخل والرطب؟ في القرآن سورةٌ اسمها سورة «مريم»، فيها قصةٌ عن نخلةٍ مباركة."
+"text": "أهلًا يا حبيبي! اجلس هنا في الظلّ. هل ترى النخل والرطب؟ في القرآن سورةٌ اسمها سورة «مريم»، فيها قصةٌ عن نخلةٍ مباركة."
 },
 {
 "id": "isa-in-the-cradle/zainab-4fe95569d9",
@@ -3144,123 +3144,123 @@
 "text": "اللهمّ صلِّ وسلّم على نبيّنا محمد! سأكون صادقًا أمينًا."
 },
 {
-"id": "narrator/narrator-f02a8f2242",
+"id": "narrator/narrator-1008b57a58",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "يلا بينا نبدأ مغامرة جديدة!"
+"text": "هيّا نبدأ مغامرةً جديدة!"
 },
 {
-"id": "narrator/narrator-1e1caedd13",
+"id": "narrator/narrator-3524eeaf3d",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "قصة جديدة مستنياك!"
+"text": "قصةٌ جديدة تنتظرك!"
 },
 {
-"id": "narrator/narrator-a5ce185b0c",
+"id": "narrator/narrator-ffd02f5c04",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح لبيت الجدّة زينب عند الترعة، هي والجدّ سالم قاعدين على المصطبة ومستنيينك."
+"text": "اذهب إلى بيت الجدّة زينب عند الترعة، فهي والجدّ سالم جالسان على المصطبة ينتظرانك."
 },
 {
-"id": "narrator/narrator-9c7c525666",
+"id": "narrator/narrator-b90a548710",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للعمّ حمدان في الغيطان الشرقية، صاحب القافلة مستنيك."
+"text": "اذهب إلى العمّ حمدان في الحقول الشرقية، فصاحب القافلة ينتظرك."
 },
 {
-"id": "narrator/narrator-bada156a17",
+"id": "narrator/narrator-0901713ed5",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "زور الجدّة آمنة في واحة النخيل، عندها حكاية عن حلم عجيب."
+"text": "زُر الجدّة آمنة في واحة النخيل، فعندها حكايةٌ عن حُلمٍ عجيب."
 },
 {
-"id": "narrator/narrator-815367a3ed",
+"id": "narrator/narrator-54dba46afc",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للجدّة آمنة عند شبّاك بيتها في غرب القرية."
+"text": "اذهب إلى الجدّة آمنة عند نافذة بيتها في غرب القرية."
 },
 {
-"id": "narrator/narrator-5627d2879c",
+"id": "narrator/narrator-264a46ee29",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للجدّ سالم في الغيط جنب الترعة، شرق القرية."
+"text": "اذهب إلى الجدّ سالم في الحقل بجانب الترعة، شرق القرية."
 },
 {
-"id": "narrator/narrator-6aff5f0092",
+"id": "narrator/narrator-fdd2cffec8",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح لبستان النخيل جنوب الواحة، العمّ حمدان والجدّ سالم عند سلال التمر."
+"text": "اذهب إلى بستان النخيل جنوب الواحة، فالعمّ حمدان والجدّ سالم عند سلال التمر."
 },
 {
-"id": "narrator/narrator-6c60cf25ba",
+"id": "narrator/narrator-b57c013d5e",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "زور العمّ حمدان عند باب بيته، شمال شرق القرية."
+"text": "زُر العمّ حمدان عند باب بيته، شمال شرق القرية."
 },
 {
-"id": "narrator/narrator-614f3175d3",
+"id": "narrator/narrator-3ed7f35766",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للساحة الواسعة في الدار القديمة، الجدّ سالم والعمّ حمدان مستنيينك هناك."
+"text": "اذهب إلى الساحة الواسعة في الدار القديمة، فالجدّ سالم والعمّ حمدان ينتظرانك هناك."
 },
 {
-"id": "narrator/narrator-cef35d41c5",
+"id": "narrator/narrator-afed502e1f",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "زور الجدّة آمنة والجدّ سالم عند البيت اللي فيه السراج، في شارع القرية الجنوبي."
+"text": "زُر الجدّة آمنة والجدّ سالم عند البيت ذي السراج، في شارع القرية الجنوبي."
 },
 {
-"id": "narrator/narrator-2499dae190",
+"id": "narrator/narrator-5215af5dee",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للعمّ حمدان على طريق الدار القديمة، مستنيك قبل الأطلال."
+"text": "اذهب إلى العمّ حمدان على طريق الدار القديمة، إنّه ينتظرك قبل الأطلال."
 },
 {
-"id": "narrator/narrator-a438434dd1",
+"id": "narrator/narrator-6342654819",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للسوق جنب دكّان القرية، العمّ حمدان والجدّة آمنة مستنيينك."
+"text": "اذهب إلى السوق بجانب دكّان القرية، العمّ حمدان والجدّة آمنة ينتظرانك."
 },
 {
-"id": "narrator/narrator-44abca7cb9",
+"id": "narrator/narrator-ecac3e4469",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح لبئر القرية في الساحة، الجدّ سالم مستنيك جنب البئر."
+"text": "اذهب إلى بئر القرية في الساحة، الجدّ سالم ينتظرك بجانب البئر."
 },
 {
-"id": "narrator/narrator-395a3374b1",
+"id": "narrator/narrator-2405b8b857",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "زور الجدّة آمنة عند باب البيت اللي عليه فانوس، غرب ساحة القرية."
+"text": "زُر الجدّة آمنة عند باب البيت الذي عليه فانوس، غرب ساحة القرية."
 },
 {
-"id": "narrator/narrator-a2b23c4256",
+"id": "narrator/narrator-02a136ff2d",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للجدّ سالم والعمّ حمدان على شطّ النهر، شمال الغيطان جنب الكوبري."
+"text": "اذهب إلى الجدّ سالم والعمّ حمدان على شاطئ النهر، شمال الحقول بجانب الجسر."
 },
 {
-"id": "narrator/narrator-742ea44685",
+"id": "narrator/narrator-890c901b9f",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح للغيطان الشرقية على طريق الدار القديمة، العمّ حمدان والجدّ سالم مستنيينك."
+"text": "اذهب إلى الحقول الشرقية على طريق الدار القديمة، العمّ حمدان والجدّ سالم ينتظرانك."
 },
 {
-"id": "narrator/narrator-9cf00794a8",
+"id": "narrator/narrator-35ca3eee23",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "زور الجدّة آمنة جنب الترعة الغربية وسط الغيطان، شمال غرب القرية."
+"text": "زُر الجدّة آمنة بجانب الترعة الغربية وسط الحقول، شمال غرب القرية."
 },
 {
-"id": "narrator/narrator-d224012446",
+"id": "narrator/narrator-f68fcf2646",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح لعريشة النخيل في الواحة، الجدّة زينب قاعدة في الظلّ مستنياك."
+"text": "اذهب إلى عريشة النخيل في الواحة، الجدّة زينب تجلس في الظلّ وتنتظرك."
 },
 {
-"id": "narrator/narrator-3fc0207c88",
+"id": "narrator/narrator-90aea22702",
 "enc": "narrator",
 "speaker": "narrator",
-"text": "روح لسفح التلال شمال النهر، الجدّ سالم والجدّة آمنة مستنيينك."
+"text": "اذهب إلى سفح التلال شمال النهر، الجدّ سالم والجدّة آمنة ينتظرانك."
 }
 ]

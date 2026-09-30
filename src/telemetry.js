@@ -2,6 +2,9 @@
 //   visit : one row per app launch (device, browser, screen, GPU, graphics level, installed app…)
 //   crash : an uncaught error / rejected promise / React error — at most 5 per launch, no repeats
 //   story : a story finished (message = story id)
+//   ready : the world finished loading (extra.ms = time since page start)
+//   start : a story was started (message = story id)
+//   time  : active (visible) play time so far in this launch (extra.sec), sent when the page is hidden
 // The IP address and country are added by the database from the request itself (a trigger), so
 // the page never needs to know them. Everything runs in the background: fire-and-forget fetches
 // with keepalive, never awaited by the game, errors swallowed. Off on localhost unless
@@ -76,9 +79,22 @@ export function reportCrash(err, where = 'error', extra = {}) {
   } catch { /* ignore */ }
 }
 export function trackStory(id, extra = {}) { send('story', { message: String(id).slice(0, 100), extra }); }
+let readySent = false;
+export function trackReady() { if (readySent) return; readySent = true; send('ready', { extra: { ms: Math.round(performance.now()) } }); }
+export function trackStart(id, extra = {}) { send('start', { message: String(id).slice(0, 100), extra }); }
+
+// active play time: counts only while the page is visible; reported whenever it gets hidden/closed
+let active = 0, since = document.visibilityState === 'visible' ? performance.now() : null, lastSent = 0;
+function reportTime() {
+  if (since != null) { active += performance.now() - since; since = null; }
+  const sec = Math.round(active / 1000);
+  if (sec >= 5 && sec - lastSent >= 5) { lastSent = sec; send('time', { extra: { sec } }); }
+}
 
 if (typeof window !== 'undefined') {
   addEventListener('error', e => reportCrash(e.error ?? e.message, 'error', { src: e.filename ? `${e.filename.split('/').pop()}:${e.lineno}:${e.colno}` : null }));
   addEventListener('unhandledrejection', e => reportCrash(e.reason, 'promise'));
   visit();
+  addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') reportTime(); else since = performance.now(); });
+  addEventListener('pagehide', reportTime);
 }

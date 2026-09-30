@@ -1,0 +1,170 @@
+{
+ "farmer": {
+  "ref": "anchors/en_farmer.wav",
+  "text": "Come here, my dear, sit next to me. I will tell you a beautiful story from the Quran.",
+  "cer": 0.0,
+  "f0": 143,
+  "takes": [
+   [
+    0.025,
+    0,
+    163
+   ],
+   [
+    0.0,
+    1,
+    143
+   ],
+   [
+    0.0,
+    2,
+    157
+   ],
+   [
+    0.0,
+    3,
+    161
+   ]
+  ]
+ },
+ "zainab": {
+  "ref": "anchors/en_zainab.wav",
+  "text": "Come, my little one, sit with us. I have a lovely story for you about patience.",
+  "cer": 0.0,
+  "f0": 262,
+  "takes": [
+   [
+    0.0,
+    0,
+    285
+   ],
+   [
+    0.0,
+    1,
+    289
+   ],
+   [
+    0.0,
+    2,
+    262
+   ],
+   [
+    0.0,
+    3,
+    270
+   ]
+  ]
+ },
+ "hamdan": {
+  "ref": "anchors/en_hamdan.wav",
+  "text": "Welcome, young friend! The caravan has just arrived from the market. Let me tell you about a great journey.",
+  "cer": 0.0,
+  "f0": 163,
+  "takes": [
+   [
+    0.0,
+    0,
+    168
+   ],
+   [
+    0.0,
+    1,
+    171
+   ],
+   [
+    0.0,
+    2,
+    174
+   ],
+   [
+    0.0,
+    3,
+    163
+   ]
+  ]
+ },
+ "amina": {
+  "ref": "anchors/en_amina.wav",
+  "text": "What a wonderful question! Listen to the story from the beginning, and you will find the answer yourself.",
+  "cer": 0.0,
+  "f0": 311,
+  "takes": [
+   [
+    0.0,
+    0,
+    311
+   ],
+   [
+    0.0,
+    1,
+    394
+   ],
+   [
+    0.0,
+    2,
+    290
+   ],
+   [
+    0.02,
+    3,
+    469
+   ]
+  ]
+ },
+ "player": {
+  "ref": "anchors/en_player.wav",
+  "text": "Grandpa, please tell me the story! I love the stories of the Quran so much.",
+  "cer": 0.0,
+  "f0": 418,
+  "takes": [
+   [
+    0.0,
+    0,
+    266
+   ],
+   [
+    0.0,
+    1,
+    183
+   ],
+   [
+    0.0,
+    2,
+    418
+   ],
+   [
+    0.0,
+    3,
+    170
+   ]
+  ]
+ },
+ "narrator": {
+  "ref": "anchors/en_narrator.wav",
+  "text": "Let's begin a new adventure! Walk to the next house in the village, someone is waiting for you.",
+  "cer": 0.0,
+  "f0": 256,
+  "takes": [
+   [
+    0.0,
+    0,
+    279
+   ],
+   [
+    0.0,
+    1,
+    256
+   ],
+   [
+    0.0,
+    2,
+    218
+   ],
+   [
+    0.0,
+    3,
+    256
+   ]
+  ]
+ }
+}

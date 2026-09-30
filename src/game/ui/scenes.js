@@ -91,7 +91,7 @@ const SCENES = {
       ${g(900, 600, 0.6, elephant(), true)}${Array.from({ length: 25 }, (_, i) => g(100 + i * 60, 650, 0.9, soldier('#24180f'))).join('')}`;
   },
   caravan(r, id, lang) {
-    const yemen = lang === 'ar' ? 'الشتاء ← اليمن' : 'Winter → Yemen', sham = lang === 'ar' ? 'الصيف ← الشام' : 'Summer → Ash-Sham';
+    const yemen = lang === 'ar' ? 'الشتاء ← اليمن' : lang === 'ru' ? 'Зима → Йемен' : 'Winter → Yemen', sham = lang === 'ar' ? 'الصيف ← الشام' : lang === 'ru' ? 'Лето → Шам' : 'Summer → Ash-Sham';
     return `<defs>${sky(id + 's', [[0, '#6a5a8a'], [0.5, '#ef9a5a'], [1, '#fbd99a']])}${sunGlow(id + 'g')}</defs>
       <rect width="${W}" height="${H}" fill="url(#${id}s)"/><circle cx="300" cy="420" r="230" fill="url(#${id}g)"/>
       ${dunes(520, '#c98a52', 40)}${dunes(590, '#a86a3c', 30)}

@@ -107,7 +107,7 @@ export function playRecitation({ from, to, words: part, meaning: note }, { recit
       m.textContent = ''; src.textContent = '';
       if (!meaning) return;
       if (clip) { const t = note?.[lang] ?? note?.ar; if (t) { m.textContent = t; src.textContent = `${S.simple} · ${v.key}`; } lastWord = -1; return; }
-      if (lang === 'en') { m.textContent = `“${v.translation}”`; src.textContent = `${S.translation} · ${v.key}`; }
+      if (lang === 'en' || lang === 'ru') { const tx = lang === 'ru' ? v.translationRu || v.translation : v.translation; m.textContent = `“${tx}”`; src.textContent = `${S.translation} · ${v.key}`; }
       else QuranService.getTafsir(v.key).then(t => { if (verses[i] === v) { m.textContent = t.text; src.textContent = `${S.tafsir} · ${v.key}`; } }).catch(() => {});
       lastWord = -1;
     }

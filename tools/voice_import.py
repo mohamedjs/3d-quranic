@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 """Import generated voice clips into the game.
-   python3 tools/voice_import.py <folder-with-wavs> [--no-post]   (--no-post: OmniVoice clones, no Habibi pitch/tempo filters)
+   python3 tools/voice_import.py <folder-with-wavs> [--no-post] [--lang=en|ru]   (--no-post: OmniVoice clones, no Habibi pitch/tempo filters)
    Each wav is named like tools/voice_lines.json ids with '/' → '__' (e.g. people-of-the-elephant__farmer-1a2b3c4d5e.wav).
    → public/audio/<enc>/<speaker>-<hash>.mp3 (mono, 24 kHz, 48 kbps) + public/audio/manifest.json {text: path}"""
 import json, os, sys, subprocess
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 src = sys.argv[1]
-lines = json.load(open(os.path.join(ROOT, 'tools/voice_lines.json')))
+LANG = next((a.split('=')[1] for a in sys.argv if a.startswith('--lang=')), 'ar')   # --lang=en|ru
+lines = json.load(open(os.path.join(ROOT, 'tools/voice_lines.json' if LANG == 'ar' else f'tools/voice_lines_{LANG}.json')))
 voices = json.load(open(os.path.join(ROOT, 'tools/voices.json')))
 mpath = os.path.join(ROOT, 'public/audio/manifest.json')
 manifest = json.load(open(mpath)) if os.path.exists(mpath) else {}

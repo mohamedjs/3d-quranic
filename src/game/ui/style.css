@@ -14,7 +14,7 @@
   color-scheme: dark;
   --sa-t: env(safe-area-inset-top, 0px); --sa-r: env(safe-area-inset-right, 0px); --sa-b: env(safe-area-inset-bottom, 0px); --sa-l: env(safe-area-inset-left, 0px);
 }
-html[lang="en"] { --ui: 'Nunito', 'Tajawal', system-ui, sans-serif; --display: 'Cormorant Garamond', 'Aref Ruqaa', serif; }
+html:not([lang="ar"]) { --ui: 'Nunito', 'Tajawal', system-ui, sans-serif; --display: 'Cormorant Garamond', 'Aref Ruqaa', serif; }
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; overflow: hidden; background: #1a130c; color: var(--ink); font-family: var(--ui); -webkit-tap-highlight-color: transparent; user-select: none;
   -webkit-user-select: none; -webkit-touch-callout: none; touch-action: manipulation; overscroll-behavior: none; -webkit-text-size-adjust: 100%; }
@@ -233,7 +233,7 @@ body.cinema #zoom { display: none; }
 @keyframes glow { to { filter: drop-shadow(0 0 40px rgba(255, 214, 120, .95)); } }
 #reward .kicker { display: block; margin-bottom: 4px; color: var(--sun); font: 800 12px Nunito, sans-serif; letter-spacing: .22em; text-transform: uppercase; opacity: .9; }
 #reward .kicker:empty { display: none; }
-html[lang="en"] #reward .kicker { font-family: 'Tajawal', sans-serif; letter-spacing: 0; font-size: 14px; text-transform: none; }
+html:not([lang="ar"]) #reward .kicker { font-family: 'Tajawal', sans-serif; letter-spacing: 0; font-size: 14px; text-transform: none; }
 #reward h2 { margin: 0 0 8px; font: 800 clamp(24px, 6vw, 30px)/1.3 var(--ui); background: var(--gold-text); -webkit-background-clip: text; background-clip: text; color: transparent; }
 #reward p { margin: 0 0 16px; color: var(--ink); opacity: .9; font-size: 17px; line-height: 1.6; }
 #reward .pts { display: inline-flex; align-items: center; gap: 8px; padding: 5px 18px 5px 6px; border-radius: 999px; background: rgba(244, 199, 102, .14); border: 1px solid var(--line);
@@ -331,12 +331,12 @@ html[dir="rtl"] #title .credit { left: auto; right: 7vw; }
   background: var(--gold-text); -webkit-background-clip: text; background-clip: text; color: transparent;
   filter: drop-shadow(0 0 1px rgba(90, 50, 10, .9)) drop-shadow(0 4px 18px rgba(60, 30, 0, .65)); }
 #title .alt { margin: -.15em 0 0; font: 700 clamp(20px, 2.6vw, 32px)/1.3 'Cormorant Garamond', serif; color: #fff1d0; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 2px 12px rgba(40, 20, 0, .7); }
-html[lang="en"] #title .alt { font-family: 'Aref Ruqaa', serif; letter-spacing: 0; text-transform: none; font-size: clamp(26px, 3.2vw, 40px); }
+html:not([lang="ar"]) #title .alt { font-family: 'Aref Ruqaa', serif; letter-spacing: 0; text-transform: none; font-size: clamp(26px, 3.2vw, 40px); }
 #title .rule { width: clamp(200px, 26vw, 300px); height: 16px; margin: 10px 0 8px; }
 #title .tagline { margin: 0; font: 700 clamp(18px, 2.2vw, 26px)/1.5 var(--ui); color: #fbe7bf; text-shadow: 0 2px 10px rgba(40, 20, 0, .8); word-spacing: .12em; }
 #title .tagline2 { margin: 2px 0 0; font: 700 clamp(11px, 1.1vw, 14px)/1.4 Nunito, sans-serif; letter-spacing: .28em; text-transform: uppercase; color: rgba(255, 236, 200, .8); text-shadow: 0 1px 8px rgba(40, 20, 0, .8); }
-html[lang="en"] #title .tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 600; font-size: clamp(20px, 2.4vw, 28px); word-spacing: 0; }
-html[lang="en"] #title .tagline2 { font-family: 'Tajawal', sans-serif; letter-spacing: .06em; font-size: clamp(13px, 1.3vw, 16px); text-transform: none; }
+html:not([lang="ar"]) #title .tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-weight: 600; font-size: clamp(20px, 2.4vw, 28px); word-spacing: 0; }
+html:not([lang="ar"]) #title .tagline2 { font-family: 'Tajawal', sans-serif; letter-spacing: .06em; font-size: clamp(13px, 1.3vw, 16px); text-transform: none; }
 #title nav { position: absolute; bottom: 9vh; inset-inline-end: 7vw; display: flex; flex-direction: column; align-items: stretch; gap: 6px; min-width: 250px; }
 #title nav button { position: relative; padding: 8px 18px; font-size: 19px; font-weight: 700; color: #fff4dc; text-shadow: 0 2px 10px rgba(0, 0, 0, .7); text-align: center; border-radius: 999px; transition: color .15s, background .15s; }
 #title nav button:not(.primary):hover { color: var(--gold-2); background: rgba(15, 42, 51, .45); }

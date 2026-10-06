@@ -16,3 +16,5 @@ tools/voice_raw_omni/
 tools/voice_raw_omni_test/
 Claude outputs/
 .poscheck.mjs
+tools/voice_raw_gemini/
+tools/voice_raw_openrouter/

@@ -1,0 +1,27 @@
+{
+  "_note": "Gemini prebuilt voice + a short English profile per character. Edit freely; delete a line's wav to regenerate it.",
+  "zainab": {
+    "voice": "Sulafat",
+    "profile": "Grandma Zainab, an elderly, loving Egyptian grandmother telling her grandson a Quran story; warm, gentle and unhurried."
+  },
+  "amina": {
+    "voice": "Vindemiatrix",
+    "profile": "Grandma Amina, a kind elderly grandmother; soft, patient and caring, like a bedtime storyteller."
+  },
+  "farmer": {
+    "voice": "Algenib",
+    "profile": "Grandpa Salim, an old village farmer; deep, slightly gravelly, wise and kind, speaks slowly."
+  },
+  "hamdan": {
+    "voice": "Charon",
+    "profile": "Uncle Hamdan, a friendly middle-aged village man; clear, confident and warm."
+  },
+  "player": {
+    "voice": "Puck",
+    "profile": "A curious nine-year-old boy; bright, eager and polite, asking his grandparents questions."
+  },
+  "narrator": {
+    "voice": "Mako",
+    "profile": "A warm, friendly narrator for a children's game; encouraging and clear."
+  }
+}

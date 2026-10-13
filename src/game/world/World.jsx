@@ -1,4 +1,5 @@
 import { trackReady } from '../../telemetry.js';
+import { perfFrame } from '../../perf.js';
 // The scene graph. Suspends until the Blender models and story data are loaded, then
 // builds everything once; the game loop starts when it mounts.
 import { use, useMemo, useEffect, useRef, useState, lazy, Suspense } from 'react';
@@ -146,6 +147,6 @@ function GameSystem({ world, data }) {
     return () => { alive = false; };
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
   const frames = useRef({ n: 0, dts: [] });
-  useFrame((_, dt) => { const f = frames.current; f.n++; f.dts.push(dt); if (f.dts.length > 20) f.dts.shift(); game.current?.tick(dt); });
+  useFrame((state, dt) => { const f = frames.current; f.n++; f.dts.push(dt); if (f.dts.length > 20) f.dts.shift(); game.current?.tick(dt); perfFrame(dt, state.gl); });
   return null;
 }

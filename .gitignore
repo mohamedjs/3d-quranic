@@ -18,3 +18,14 @@ Claude outputs/
 .poscheck.mjs
 tools/voice_raw_gemini/
 tools/voice_raw_openrouter/
+
+# Android build outputs (the android/ project itself is committed)
+android/app/build/
+android/build/
+android/.gradle/
+android/local.properties
+android/app/src/main/assets/public/
+*.keystore
+*.jks
+
+android/keystore.properties

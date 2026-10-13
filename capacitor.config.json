@@ -1,0 +1,15 @@
+{
+  "appId": "com.mohamedjs.rehla",
+  "appName": "رحلة مع القرآن",
+  "webDir": "dist",
+  "android": {
+    "minWebViewVersion": 80,
+    "backgroundColor": "#f3e2c4",
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "plugins": {
+    "SplashScreen": { "launchShowDuration": 0, "launchAutoHide": true, "backgroundColor": "#f3e2c4" }
+  }
+}

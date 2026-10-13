@@ -345,6 +345,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
 
   // ---- input ---------------------------------------------------------------------------------
   let nearNpc = null;
+  window.__gameMode = () => mode;   // read by the Android back button (main.jsx)
   addEventListener('keydown', e => {
     if (mode === 'explore' && e.code === 'KeyE' && nearNpc) startEncounter(nearNpc);
     else if (mode === 'explore' && e.code === 'KeyM') panel('map');

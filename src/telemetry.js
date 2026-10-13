@@ -41,9 +41,11 @@ function device() {
     os, browser, device: tablet ? 'tablet' : phone ? 'phone' : 'desktop', model: model && model !== 'K' ? model : uad?.mobile ? 'Android' : model,
     screen: `${screen.width}x${screen.height}@${Math.round((devicePixelRatio || 1) * 100) / 100}`,
     lang: navigator.language, gpu: gpu && gpu.slice(0, 120), memory_gb: navigator.deviceMemory ?? null, cores: navigator.hardwareConcurrency ?? null,
-    installed: matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true,
+    ...(window.Capacitor?.isNativePlatform?.() ? { browser: 'android-app' } : {}),
+    installed: window.Capacitor?.isNativePlatform?.() || matchMedia('(display-mode: standalone), (display-mode: fullscreen)').matches || navigator.standalone === true,
   };
 }
+import { perfSummary } from './perf.js';
 const quality = () => window.__game?.store?.getState?.().quality ?? window.__quality?.level ?? null;
 
 // ---- send ------------------------------------------------------------------------------------------
@@ -88,7 +90,7 @@ let active = 0, since = document.visibilityState === 'visible' ? performance.now
 function reportTime() {
   if (since != null) { active += performance.now() - since; since = null; }
   const sec = Math.round(active / 1000);
-  if (sec >= 5 && sec - lastSent >= 5) { lastSent = sec; send('time', { extra: { sec } }); }
+  if (sec >= 5 && sec - lastSent >= 5) { lastSent = sec; const perf = perfSummary(); send('time', { extra: perf ? { sec, ...perf } : { sec } }); }
 }
 
 if (typeof window !== 'undefined') {

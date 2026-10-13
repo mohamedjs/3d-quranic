@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">رحلة مع القرآن</string>
+    <string name="title_activity_main">رحلة مع القرآن</string>
+    <string name="package_name">com.mohamedjs.rehla</string>
+    <string name="custom_url_scheme">com.mohamedjs.rehla</string>
+</resources>

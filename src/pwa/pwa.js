@@ -4,7 +4,9 @@
 import { QuranService, verseKeys } from '../game/systems/quran.js';
 
 const $ = id => document.getElementById(id);
-const supported = typeof navigator !== 'undefined' && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+// inside the Android app (Capacitor) the files are already on the phone: no service worker, no install popup
+export const isNativeApp = () => typeof window !== 'undefined' && !!window.Capacitor?.isNativePlatform?.();
+const supported = !isNativeApp() && typeof navigator !== 'undefined' && 'serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
 
 // beforeinstallprompt can fire before the game UI exists: catch it from the first moment
 let deferredInstall = null, onInstallable = null;
@@ -21,7 +23,7 @@ export const pwa = { registration: null, version: null, ready: false, supported 
 // S(): the current language's strings · toast(text, ms) · busy(): true while a story / verse / sheet
 // is on screen (the install popup waits for a calm moment)
 const DISMISS_KEY = 'quran-journey-install-dismissed';
-export const canInstall = () => !isStandalone() && (!!deferredInstall || (isIOS() && isSafari()));
+export const canInstall = () => !isNativeApp() && !isStandalone() && (!!deferredInstall || (isIOS() && isSafari()));
 // ask the browser to install (Android / desktop Chrome, Edge…); iOS Safari has no prompt → false
 export async function installApp() {
   if (!deferredInstall) return false;

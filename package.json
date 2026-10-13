@@ -3,13 +3,24 @@
   "private": true,
   "version": "2.0.0",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22"
+  },
   "scripts": {
     "dev": "vite --host",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "android:sync": "vite build && npx cap sync android",
+    "android:run": "vite build && npx cap run android",
+    "android:apk": "vite build && npx cap sync android && cd android && ./gradlew assembleDebug",
+    "android:bundle": "vite build && npx cap sync android && cd android && ./gradlew bundleRelease"
   },
   "dependencies": {
+    "@capacitor/android": "^8.5.3",
+    "@capacitor/app": "^8.1.2",
+    "@capacitor/core": "^8.5.3",
+    "@capacitor/splash-screen": "^8.0.2",
+    "@capacitor/status-bar": "^8.0.4",
     "@mintplex-labs/piper-tts-web": "^1.0.5",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.8.0",
@@ -22,6 +33,7 @@
     "zustand": "^5.0.15"
   },
   "devDependencies": {
+    "@capacitor/cli": "^8.5.3",
     "@types/react": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "csstype": "^3.2.3",

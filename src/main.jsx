@@ -5,6 +5,15 @@ import './telemetry.js';       // anonymous play statistics (visits, crashes) â€
 import './pwa/pwa.js';          // listens for beforeinstallprompt from the first moment
 import { resolveQuality } from './game/systems/quality.js';
 
+// Android app (Capacitor): the back button closes an open panel; on the map it sends the app
+// to the background instead of killing it, so progress and the loaded world stay.
+if (window.Capacitor?.isNativePlatform?.()) {
+  import('@capacitor/app').then(({ App }) => App.addListener('backButton', () => {
+    if (window.__gameMode?.() === 'panel') dispatchEvent(new KeyboardEvent('keydown', { code: 'Escape', key: 'Escape' }));
+    else App.minimizeApp();
+  })).catch(() => {});
+}
+
 // The quality level is settled here, on the loading screen, BEFORE anything of the world is
 // built: GPU guess + device age (pre-2021 â†’ Low/Lite) + a saved choice / remembered Lite
 // (systems/store.js). The game module (and with it the store) is only loaded afterwards, so

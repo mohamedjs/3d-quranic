@@ -24,6 +24,11 @@ const abs = u => new URL(u, scope).href;
 const keyFor = e => abs(e.url) + (e.url.includes('?') ? '&' : '?') + '__rev=' + e.rev;
 const byUrl = new Map(PRECACHE.map(e => [abs(e.url), e]));
 byUrl.set(scope.href, byUrl.get(abs('index.html')));                 // "./" is the shell too
+// Some hosts redirect (Cloudflare Pages: /index.html → /, /privacy.html → /privacy). A response
+// that went through a redirect must never answer a navigation (Chrome fails it with ERR_FAILED),
+// so it is rebuilt as a plain response before it is cached or served.
+const unredirect = async r => (r && r.redirected)
+  ? new Response(await r.blob(), { status: r.status, statusText: r.statusText, headers: r.headers }) : r;
 const AUDIO_HOSTS = /(^|\.)(verses\.quran\.com|audio\.qurancdn\.com|everyayah\.com|quranicaudio\.com|download\.quranicaudio\.com|mirrors\.quranicaudio\.com|cdn\.islamic\.network)$/;
 
 async function precache() {
@@ -36,7 +41,7 @@ async function precache() {
       try {
         const r = await fetch(abs(e.url), { cache: 'no-cache', credentials: 'same-origin' });
         if (!r.ok) throw new Error(r.status);
-        await cache.put(keyFor(e), r);
+        await cache.put(keyFor(e), await unredirect(r));
       } catch (err) { failed.push(e); }
     }
   };
@@ -45,7 +50,15 @@ async function precache() {
   if (core.length) throw new Error('precache failed: ' + core.map(e => e.url).join(', '));
 }
 
-self.addEventListener('install', e => { e.waitUntil(precache()); });
+// A new version waits for the child to tap «تحديث» — but only when a page is actually running on
+// the old one. With no controlled window (first visit, or the old worker failed to open the page)
+// there is nothing to interrupt, so it takes over at once.
+self.addEventListener('install', e => {
+  e.waitUntil((async () => {
+    await precache();
+    if (!(await self.clients.matchAll({ type: 'window' })).length) await self.skipWaiting();
+  })());
+});
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
     const cache = await caches.open(SHELL), keep = new Set(PRECACHE.map(keyFor));
@@ -75,10 +88,10 @@ async function ranged(req, res) {
 
 async function fromShell(req, entry) {
   const cache = await caches.open(SHELL);
-  let res = await cache.match(keyFor(entry));
+  let res = await unredirect(await cache.match(keyFor(entry)));
   if (!res) {                                                  // not cached yet (or evicted): network, then keep it
     try {
-      res = await fetch(abs(entry.url), { credentials: 'same-origin' });
+      res = await unredirect(await fetch(abs(entry.url), { credentials: 'same-origin' }));
       if (res.ok) cache.put(keyFor(entry), res.clone());
     } catch (e) { return Response.error(); }
   }

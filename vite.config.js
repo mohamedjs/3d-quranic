@@ -4,8 +4,8 @@ import pwa from './tools/vite-pwa.js';
 import { execSync } from 'node:child_process';
 import pkg from './package.json' with { type: 'json' };
 
-// build id for the statistics rows: Railway / GitHub Actions give the commit in env vars, locally ask git
-const sha = (process.env.RAILWAY_GIT_COMMIT_SHA || process.env.GITHUB_SHA || '').slice(0, 7) || (() => { try { return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return 'nogit'; } })();
+// build id for the statistics rows: Railway / GitHub Actions / Cloudflare Pages give the commit in env vars, locally ask git
+const sha = (process.env.RAILWAY_GIT_COMMIT_SHA || process.env.GITHUB_SHA || process.env.CF_PAGES_COMMIT_SHA || '').slice(0, 7) || (() => { try { return execSync('git rev-parse --short HEAD', { stdio: ['ignore', 'pipe', 'ignore'] }).toString().trim(); } catch { return 'nogit'; } })();
 
 // base './' so the built game runs from any sub-path (e.g. Apache at /old/3d-quranic/dist/)
 // Vendor code is split into long-lived chunks (three · react/r3f) that download in parallel

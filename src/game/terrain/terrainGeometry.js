@@ -2,9 +2,25 @@
 // painted toon ground colour, masks for the crisp features the shader draws (farm plots,
 // paths), plus the painted minimap image.
 import * as THREE from 'three';
-import { SIZE, height, groundColor, groundMask, colorAt, mapImage } from './heightfield.js';
+import { SIZE, height, groundColor, groundMask, colorAt, mapImage, bakePathDist } from './heightfield.js';
+
+let pathTexture = null;
+// Single-channel DataTexture of pathDist (0..8 m) baked once at terrain build time so roads stay
+// crisp even on Lite's coarse vertex grid.
+export function getPathDistTexture() {
+  if (pathTexture) return pathTexture;
+  const res = 1024;
+  const tex = new THREE.DataTexture(bakePathDist(res), res, res, THREE.RedFormat, THREE.UnsignedByteType);
+  tex.magFilter = tex.minFilter = THREE.LinearFilter;
+  tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+  tex.generateMipmaps = false;
+  tex.flipY = false;
+  tex.needsUpdate = true;
+  return (pathTexture = tex);
+}
 
 export function buildTerrainGeometry(seg = 360) {
+  getPathDistTexture();
   const step = SIZE / seg, row = seg + 1;
   const geo = new THREE.PlaneGeometry(SIZE, SIZE, seg, seg);
   geo.rotateX(-Math.PI / 2);

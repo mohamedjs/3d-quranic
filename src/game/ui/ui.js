@@ -29,12 +29,12 @@ const MAP_X0 = -235, MAP_X1 = 265, MAP_Z0 = -178, MAP_Z1 = 179;
 const mapPct = (x, z) => [(x - MAP_X0) / (MAP_X1 - MAP_X0) * 100, (MAP_Z1 - z) / (MAP_Z1 - MAP_Z0) * 100];
 // Region pins as named on the concept board (falls back to the area's own name).
 const REGIONS = {
-  oasis: { ar: 'الواحة', en: 'Oasis', g: 'oasis' },
-  village: { ar: 'القرية', en: 'Village', g: 'village' },
-  fields: { ar: 'النهر والمزارع', en: 'River & Farms', g: 'fields' },
-  mountains: { ar: 'الجبال', en: 'Mountains', g: 'mountains' },
-  ruins: { ar: 'المدينة القديمة', en: 'Ancient Settlement', g: 'ruins' },
-  desert: { ar: 'طريق الصحراء', en: 'Desert Path', g: 'desert' },
+  oasis: { ar: 'الواحة', en: 'Oasis', ru: 'Оазис', g: 'oasis' },
+  village: { ar: 'القرية', en: 'Village', ru: 'Деревня', g: 'village' },
+  fields: { ar: 'النهر والمزارع', en: 'River & Farms', ru: 'Река и поля', g: 'fields' },
+  mountains: { ar: 'الجبال', en: 'Mountains', ru: 'Горы', g: 'mountains' },
+  ruins: { ar: 'المدينة القديمة', en: 'Ancient Settlement', ru: 'Древнее поселение', g: 'ruins' },
+  desert: { ar: 'طريق الصحراء', en: 'Desert Path', ru: 'Пустынная тропа', g: 'desert' },
 };
 
 export const STR = {
@@ -108,7 +108,37 @@ export const STR = {
 
 const $ = id => document.getElementById(id);
 // surah names for the verse references on the story cards (fallback: the number)
-const SURAHS = { 2: ['البقرة', 'Al-Baqarah'], 12: ['يوسف', 'Yusuf'], 59: ['الحشر', 'Al-Hashr'], 105: ['الفيل', 'Al-Fil'], 106: ['قريش', 'Quraysh'] };
+const SURAHS = {
+  1: ['الفاتحة', 'Al-Fatihah'], 2: ['البقرة', 'Al-Baqarah'], 3: ['آل عمران', "Ali 'Imran"], 4: ['النساء', 'An-Nisa'],
+  5: ['المائدة', "Al-Ma'idah"], 6: ['الأنعام', "Al-An'am"], 7: ['الأعراف', "Al-A'raf"], 8: ['الأنفال', 'Al-Anfal'],
+  9: ['التوبة', 'At-Tawbah'], 10: ['يونس', 'Yunus'], 11: ['هود', 'Hud'], 12: ['يوسف', 'Yusuf'],
+  13: ['الرعد', "Ar-Ra'd"], 14: ['إبراهيم', 'Ibrahim'], 15: ['الحجر', 'Al-Hijr'], 16: ['النحل', 'An-Nahl'],
+  17: ['الإسراء', 'Al-Isra'], 18: ['الكهف', 'Al-Kahf'], 19: ['مريم', 'Maryam'], 20: ['طه', 'Ta-Ha'],
+  21: ['الأنبياء', 'Al-Anbiya'], 22: ['الحج', 'Al-Hajj'], 23: ['المؤمنون', "Al-Mu'minun"], 24: ['النور', 'An-Nur'],
+  25: ['الفرقان', 'Al-Furqan'], 26: ['الشعراء', "Ash-Shu'ara"], 27: ['النمل', 'An-Naml'], 28: ['القصص', 'Al-Qasas'],
+  29: ['العنكبوت', "Al-'Ankabut"], 30: ['الروم', 'Ar-Rum'], 31: ['لقمان', 'Luqman'], 32: ['السجدة', 'As-Sajdah'],
+  33: ['الأحزاب', 'Al-Ahzab'], 34: ['سبأ', 'Saba'], 35: ['فاطر', 'Fatir'], 36: ['يس', 'Ya-Sin'],
+  37: ['الصافات', 'As-Saffat'], 38: ['ص', 'Sad'], 39: ['الزمر', 'Az-Zumar'], 40: ['غافر', 'Ghafir'],
+  41: ['فصلت', 'Fussilat'], 42: ['الشورى', 'Ash-Shura'], 43: ['الزخرف', 'Az-Zukhruf'], 44: ['الدخان', 'Ad-Dukhan'],
+  45: ['الجاثية', 'Al-Jathiyah'], 46: ['الأحقاف', 'Al-Ahqaf'], 47: ['محمد', 'Muhammad'], 48: ['الفتح', 'Al-Fath'],
+  49: ['الحجرات', 'Al-Hujurat'], 50: ['ق', 'Qaf'], 51: ['الذاريات', 'Adh-Dhariyat'], 52: ['الطور', 'At-Tur'],
+  53: ['النجم', 'An-Najm'], 54: ['القمر', 'Al-Qamar'], 55: ['الرحمن', 'Ar-Rahman'], 56: ['الواقعة', "Al-Waqi'ah"],
+  57: ['الحديد', 'Al-Hadid'], 58: ['المجادلة', 'Al-Mujadilah'], 59: ['الحشر', 'Al-Hashr'], 60: ['الممتحنة', 'Al-Mumtahanah'],
+  61: ['الصف', 'As-Saff'], 62: ['الجمعة', "Al-Jumu'ah"], 63: ['المنافقون', 'Al-Munafiqun'], 64: ['التغابن', 'At-Taghabun'],
+  65: ['الطلاق', 'At-Talaq'], 66: ['التحريم', 'At-Tahrim'], 67: ['الملك', 'Al-Mulk'], 68: ['القلم', 'Al-Qalam'],
+  69: ['الحاقة', 'Al-Haqqah'], 70: ['المعارج', "Al-Ma'arij"], 71: ['نوح', 'Nuh'], 72: ['الجن', 'Al-Jinn'],
+  73: ['المزمل', 'Al-Muzzammil'], 74: ['المدثر', 'Al-Muddaththir'], 75: ['القيامة', 'Al-Qiyamah'], 76: ['الإنسان', 'Al-Insan'],
+  77: ['المرسلات', 'Al-Mursalat'], 78: ['النبأ', 'An-Naba'], 79: ['النازعات', "An-Nazi'at"], 80: ['عبس', "'Abasa"],
+  81: ['التكوير', 'At-Takwir'], 82: ['الانفطار', 'Al-Infitar'], 83: ['المطففين', 'Al-Mutaffifin'], 84: ['الانشقاق', 'Al-Inshiqaq'],
+  85: ['البروج', 'Al-Buruj'], 86: ['الطارق', 'At-Tariq'], 87: ['الأعلى', "Al-A'la"], 88: ['الغاشية', 'Al-Ghashiyah'],
+  89: ['الفجر', 'Al-Fajr'], 90: ['البلد', 'Al-Balad'], 91: ['الشمس', 'Ash-Shams'], 92: ['الليل', 'Al-Layl'],
+  93: ['الضحى', 'Ad-Duha'], 94: ['الشرح', 'Ash-Sharh'], 95: ['التين', 'At-Tin'], 96: ['العلق', "Al-'Alaq"],
+  97: ['القدر', 'Al-Qadr'], 98: ['البينة', 'Al-Bayyinah'], 99: ['الزلزلة', 'Az-Zalzalah'], 100: ['العاديات', "Al-'Adiyat"],
+  101: ['القارعة', "Al-Qari'ah"], 102: ['التكاثر', 'At-Takathur'], 103: ['العصر', "Al-'Asr"], 104: ['الهمزة', 'Al-Humazah'],
+  105: ['الفيل', 'Al-Fil'], 106: ['قريش', 'Quraysh'], 107: ['الماعون', "Al-Ma'un"], 108: ['الكوثر', 'Al-Kawthar'],
+  109: ['الكافرون', 'Al-Kafirun'], 110: ['النصر', 'An-Nasr'], 111: ['المسد', 'Al-Masad'], 112: ['الإخلاص', 'Al-Ikhlas'],
+  113: ['الفلق', 'Al-Falaq'], 114: ['الناس', 'An-Nas'],
+};
 export const arDigits = n => String(n).replace(/\d/g, d => '٠١٢٣٤٥٦٧٨٩'[d]);
 // the painted illustration that stands for a story on its card: its first painted scene, else a stand-in
 const THUMBS = { 'people-of-the-elephant': 'elephant', 'the-guest-and-the-lamp': 'guest_meal' };   // a painting that reads better small
@@ -280,26 +310,25 @@ export class UI {
       const ctx = cv.getContext('2d'); ctx.fillStyle = '#6f8a3c'; ctx.fillRect(0, 0, 1400, 1000);
       ctx.drawImage(this.mapCanvas, sx, sy, ex - sx, ey - sy, 0, 0, 1400, 1000); img.replaceWith(cv);
     };
-    // zoom + pan: the painting sits in a scaled layer; markers stay in the unscaled stage
+    // zoom + pan: the painting and route sit in a scaled layer; markers stay in the unscaled stage
     // (so pins and labels keep their size) and are re-positioned from their map percentages
     const layer = document.createElement('div'); layer.className = 'layer'; layer.append(img); stage.append(layer);
-    let routeG = null;                                // the guided path, dashed gold (same transform as the painting)
     if (route && from < route.n - 2) {
       const NS = 'http://www.w3.org/2000/svg', svg = document.createElementNS(NS, 'svg');
       svg.setAttribute('class', 'route'); svg.setAttribute('viewBox', '0 0 100 100'); svg.setAttribute('preserveAspectRatio', 'none');
       let d = '';
       for (let i = from; i < route.n; i += 4) { const [l, t] = mapPct(route.x[i], route.z[i]); d += `${d ? 'L' : 'M'}${l.toFixed(2)} ${t.toFixed(2)}`; }
       const [el, et] = mapPct(route.x[route.n - 1], route.z[route.n - 1]); d += `L${el.toFixed(2)} ${et.toFixed(2)}`;
-      routeG = document.createElementNS(NS, 'g');
+      const routeG = document.createElementNS(NS, 'g');
       routeG.innerHTML = `<path class="ink" d="${d}" vector-effect="non-scaling-stroke"/><path class="dash" d="${d}" vector-effect="non-scaling-stroke"/>`;
-      svg.append(routeG); stage.append(svg);
+      svg.append(routeG); layer.append(svg);          // inside layer so zoom/pan matches the painting 1:1
     }
     const marks = [];
     const place = (el, x, z, clampY = 0) => { const [l, t] = mapPct(x, z); el._p = [Math.min(97, Math.max(3, l)), Math.min(92, Math.max(clampY, t))]; marks.push(el); return el; };
     const here = this.data.areas.find(a => Math.hypot(a.x - player.pos.x, a.z - player.pos.z) < a.r);
     for (const a of this.data.areas) {
       const known = this.save.discovered.includes(a.id), R = REGIONS[a.id], hasStory = this.data.encounters.some(e => e.area === a.id);
-      const name = R ? R[lang] : this.t(a), other = R ? R[lang === 'ar' ? 'en' : 'ar'] : '';
+      const name = R ? (R[lang] ?? R.ar) : this.t(a), other = R ? R[lang === 'ar' ? 'en' : 'ar'] : '';
       const pin = document.createElement('div'); pin.className = `pin${known ? '' : ' unknown'}${here === a ? ' here' : ''}`;
       pin.innerHTML = `<svg class="p" viewBox="0 0 44 56" aria-hidden="true"><use href="#o-pin"/></svg>
         <svg class="g" aria-hidden="true"><use href="#${known ? `r-${R?.g ?? 'village'}` : 'i-lock'}"/></svg>
@@ -328,7 +357,6 @@ export class UI {
       view.x = Math.min(0, Math.max(100 * (1 - view.s), view.x)); view.y = Math.min(0, Math.max(100 * (1 - view.s), view.y));
       stage.classList.toggle('ease', ease); stage.classList.toggle('zoomed', view.s > 1.01);
       layer.style.transform = `translate(${view.x}%, ${view.y}%) scale(${view.s})`;
-      if (routeG) routeG.style.transform = `translate(${view.x}px, ${view.y}px) scale(${view.s})`;
       for (const el of marks) { el.style.left = `${view.x + el._p[0] * view.s}%`; el.style.top = `${view.y + el._p[1] * view.s}%`; }
       tools.querySelector('[data-z="out"]').disabled = view.s <= 1.01; tools.querySelector('[data-z="in"]').disabled = view.s >= MAXS - 0.01;
     };
@@ -413,7 +441,7 @@ export class UI {
         ref = `${S.surah} ${name ?? num(su)} ${num(a0)}${a1 !== a0 ? `–${num(a1)}` : ''}`;
       }
       const area = this.data.areas.find(a => a.id === e.area), R = REGIONS[e.area];
-      const place = R ? R[lang] : this.t(area);
+      const place = R ? (R[lang] ?? R.ar) : this.t(area);
       const d = Math.hypot(npc.x - player.pos.x, npc.z - player.pos.z), dist = d < 15 ? num(Math.max(1, Math.round(d))) : num(Math.round(d / 10) * 10);
       const cast = e.characters ?? [e.character];
       const faces = cast.slice(0, 2).map(c => `<i class="face">${portrait(c.id, c)}</i>`).join('');

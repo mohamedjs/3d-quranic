@@ -9,7 +9,7 @@ import { groundAt } from '../terrain/heightfield.js';
 import { usePreset } from '../systems/store.js';
 import { LAYER_NO_REFLECT } from '../systems/layers.js';
 
-const MAX = 24;
+const MAX = 48;
 function blobTexture() {
   const c = document.createElement('canvas'); c.width = c.height = 64; const x = c.getContext('2d');
   const g = x.createRadialGradient(32, 32, 0, 32, 32, 32);

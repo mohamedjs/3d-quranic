@@ -161,6 +161,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     target = nextStory();
     if (!target) { ui.objective([S().explore, S().exploreSub]); return; }
     coins.want([target.enc.id], true);
+    coins.ensure(target.enc.id);
     if (target.state === 'gated') {
       const g = target.gate;
       ui.objective(g ? [`${S().gateObj}: ${num(g.have)} / ${num(g.need)} 🪙`, t(target.enc.title) || lines(target.enc.objective)[0]] : [S().gatePrep, t(target.enc.title)]);
@@ -328,6 +329,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     if (!npc || mode !== 'explore') return;
     save.chosen = id; save.category = prog.catOf(id) ?? save.category; persist();
     coins.want([id], true);
+    coins.ensure(id);
     refreshNpcs(); target = null; updateObjective();
     ui.toast(`${S().headingTo}: ${t(npc.enc.title)}`, 3000);
     narrate([npc.enc.narration]);
@@ -440,7 +442,7 @@ export function createGame({ camera, mapCanvas, data, scene, colliders }) {
     // the golden trail always leads to the target storyteller's house, open or still waiting for
     // coins — it never turns off to chase coins; the child gathers them on their own
     goal = null;
-    guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines, goal });
+    guide.update(dt, now, { explore, show: save.settings.path !== false, target, player, outlines: preset.outlines, goal, occupied: coins.occupied });
     auto.update(dt, { explore });
     ui.walkButton(explore && !!guide.route && !!guide.target, auto.active);
     coins.update(dt, now, { explore, player, show: target && !save.done.includes(target.enc.id) ? target.enc.id : null, preset });

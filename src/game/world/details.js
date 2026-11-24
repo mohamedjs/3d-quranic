@@ -21,8 +21,7 @@ export function buildCanalScene(npcPos, home = null) {
   place('sluice', CX, 18.4, 0, 1, -0.05); collide(CX - 1.45, 18.4, 0.2); collide(CX + 1.45, 18.4, 0.2);
   const sx = CX - 1.9, sz = 24;
   place('shaduf', sx, sz, 0); collide(sx, sz, 0.3, 0.7);   // sweep (model +X) reaches out over the canal
-  place('footbridge', CX, 34.5, 0, 1, 0.05);   // planks span the canal (model X)
-  for (const b of FOOTBRIDGES) placements.push({ model: 'footbridge', x: b.x, y: FOOTBRIDGE_DECK - 0.14, z: b.z, rot: b.rot });   // across the road canals
+  for (const b of FOOTBRIDGES) placements.push({ model: 'footbridge', x: b.x, y: FOOTBRIDGE_DECK - 0.14, z: b.z, rot: b.rot });   // across the canals
   const [nx, nz] = npcPos;
   if (home) {                                  // at grandma's door: water jars past the doorway, her basket by the bench
     const w = (mx, mz) => [home.x + mx * Math.cos(home.rot) + mz * Math.sin(home.rot), home.z - mx * Math.sin(home.rot) + mz * Math.cos(home.rot)];

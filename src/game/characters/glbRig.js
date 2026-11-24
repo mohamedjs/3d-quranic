@@ -14,7 +14,7 @@ import { gltfLoader } from '../world/loaders.js';
 export async function loadGlbRig(url, targetHeight) {
   try {
     const head = await fetch(url, { method: 'HEAD' });
-    if (!head.ok || !/model|octet|gltf/.test(head.headers.get('content-type') || 'model/gltf-binary')) return null;
+    if (!head.ok || /text\/html/i.test(head.headers.get('content-type') || '')) return null;
   } catch { return null; }
   const gltf = await gltfLoader().loadAsync(url);   // a present-but-broken file should fail loudly
   return new GlbRig(gltf, targetHeight);

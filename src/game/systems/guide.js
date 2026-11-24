@@ -154,7 +154,9 @@ export function buildRoute(grid, cells, sx, sz, end = null) {
     const o = [pts[0]];
     for (let i = 0; i < pts.length - 1; i++) {
       const [ax, az] = pts[i], [bx, bz] = pts[i + 1];
-      o.push([ax * 0.75 + bx * 0.25, az * 0.75 + bz * 0.25], [ax * 0.25 + bx * 0.75, az * 0.25 + bz * 0.75]);
+      const qx = ax * 0.75 + bx * 0.25, qz = az * 0.75 + bz * 0.25;
+      const rx = ax * 0.25 + bx * 0.75, rz = az * 0.25 + bz * 0.75;
+      o.push(grid.walkable(qx, qz) ? [qx, qz] : pts[i], grid.walkable(rx, rz) ? [rx, rz] : pts[i + 1]);
     }
     o.push(pts[pts.length - 1]); pts = o;
   }
@@ -253,7 +255,7 @@ export function createGuide({ scene, colliders }) {
   const trail = trailMesh(), bc = beacon();
   scene.add(trail, bc.group);
   const fade = trail.geometry.attributes.aFade;
-  const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0);
+  const _m = new THREE.Matrix4(), _bm = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0), _bx = new THREE.Vector3(), _by = new THREE.Vector3(), _bz = new THREE.Vector3();
 
   let route = null, routeTarget = null, pendingTarget = null, pendingFrom = [0, 0], lastReq = -9, prog = 0, stray = 0, version = 0;
   // goal: an optional waypoint {x, z, key} the route leads to instead of the storyteller (the next
@@ -283,7 +285,7 @@ export function createGuide({ scene, colliders }) {
   }
 
   // show: the path setting and the mode allow drawing · target: the npc the objective points at
-  api.update = (dt, now, { explore, show, target, player, outlines = true, goal = null }) => {
+  api.update = (dt, now, { explore, show, target, player, outlines = true, goal = null, occupied = null }) => {
     const px = player.pos.x, pz = player.pos.z, gk = goal?.key ?? null;
     if (explore) {
       if (!target) { if (route || search.active) { route = null; routeTarget = null; routeGoal = null; pendingTarget = null; search.cancel(); version++; } }
@@ -316,18 +318,28 @@ export function createGuide({ scene, colliders }) {
     }
     if (!visible) return;
     // chevrons anchored to the route, flowing forward; bigger and sparser as the camera rises
-    const k = THREE.MathUtils.clamp(refs.view.dist / 5.2, 1, 7), size = 0.8 * k, spacing = 1.25 * k;
-    const s0 = prog * STEP, range = 38 + refs.view.dist * 2.2, end = Math.min(route.len - 1.2, s0 + range);
+    const k = THREE.MathUtils.clamp(refs.view.dist / 5.2, 1, 7), size = 0.8 * k, short = route.len < 4;
+    const s0 = prog * STEP, range = 38 + refs.view.dist * 2.2, end = Math.min(short ? Math.max(0, route.len - 0.3) : route.len - 1.2, s0 + range);
+    const spacing = short ? Math.min(1.25 * k, Math.max(0.5, (end - s0 - 0.2) / 2.2)) : 1.25 * k;
     const phase = (now * 1.3 * Math.min(k, 3)) % spacing;
-    let s = Math.ceil((s0 + 0.6 - phase) / spacing) * spacing + phase, count = 0;
+    let s = Math.ceil((s0 + (short ? 0.2 : 0.6) - phase) / spacing) * spacing + phase, count = 0;
     const lift = 0.09 + 0.05 * k;
     while (s < end && count < TRAIL_MAX) {
       const f = s / STEP, i = Math.min(route.n - 2, Math.floor(f)), t = f - i;
       const x = route.x[i] + (route.x[i + 1] - route.x[i]) * t, z = route.z[i] + (route.z[i + 1] - route.z[i]) * t, y = route.y[i] + (route.y[i + 1] - route.y[i]) * t;
-      const a = Math.max(0, i - 2), b = Math.min(route.n - 1, i + 3), tx = route.x[b] - route.x[a], tz = route.z[b] - route.z[a];
+      if (occupied?.(x, z, 0.9)) { s += spacing; continue; }
+      const a = Math.max(0, i - 2), b = Math.min(route.n - 1, i + 3);
+      const tx = route.x[b] - route.x[a], ty = route.y[b] - route.y[a], tz = route.z[b] - route.z[a], tl = Math.hypot(tx, ty, tz);
       const ds = s - s0;
-      const fa = smooth(0.4, 1.8 * Math.min(k, 2), ds) * (1 - smooth(range * 0.7, range, ds)) * (1 - smooth(route.len - 4, route.len - 1.2, s));
-      _q.setFromAxisAngle(_up, Math.atan2(-tx, -tz));
+      const startFade = short ? smooth(0.1, 0.5, ds) : smooth(0.4, 1.8 * Math.min(k, 2), ds);
+      const endFade = Math.max(short ? 0.55 : 0, 1 - smooth(route.len - 4, route.len - 1.2, s));
+      const fa = startFade * (1 - smooth(range * 0.7, range, ds)) * endFade;
+      if (tl > 1e-4 && tx * tx + tz * tz > 1e-8) {
+        _bz.set(-tx / tl, -ty / tl, -tz / tl);
+        _bx.crossVectors(_up, _bz).normalize();
+        _by.crossVectors(_bz, _bx);
+        _q.setFromRotationMatrix(_bm.makeBasis(_bx, _by, _bz));
+      } else _q.identity();
       _m.compose(_p.set(x, y + lift, z), _q, _s.set(size, 1, size * 1.25));   // stretched along the way: reads at grazing angles
       trail.setMatrixAt(count, _m); fade.array[count] = fa;
       count++; s += spacing;

@@ -60,7 +60,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [], onTrees
     const list = [];
 
     // chunked instancing: one body (+ optional ink hull) mesh per chunk × model
-    const CH = 24;
+    const CH = detail.lite ? 32 : 24;
     const bucket = () => new Map();
     const put = (map, key, x, z, m, c) => {
       const k = `${key}|${Math.floor(x / CH)},${Math.floor(z / CH)}`;
@@ -88,7 +88,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [], onTrees
       if (!lush(x, z, h) || blocked(x, z, 0.15)) continue;
       const patch = fbm(x * 0.05, z * 0.05);
       if (patch < -0.5 && r() < 0.6) continue;                 // a few natural bare patches
-      const model = patch > 0.55 ? 'grass_c' : hash(Math.floor(x / 9), Math.floor(z / 9)) < 0.5 ? 'grass_a' : 'grass_b';
+      const model = detail.lite ? 'grass_a' : patch > 0.55 ? 'grass_c' : hash(Math.floor(x / 9), Math.floor(z / 9)) < 0.5 ? 'grass_a' : 'grass_b';
       put(grass, model, x, z, M(x, h - 0.03, z, r() * 6.3, 0.9 + r() * 0.5, 0.8 + r() * 0.7 + (waterDist(x, z) < 5 ? 0.4 : 0)), tint(r));
       n++;
     }
@@ -141,7 +141,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [], onTrees
       if (h < WATER_Y - 0.25 || h > WATER_Y + 1.6 || wd > 2.5 || blocked(x, z, 0.3)) continue;
       put(reeds, 'reeds', x, z, M(x, h - 0.05, z, r() * 6.3, 0.8 + r() * 0.5, 0.8 + r() * 0.5)); nReeds++;
     }
-    flush(reeds, 'crop', { wind: WIND.reed, shadow: !lowDetail, outline: false });
+    flush(reeds, 'grass', { wind: WIND.reed, shadow: !lowDetail, outline: false });
 
     // ---- date palms (three variants) ------------------------------------------------------
     const spots = [];
@@ -227,7 +227,7 @@ export function Vegetation({ colliders, clearings, assets, gardens = [], onTrees
     }
     flush(litter, 'grass', { geo: new THREE.CircleGeometry(1, 5), mat: toonMaterial('litter', { side: THREE.DoubleSide, rim: 0 }), outline: false });
     const fl = bucket(); let nFl = 0;
-    for (let i = 0; i < 14000 && nFl < 1000 * k; i++) {
+    for (let i = 0; !detail.lite && i < 14000 && nFl < 1000 * k; i++) {
       const [ox, oz] = r() < 0.5 ? [0, 0] : [OASIS.x, OASIS.z], a = r() * 6.3, d = 14 + r() * 50;
       const x = ox + Math.cos(a) * d, z = oz + Math.sin(a) * d, h = height(x, z);
       if (!lush(x, z, h) || blocked(x, z, 0.3) || fbm(x * 0.07, z * 0.07) < 0.1) continue;

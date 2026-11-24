@@ -81,7 +81,7 @@ function mergeModels(assets, placements, { shadow, blocker, chunk = 32, near = 2
         if (part.outline) continue;
         const g = part.geometry, water = !g.attributes.color;             // UV'd stream ribbon keeps its own shader
         const side = part.material.side === THREE.DoubleSide ? 'd' : 's';
-        const key = water ? 'w:' + part.material.uuid : side + (block && side === 's' ? 'b' : '');
+        const key = water ? 'w:' + part.material.uuid : side + (tier === 'near' && block && side === 's' ? 'b' : '');
         if (!groups.has(key)) groups.set(key, { list: [], material: water ? part.material : LITE_MAT[side](), block: key === 'sb' });
         groups.get(key).list.push(g.clone().applyMatrix4(m));
       }

@@ -1,0 +1,10 @@
+[
+  {
+    "name": "backdrop_hills",
+    "tris": 3168,
+    "kb": 14.9,
+    "mats": [
+      "env_backdrop_hills"
+    ]
+  }
+]

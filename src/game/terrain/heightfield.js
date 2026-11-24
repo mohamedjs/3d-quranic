@@ -45,7 +45,7 @@ export const STREET = { z0: -54, z1: -12, channelX: -3.3 };
 // title-screen lookout: a grassy hill south-west of the village, looking over it
 export const LOOKOUT = { x: -33, z: -80, facing: Math.atan2(33, 58) };
 
-const PATHS = [
+export const PATHS = [
   [[0, -95], [0, 0]],
   [[0, 0], [0, 140]],
   [[0, 0], [-40, -8], [-80, -16], [-96, -19]],
@@ -180,25 +180,146 @@ export function waterDist(x, z) {
   return Math.max(0, d);
 }
 
-// ---- colour: the toon ground palette (matches blender/v2/env/village.py) -------------
+// Desert sandiness biome factor (0 = lush Nile valley loam/meadow, 1 = golden desert sand):
+// transitions smoothly across the eastern desert plateau & ruins (x > ~80, matching sand footsteps
+// in game.js) and the arid outer rim west/south of the oasis, while keeping the Nile banks lush.
+export function desertFactor(x, z) {
+  const n = fbm(x * 0.022, z * 0.022, 3) * 16;
+  let d = smooth(72, 122, x + n);                                          // eastern desert & ruins
+  const dO = Math.hypot(x - OASIS.x, z - OASIS.z);
+  d = Math.max(d, smooth(-130, -178, x + n * 0.6) * smooth(24, 42, dO));   // arid fringe west of oasis
+  d = Math.max(d, smooth(-95, -148, z + n * 0.6) * smooth(34, 56, Math.hypot(x - LOOKOUT.x, z - LOOKOUT.z)) * 0.72);
+  // River corridor and inner oasis stay lush green
+  d *= smooth(10, 22, Math.abs(z - riverZ(x)));
+  d *= smooth(OASIS.r + 4, OASIS.r + 18, dO);
+  return clamp(d, 0, 1);
+}
+
+// Bake per-pixel terrain feature maps into a single RGBA Uint8 buffer (1 texture fetch in shader):
+//   R = pathDist  (0..8 m -> 0..255)
+//   G = waterDist (0..8 m -> 0..255)
+//   B = fieldMask (0 or 255: crisp per-pixel farm plot region)
+//   A = desert    (0..1 -> 0..255: golden desert biome blend)
+export function bakeTerrainMaps(res = 1024) {
+  const data = new Uint8Array(res * res * 4), step = SIZE / res, o = -HALF + 0.5 * step, scale = 255 / 8;
+  const prep = list => list.map(([[ax, az], [bx, bz]]) => {
+    const dx = bx - ax, dz = bz - az;
+    return [ax, az, dx, dz, 1 / (dx * dx + dz * dz), Math.min(ax, bx) - 10, Math.max(ax, bx) + 10, Math.min(az, bz) - 10, Math.max(az, bz) + 10];
+  });
+  const psegs = prep(SEGS), csegs = prep(CSEGS);
+  // Precompute riverZ(x) once per column and low-frequency desert noise on a 129^2 grid
+  const rzCol = new Float32Array(res);
+  for (let c = 0; c < res; c++) rzCol[c] = riverZ(o + c * step);
+  const ng = 128, ng1 = ng + 1, nGrid = new Float32Array(ng1 * ng1), nStep = SIZE / ng;
+  for (let gr = 0; gr <= ng; gr++) {
+    const gz = -HALF + gr * nStep;
+    for (let gc = 0; gc <= ng; gc++) nGrid[gr * ng1 + gc] = fbm((-HALF + gc * nStep) * 0.022, gz * 0.022, 3) * 16;
+  }
+  const sampleN = (x, z) => {
+    const gx = clamp((x + HALF) / nStep, 0, ng - 1e-4), gz = clamp((z + HALF) / nStep, 0, ng - 1e-4);
+    const ix = gx | 0, iz = gz | 0, fx = gx - ix, fz = gz - iz, p = iz * ng1 + ix;
+    return lerp(lerp(nGrid[p], nGrid[p + 1], fx), lerp(nGrid[p + ng1], nGrid[p + ng1 + 1], fx), fz);
+  };
+
+  for (let r = 0; r < res; r++) {
+    const z = o + r * step, row = r * res;
+    const pAct = [], cAct = [];
+    for (let s = 0; s < psegs.length; s++) if (z >= psegs[s][7] && z <= psegs[s][8]) pAct.push(psegs[s]);
+    for (let s = 0; s < csegs.length; s++) if (z >= csegs[s][7] && z <= csegs[s][8]) cAct.push(csegs[s]);
+    const inFieldZ = z >= -150 && z <= 150 && z < 126;
+    const zSmooth = smooth(118, 150, z);
+    const inCanalZ = z > 15;
+    for (let c = 0; c < res; c++) {
+      const x = o + c * step, idx = (row + c) * 4;
+      // R: pathDist (0..8 m)
+      let pm2 = 64;
+      for (let s = 0; s < pAct.length; s++) {
+        const g = pAct[s];
+        if (x < g[5] || x > g[6]) continue;
+        let t = ((x - g[0]) * g[2] + (z - g[1]) * g[3]) * g[4];
+        if (t < 0) t = 0; else if (t > 1) t = 1;
+        const px = x - g[0] - g[2] * t, pz = z - g[1] - g[3] * t, d2 = px * px + pz * pz;
+        if (d2 < pm2) pm2 = d2;
+      }
+      const pd = pm2 >= 64 ? 8 : Math.sqrt(pm2);
+
+      // G: waterDist (0..8 m) — river, oasis, field canals, road canals
+      const rz = rzCol[c], dzR = Math.abs(z - rz);
+      let cm2 = 100;
+      for (let s = 0; s < cAct.length; s++) {
+        const g = cAct[s];
+        if (x < g[5] || x > g[6]) continue;
+        let t = ((x - g[0]) * g[2] + (z - g[1]) * g[3]) * g[4];
+        if (t < 0) t = 0; else if (t > 1) t = 1;
+        const px = x - g[0] - g[2] * t, pz = z - g[1] - g[3] * t, d2 = px * px + pz * pz;
+        if (d2 < cm2) cm2 = d2;
+      }
+      const cd = cm2 >= 100 ? 10 : Math.sqrt(cm2);
+      const ox = x - OASIS.x, oz = z - OASIS.z, dO2 = ox * ox + oz * oz, dO = Math.sqrt(dO2);
+      let wd = Math.min(dzR - 6, dO - OASIS.r, cd - 1.5);
+      if (inCanalZ && z < rz) {
+        for (let k = 0; k < CANALS.length; k++) {
+          const d = Math.abs(x - CANALS[k]) - 1;
+          if (d < wd) wd = d;
+        }
+      }
+      if (wd < 0) wd = 0; else if (wd > 8) wd = 8;
+
+      // B: crisp farmland mask (matches fieldPlot() exactly using squared-distance checks)
+      let fm = 0;
+      if (inFieldZ && x >= -205 && x <= 205 && pd >= 3.2 && cd >= 3.6 && dzR >= 11 && dO2 >= 1764) {
+        const ax = x < 0 ? -x : x, az = z < 0 ? -z : z;
+        const rx = x - RUINS.x, rzd = z - RUINS.z, lx = x - LOOKOUT.x, lz = z - LOOKOUT.z;
+        if (x * x + z * z >= 2116 && !(ax < 16 && z > -60 && z < -8)
+          && rx * rx + rzd * rzd >= 1764 && lx * lx + lz * lz >= 900
+          && Math.max(zSmooth, smooth(170, 200, ax > az ? ax : az)) <= 0.2) fm = 255;
+      }
+
+      // A: desert biome factor (reuses precomputed rz, dO, and low-freq noise grid)
+      let des = 0;
+      if (x > 50 || x < -105 || z < -75) {
+        const nv = sampleN(x, z);
+        des = smooth(72, 122, x + nv);
+        if (x < -105) des = Math.max(des, smooth(-130, -178, x + nv * 0.6) * smooth(24, 42, dO));
+        if (z < -75) {
+          const lx = x - LOOKOUT.x, lz = z - LOOKOUT.z;
+          des = Math.max(des, smooth(-95, -148, z + nv * 0.6) * smooth(34, 56, Math.sqrt(lx * lx + lz * lz)) * 0.72);
+        }
+        if (des > 0) des *= smooth(10, 22, dzR) * smooth(OASIS.r + 4, OASIS.r + 18, dO);
+      }
+
+      data[idx]     = pm2 >= 64 ? 255 : Math.round(pd * scale);
+      data[idx + 1] = Math.round(wd * scale);
+      data[idx + 2] = fm;
+      data[idx + 3] = Math.round(des * 255);
+    }
+  }
+  return data;
+}
+
+// ---- colour: painterly Nile valley ground palette -----------------------------------
 const hex = h => new THREE.Color(h);   // sRGB hex → linear working colour
 const P = {
-  grass: hex(0x8DB04C), grass2: hex(0x7AA443), grass3: hex(0x9DBE5A), village: hex(0xCFAF7C), villageGrass: hex(0xA9B862),
-  yard: hex(0xD8BA88), path: hex(0xDCC28F), bank: hex(0x80603F), mud: hex(0x6A4E34), hill: hex(0xA6B45A), rock: hex(0xB09A78),
-  bund: hex(0x9C7A50), crops: [hex(0x5FA03A), hex(0xD7B85C), hex(0x71923A), hex(0x86B44E)],
+  grass: hex(0x80A846), grass2: hex(0x6C963B), grass3: hex(0x95B754), village: hex(0xD2B07E), villageGrass: hex(0x9EB25B),
+  yard: hex(0xD9BA88), path: hex(0xE2C184), pathEdge: hex(0xCCA167),
+  desert: hex(0xDEB677), desert2: hex(0xCFA060),
+  bank: hex(0x705236), mud: hex(0x523A24), moss: hex(0x5B7D34),
+  hill: hex(0xA4AD5C), rock: hex(0xB89E7A), rockDark: hex(0x9A8162),
+  bund: hex(0x98744B), crops: [hex(0x569A37), hex(0xDAB654), hex(0x698E38), hex(0x7FAE48)],
 };
 const HOME_YARD = { x: -5.9, z: 26 };
-// Ground colour without the crisp features (paths and fields are drawn sharp in the shader).
+// Base ground colour without sharp edges (paths, fields and wet banks are drawn per pixel in shader,
+// eliminating sawtooth canal/river triangles on Lite's coarse vertex grid).
 export function groundColor(x, z, h, slope, c) {
-  const n = fbm(x * 0.09, z * 0.09);
-  c.copy(n < -0.1 ? P.grass2 : n < 0.2 ? P.grass : P.grass3);
+  const n = fbm(x * 0.08, z * 0.08);
+  c.copy(n < -0.1 ? P.grass2 : n < 0.22 ? P.grass : P.grass3);
+  const des = desertFactor(x, z);
+  if (des > 0) c.lerp(n < 0 ? P.desert2 : P.desert, des);
   const vil = Math.max(1 - smooth(40, 46, Math.hypot(x, z)), (1 - smooth(14, 16, Math.abs(x))) * smooth(-64, -60, z) * (1 - smooth(-10, -6, z)));
-  if (vil > 0) c.lerp(n < 0.12 ? P.village : P.villageGrass, vil);
+  if (vil > 0) c.lerp(n < 0.14 ? P.village : P.villageGrass, vil);
   c.lerp(P.yard, 1 - smooth(3.5, 5, Math.hypot(x - HOME_YARD.x, z - HOME_YARD.z)));
-  c.lerp(P.hill, smooth(4, 14, h) * 0.6);
-  c.lerp(P.rock, smooth(0.8, 1.2, slope) * 0.8);
-  c.lerp(P.bank, (1 - smooth(0.4, 1.0, waterDist(x, z))) * (1 - smooth(0.8, 1.1, h)));
-  c.lerp(P.mud, 1 - smooth(-0.35, -0.15, h));
+  c.lerp(P.hill, smooth(4, 14, h) * 0.55 * (1 - des * 0.5));
+  c.lerp(P.rock, smooth(0.65, 1.15, slope) * 0.78);
   return c;
 }
 // Sharp-feature masks for the shader: [farmland 0..1, path 0..1]
@@ -207,10 +328,15 @@ export function groundMask(x, z, out) {
   out[1] = 1 - smooth(1.2, 2.4, pathDist(x, z));
   return out;
 }
-export const FIELD_COLORS = { crops: P.crops, bund: P.bund, path: P.path };
-// Full colour (minimap / world map): ground + paths + fields.
+export const FIELD_COLORS = {
+  crops: P.crops, bund: P.bund, path: P.path, pathEdge: P.pathEdge,
+  desert: P.desert, desert2: P.desert2, bank: P.bank, mud: P.mud, moss: P.moss, rockDark: P.rockDark,
+};
+// Full colour (minimap / world map): ground + banks + paths + fields.
 export function colorAt(x, z, h, slope, c) {
   groundColor(x, z, h, slope, c);
+  c.lerp(P.bank, (1 - smooth(0.4, 1.0, waterDist(x, z))) * (1 - smooth(0.8, 1.1, h)));
+  c.lerp(P.mud, 1 - smooth(-0.35, -0.15, h));
   const fp = fieldPlot(x, z);
   if (fp >= 0) c.copy(fp === 4 ? P.bund : P.crops[fp]);
   c.lerp(P.path, 1 - smooth(1.6, 2.0, pathDist(x, z)));

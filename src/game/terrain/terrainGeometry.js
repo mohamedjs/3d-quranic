@@ -2,25 +2,27 @@
 // painted toon ground colour, masks for the crisp features the shader draws (farm plots,
 // paths), plus the painted minimap image.
 import * as THREE from 'three';
-import { SIZE, height, groundColor, groundMask, colorAt, mapImage, bakePathDist } from './heightfield.js';
+import { SIZE, height, groundColor, groundMask, colorAt, mapImage, bakeTerrainMaps } from './heightfield.js';
 
-let pathTexture = null;
-// Single-channel DataTexture of pathDist (0..8 m) baked once at terrain build time so roads stay
-// crisp even on Lite's coarse vertex grid.
-export function getPathDistTexture() {
-  if (pathTexture) return pathTexture;
+let terrainMapTex = null;
+// Single RGBA DataTexture baked once at terrain build time (1 fetch per pixel in shader):
+//   R = pathDist (0..8 m), G = waterDist (0..8 m), B = fieldMask (0..1), A = desertBiome (0..1).
+// Eliminates sawtooth roads, jagged canal banks, and stair-stepped farm edges even on Lite.
+export function getTerrainMapTexture() {
+  if (terrainMapTex) return terrainMapTex;
   const res = 1024;
-  const tex = new THREE.DataTexture(bakePathDist(res), res, res, THREE.RedFormat, THREE.UnsignedByteType);
+  const tex = new THREE.DataTexture(bakeTerrainMaps(res), res, res, THREE.RGBAFormat, THREE.UnsignedByteType);
   tex.magFilter = tex.minFilter = THREE.LinearFilter;
   tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
   tex.generateMipmaps = false;
   tex.flipY = false;
   tex.needsUpdate = true;
-  return (pathTexture = tex);
+  return (terrainMapTex = tex);
 }
+export const getPathDistTexture = getTerrainMapTexture;
 
 export function buildTerrainGeometry(seg = 360) {
-  getPathDistTexture();
+  getTerrainMapTexture();
   const step = SIZE / seg, row = seg + 1;
   const geo = new THREE.PlaneGeometry(SIZE, SIZE, seg, seg);
   geo.rotateX(-Math.PI / 2);

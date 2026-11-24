@@ -64,7 +64,7 @@ export function buildVillage() {
     }
     z += 7.2;
   }
-  for (let z = STREET.z0; z < STREET.z1; z += 4) place('stream', STREET.channelX, z + 2, 0);
+  for (let z = STREET.z0; z < STREET.z1; z += 4) place('stream_channel', STREET.channelX, z + 2, 0);
   collide(STREET.channelX, (STREET.z0 + STREET.z1) / 2, 0.6, (STREET.z1 - STREET.z0) / 2);
 
   // village: houses around the square, clear of the four roads and the well
@@ -123,13 +123,8 @@ export function buildVillage() {
     collide(x, z, 0.8, 0.8);
   }
 
-  // wooden bridge across the river on the north road
-  const bz = riverZ(BRIDGE.x), BM = new THREE.Matrix4().setPosition(BRIDGE.x, 0, bz);
-  for (let z = -BRIDGE.halfL; z <= BRIDGE.halfL; z += 0.5) put(box(BRIDGE.halfW * 2 + 0.2, 0.12, 0.45), r() < 0.5 ? 0x7a5634 : 0x6b4a2c, BM, 0, BRIDGE.deck - 0.06, z);
-  for (const s of [-1, 1]) {
-    put(box(0.1, 0.1, BRIDGE.halfL * 2), 0x5e4028, BM, s * BRIDGE.halfW, BRIDGE.deck + 0.85, 0);
-    for (let z = -BRIDGE.halfL; z <= BRIDGE.halfL; z += 2.5) put(box(0.14, 3.5, 0.14), 0x5e4028, BM, s * BRIDGE.halfW, -0.25, z);
-  }
+  // arched limestone-and-timber Nile river bridge (v3 GLB matching BRIDGE.deck = 0.55)
+  placements.push({ model: 'river_bridge', x: BRIDGE.x, y: 0, z: riverZ(BRIDGE.x), rot: 0, sx: 1, sy: 1, sz: 1 });
 
   // palm-frond shade shelter at the oasis (arish)
   const sh = { x: -92, z: -9 }, SM = new THREE.Matrix4().setPosition(sh.x, height(sh.x, sh.z), sh.z);

@@ -10,7 +10,7 @@ import { TOON } from '../shaders/toonPalette.js';
 import { toonStreamWaterMaterial } from '../shaders/waterMaterial.js';
 
 export const ENV_MODELS = ['house_a', 'house_b', 'house_c', 'mastaba', 'palm_a', 'palm_b', 'palm_c', 'sycamore', 'bougainvillea',
-  'well', 'shaduf', 'sluice', 'jar', 'jar_b', 'basket', 'hoe', 'fence', 'footbridge', 'stall', 'hay', 'stream', 'garden_wall',
+  'well', 'shaduf', 'sluice', 'jar', 'jar_b', 'basket', 'hoe', 'fence', 'river_bridge', 'footbridge', 'stall', 'hay', 'stream_channel', 'garden_wall',
   'pot_plant', 'canal_bank', 'canal_stones', 'field_bund',
   'crop_berseem', 'crop_maize', 'crop_wheat', 'crop_cotton', 'crop_cabbage', 'grass_a', 'grass_b', 'grass_c', 'reeds', 'wildflowers'];
 
@@ -74,15 +74,21 @@ export function materialFor(name, geometry) {
   return toonFor(name);
 }
 
-// Keep only what the toon shaders read (position, normal, + palette colour as vertex colour).
+// Keep position, normal, and baked v3 vertex colors + AO (or fill flat TOON hex for legacy v2 GLBs).
 const C = new THREE.Color();
 function strip(g, color) {
   const out = new THREE.BufferGeometry();
   out.setAttribute('position', g.attributes.position); out.setAttribute('normal', g.attributes.normal);
   if (g.index) out.setIndex(g.index);
-  if (color !== undefined) {
-    C.setHex(color); const n = g.attributes.position.count, a = new Float32Array(n * 3);
-    for (let i = 0; i < n; i++) a.set([C.r, C.g, C.b], i * 3);
+  const srcCol = g.attributes.color;
+  const n = g.attributes.position.count;
+  if (srcCol) {
+    const a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { C.fromBufferAttribute(srcCol, i); a[i * 3] = C.r; a[i * 3 + 1] = C.g; a[i * 3 + 2] = C.b; }
+    out.setAttribute('color', new THREE.BufferAttribute(a, 3));
+  } else if (color !== undefined) {
+    C.setHex(color); const a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { a[i * 3] = C.r; a[i * 3 + 1] = C.g; a[i * 3 + 2] = C.b; }
     out.setAttribute('color', new THREE.BufferAttribute(a, 3));
   }
   return out;

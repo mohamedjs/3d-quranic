@@ -1,10 +1,39 @@
 [
   {
-    "name": "backdrop_hills",
-    "tris": 3168,
-    "kb": 14.9,
+    "name": "river_bridge",
+    "tris": 4012,
+    "tris_lod1": 1604,
+    "kb": 27.0,
     "mats": [
-      "env_backdrop_hills"
+      "env_v3_water_prop"
+    ]
+  },
+  {
+    "name": "footbridge",
+    "tris": 800,
+    "tris_lod1": 359,
+    "kb": 9.4,
+    "mats": [
+      "env_v3_water_prop"
+    ]
+  },
+  {
+    "name": "canal_bank",
+    "tris": 250,
+    "tris_lod1": 111,
+    "kb": 9.5,
+    "mats": [
+      "env_v3_water_prop"
+    ]
+  },
+  {
+    "name": "stream_channel",
+    "tris": 468,
+    "tris_lod1": 44,
+    "kb": 9.8,
+    "mats": [
+      "env_v3_water_prop",
+      "toon_water"
     ]
   }
 ]

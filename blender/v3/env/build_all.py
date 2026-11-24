@@ -3,7 +3,8 @@
 Usage:
   blender -b --python blender/v3/env/build_all.py -- [asset_names...]
 
-With no keys, builds all currently implemented v3 assets (M1: backdrop_hills).
+With no keys, builds all currently implemented v3 assets (M1: backdrop_hills;
+M2: river_bridge, footbridge, canal_bank, stream_channel).
 Exports Draco-6 GLBs to public/models/env/<name>.glb and writes a JSON budget report.
 """
 import json
@@ -16,9 +17,14 @@ if str(HERE) not in sys.path:
 
 import landmarks
 import lib
+import water_props
 
 BUILDERS = {
     'backdrop_hills': landmarks.build_backdrop_hills,
+    'river_bridge': water_props.build_river_bridge,
+    'footbridge': water_props.build_footbridge,
+    'canal_bank': water_props.build_canal_bank,
+    'stream_channel': water_props.build_stream_channel,
 }
 
 
@@ -38,14 +44,18 @@ def main():
             raise SystemExit(f'Unknown environment v3 asset: {key}')
         lib.reset_scene()
         col = lib.make_collection(key)
-        obj = BUILDERS[key](col)
+        res = BUILDERS[key](col)
+        objs = res if isinstance(res, list) else [res]
         out_path = lib.OUT_MODELS / f'{key}.glb'
-        size_b = lib.export_glb([obj], out_path, draco_level=6)
+        size_b = lib.export_glb(objs, out_path, draco_level=6)
+        lod0_tris = sum(lib.tri_count(o) for o in objs if '_LOD1' not in o.name)
+        lod1_tris = sum(lib.tri_count(o) for o in objs if '_LOD1' in o.name)
         info = {
             'name': key,
-            'tris': lib.tri_count(obj),
+            'tris': lod0_tris,
+            'tris_lod1': lod1_tris,
             'kb': round(size_b / 1024.0, 1),
-            'mats': [m.name for m in obj.data.materials],
+            'mats': sorted({m.name for o in objs for m in o.data.materials}),
         }
         report.append(info)
         print('BUILT_ENV', json.dumps(info), flush=True)

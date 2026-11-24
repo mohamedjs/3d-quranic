@@ -19,7 +19,7 @@ export function instanceModels(assets, placements, { shadow = true, blocker = fa
       const m = new THREE.InstancedMesh(geometry, material, list.length);
       matrices.forEach((mx, i) => m.setMatrixAt(i, mx));
       m.computeBoundingSphere();                  // over all instances: stays valid as we re-sort
-      m.castShadow = shadow && !outline; m.receiveShadow = !outline;
+      m.castShadow = shadow && !outline && !material.userData?.noShadow; m.receiveShadow = !outline && !material.userData?.noShadow;
       m.userData.blocker = blocker && !outline; m.userData.shared = true; // geometry/material belong to the asset cache
       group.add(m); return m;
     });
@@ -93,7 +93,8 @@ function mergeModels(assets, placements, { shadow, blocker, chunk = 32, near = 2
       if (!geo) continue;
       geo.computeBoundingSphere(); owned.push(geo);
       const mesh = new THREE.Mesh(geo, material);
-      mesh.castShadow = shadow; mesh.receiveShadow = true; mesh.matrixAutoUpdate = false;
+      const noSh = !!material.userData?.noShadow;
+      mesh.castShadow = shadow && !noSh; mesh.receiveShadow = !noSh; mesh.matrixAutoUpdate = false;
       mesh.userData.shared = true; mesh.name = `lite-${tier}`;              // freed by dispose()
       if (block && tier === 'near') liteBlockers.add(mesh);
       mesh.visible = false; group.add(mesh); meshes.push(mesh);

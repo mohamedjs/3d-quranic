@@ -184,6 +184,7 @@ def make_lod1(obj, ratio=0.4, name=None):
     dg = bpy.context.evaluated_depsgraph_get()
     ev = copy_obj.evaluated_get(dg)
     me = bpy.data.meshes.new_from_object(ev)
+    me.validate(clean_customdata=False)
     copy_obj.modifiers.clear()
     old = copy_obj.data
     copy_obj.data = me
@@ -202,6 +203,12 @@ def export_glb(objs, path, draco_level=6):
     for o in objs:
         o.hide_set(False)
         o.hide_viewport = False
+        if o.type == 'MESH' and o.data.color_attributes:
+            idx = o.data.color_attributes.find('Color')
+            if idx < 0:
+                idx = 0
+            o.data.color_attributes.active_color_index = idx
+            o.data.color_attributes.render_color_index = idx
         o.select_set(True)
     bpy.context.view_layer.objects.active = objs[0]
     bpy.ops.export_scene.gltf(
@@ -212,6 +219,8 @@ def export_glb(objs, path, draco_level=6):
         export_yup=True,
         export_texcoords=True,
         export_normals=True,
+        export_vertex_color='ACTIVE',
+        export_all_vertex_colors=False,
         export_attributes=False,
         export_draco_mesh_compression_enable=True,
         export_draco_mesh_compression_level=draco_level,

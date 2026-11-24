@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { gltfLoader } from './loaders.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { toonFor, toonMaterial, outlineMaterial, windFor, WIND } from '../shaders/toon.js';
+import { toonFor, toonMaterial, windFor, WIND } from '../shaders/toon.js';
 import { TOON } from '../shaders/toonPalette.js';
 import { toonStreamWaterMaterial } from '../shaders/waterMaterial.js';
 
@@ -13,9 +13,6 @@ export const ENV_MODELS = ['house_a', 'house_b', 'house_c', 'mastaba', 'palm_a',
   'well', 'shaduf', 'sluice', 'jar', 'jar_b', 'basket', 'hoe', 'fence', 'footbridge', 'stall', 'hay', 'stream', 'garden_wall',
   'pot_plant', 'canal_bank', 'canal_stones', 'field_bund',
   'crop_berseem', 'crop_maize', 'crop_wheat', 'crop_cotton', 'crop_cabbage', 'grass_a', 'grass_b', 'grass_c', 'reeds', 'wildflowers'];
-
-// ink hulls that must sway with the foliage they surround
-const OUTLINE_WIND = { palm: WIND.frond, sycamore: WIND.leaf };
 
 let promise;
 export function loadEnvModels() {
@@ -50,7 +47,8 @@ function extract(root, model) {
     const groups = new Map(), out = [];
     const add = (key, geo, material, outline = false) => { if (!groups.has(key)) groups.set(key, { list: [], material, outline }); groups.get(key).list.push(geo); };
     for (const { geometry, matName } of parts) {
-      if (matName === 'outline') add('outline', strip(geometry), outlineMaterial('env', OUTLINE_WIND[model.split('_')[0]]), true);
+      // Environment ink hulls are dropped in v3 (§R.1); cel-shaded characters keep their outlines.
+      if (matName === 'outline') continue;
       else if (matName === 'toon_water' && geometry.attributes.uv) { geometry.computeBoundingSphere(); out.push({ geometry, material: materialFor(matName, geometry), outline: false }); }
       else {
         const [color, flags] = TOON[matName] ?? [0x888888, ''];

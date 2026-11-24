@@ -6,9 +6,10 @@ import { useDetail } from '../systems/store.js';
 
 export function Props({ assets, placements, blocker = false, lodDistance = 45 }) {
   const camera = useThree(s => s.camera);
-  const { outlines, lite, envDist } = useDetail();
+  const { outlines, lite, envDist, lodDist } = useDetail();
+  const dist = lodDist ?? lodDistance;
   // LITE: merged per chunk × material (see instancing.js mergeModels) instead of instanced per model
-  const inst = useMemo(() => instanceModels(assets, placements, { blocker, lodDistance, outlines, merge: lite ? { chunk: 24, near: 14, mid: 35, far: envDist } : null }), [assets, placements, blocker, lodDistance, outlines, lite, envDist]);
+  const inst = useMemo(() => instanceModels(assets, placements, { blocker, lodDistance: dist, outlines, merge: lite ? { chunk: 24, near: lodDist ?? 14, mid: 34, far: envDist } : null }), [assets, placements, blocker, dist, outlines, lite, envDist, lodDist]);
   let t = 0;
   useFrame((_, dt) => { if ((t += dt) > 0.4) { t = 0; inst.update(camera.position); } });
   useMemo(() => inst.update(camera.position, Infinity), [inst]); // eslint-disable-line react-hooks/exhaustive-deps

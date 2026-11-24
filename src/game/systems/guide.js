@@ -317,25 +317,26 @@ export function createGuide({ scene, colliders }) {
       bc.ink.visible = outlines;
     }
     if (!visible) return;
-    // chevrons anchored to the route, flowing forward; bigger and sparser as the camera rises
-    const k = THREE.MathUtils.clamp(refs.view.dist / 5.2, 1, 7), size = 0.8 * k, short = route.len < 4;
+    // chevrons anchored to the route, flowing forward; stay normal size up close, scale only as camera rises
+    const k = refs.view.dist <= 10 ? 1 : THREE.MathUtils.clamp(1 + (refs.view.dist - 10) / 8, 1, 6), size = 0.8 * k, short = route.len < 4;
     const s0 = prog * STEP, range = 38 + refs.view.dist * 2.2, end = Math.min(short ? Math.max(0, route.len - 0.3) : route.len - 1.2, s0 + range);
     const spacing = short ? Math.min(1.25 * k, Math.max(0.5, (end - s0 - 0.2) / 2.2)) : 1.25 * k;
     const phase = (now * 1.3 * Math.min(k, 3)) % spacing;
     let s = Math.ceil((s0 + (short ? 0.2 : 0.6) - phase) / spacing) * spacing + phase, count = 0;
-    const lift = 0.09 + 0.05 * k;
+    const lift = 0.09 + 0.05 * k, maxSlope = Math.tan(20 * Math.PI / 180);
     while (s < end && count < TRAIL_MAX) {
       const f = s / STEP, i = Math.min(route.n - 2, Math.floor(f)), t = f - i;
       const x = route.x[i] + (route.x[i + 1] - route.x[i]) * t, z = route.z[i] + (route.z[i + 1] - route.z[i]) * t, y = route.y[i] + (route.y[i + 1] - route.y[i]) * t;
       if (occupied?.(x, z, 0.9)) { s += spacing; continue; }
       const a = Math.max(0, i - 2), b = Math.min(route.n - 1, i + 3);
-      const tx = route.x[b] - route.x[a], ty = route.y[b] - route.y[a], tz = route.z[b] - route.z[a], tl = Math.hypot(tx, ty, tz);
+      const tx = route.x[b] - route.x[a], ty = route.y[b] - route.y[a], tz = route.z[b] - route.z[a], hLen = Math.hypot(tx, tz);
       const ds = s - s0;
       const startFade = short ? smooth(0.1, 0.5, ds) : smooth(0.4, 1.8 * Math.min(k, 2), ds);
       const endFade = Math.max(short ? 0.55 : 0, 1 - smooth(route.len - 4, route.len - 1.2, s));
       const fa = startFade * (1 - smooth(range * 0.7, range, ds)) * endFade;
-      if (tl > 1e-4 && tx * tx + tz * tz > 1e-8) {
-        _bz.set(-tx / tl, -ty / tl, -tz / tl);
+      if (hLen > 1e-4) {
+        const cy = THREE.MathUtils.clamp(ty, -hLen * maxSlope, hLen * maxSlope), cl = Math.hypot(hLen, cy);
+        _bz.set(-tx / cl, -cy / cl, -tz / cl);
         _bx.crossVectors(_up, _bz).normalize();
         _by.crossVectors(_bz, _bx);
         _q.setFromRotationMatrix(_bm.makeBasis(_bx, _by, _bz));

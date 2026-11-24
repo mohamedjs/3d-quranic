@@ -6,19 +6,21 @@
 import * as THREE from 'three';
 import { TOON, INK } from './toonPalette.js';
 import { injectWind } from './wind.js';
+import { injectAerialFog } from './stylizedPbr.js';
 
 let gradient;
 export function toonGradient() {
   if (!gradient) {
-    // 8 texels over dot(N, L) in [-1, 1]: facing away → 0 (ambient only), 0–0.25 → half-tone, above → full sun
-    const steps = [0, 0, 0, 0, 0.45, 1, 1, 1];
-    gradient = new THREE.DataTexture(new Uint8Array(steps.flatMap(v => [v * 255, v * 255, v * 255, 255])), steps.length, 1);
-    gradient.minFilter = gradient.magFilter = THREE.NearestFilter; gradient.generateMipmaps = false; gradient.needsUpdate = true;
+    // Softly feathered 3-band painterly ramp over dot(N, L) in [-1, 1]: clean shade band,
+    // warm mid-tone step, and smooth-yet-crisp transition into golden sunlight.
+    const steps = [0, 0, 0, 0, 0, 0, 0.04, 0.36, 0.46, 0.50, 0.64, 0.96, 1, 1, 1, 1];
+    gradient = new THREE.DataTexture(new Uint8Array(steps.flatMap(v => [Math.round(v * 255), Math.round(v * 255), Math.round(v * 255), 255])), steps.length, 1);
+    gradient.minFilter = gradient.magFilter = THREE.LinearFilter; gradient.generateMipmaps = false; gradient.needsUpdate = true;
   }
   return gradient;
 }
 
-export const RIM = { value: new THREE.Color('#ffe2b0') };
+export const RIM = { value: new THREE.Color('#ffd58e') };
 
 // Wind presets per plant family (GLSL factor is 0 at the root, ~1 at the tips)
 export const WIND = {
@@ -49,14 +51,15 @@ export function toonMaterial(key, { color = 0xffffff, map = null, side = THREE.F
   const m = new THREE.MeshToonMaterial({ color, map, side, vertexColors, alphaTest, gradientMap: toonGradient() });
   m.name = key;
   const w = wind ? `${wind.strength}|${wind.factor}|${wind.flutter ?? 0}` : '';
-  m.customProgramCacheKey = () => `toon|${w}|${rim}`;
+  m.customProgramCacheKey = () => `toon_v3|${w}|${rim}`;
   m.onBeforeCompile = sh => {
     if (wind) injectWind(sh, wind);
+    injectAerialFog(sh);
     if (rim) {
       sh.uniforms.uRimColor = RIM;
       sh.fragmentShader = 'uniform vec3 uRimColor;\n' + sh.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
         { float rimF = 1. - clamp(dot(normalize(vViewPosition), normal), 0., 1.);
-          reflectedLight.directDiffuse += diffuseColor.rgb * uRimColor * smoothstep(.62, .8, rimF) * ${rim.toFixed(3)}; }`);
+          reflectedLight.directDiffuse += diffuseColor.rgb * uRimColor * smoothstep(.62, .84, rimF) * ${rim.toFixed(3)}; }`);
     }
   };
   cache.set(key, m);
@@ -70,14 +73,18 @@ export function toonFor(name, fallback = 0x888888) {
   return toonMaterial(name, { color, side: flags.includes('d') ? THREE.DoubleSide : THREE.FrontSide, wind: windFor(name) });
 }
 
-// Ink outline for an inverted hull. Environment hulls keep outward winding (→ BackSide);
-// character hulls are exported with flipped normals (→ FrontSide). Unlit, fogged, no shadows.
+// Ink outline for an inverted hull. Character hulls are exported with flipped normals (→ FrontSide).
+// Unlit, aerial-fogged, no shadows.
 export function outlineMaterial(kind = 'env', wind = null) {
-  const key = `outline|${kind}|${wind ? wind.strength + wind.factor : ''}`;
+  const key = `outline_v3|${kind}|${wind ? wind.strength + wind.factor : ''}`;
   if (cache.has(key)) return cache.get(key);
   const m = new THREE.MeshBasicMaterial({ color: INK, side: kind === 'char' ? THREE.FrontSide : THREE.BackSide });
   m.name = 'outline';
-  if (wind) { m.customProgramCacheKey = () => key; m.onBeforeCompile = sh => injectWind(sh, wind); }
+  m.customProgramCacheKey = () => key;
+  m.onBeforeCompile = sh => {
+    if (wind) injectWind(sh, wind);
+    injectAerialFog(sh);
+  };
   cache.set(key, m);
   return m;
 }

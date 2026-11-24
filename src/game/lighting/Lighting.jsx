@@ -8,7 +8,9 @@ import { useFrame, useThree } from '@react-three/fiber';
 import { usePreset, useGame } from '../systems/store.js';
 import { refs } from '../systems/refs.js';
 
-export const SUN_COLOR = new THREE.Color('#ffe0b0');
+export const SUN_COLOR = new THREE.Color('#ffd488');
+const SKY_FILL = '#b4b8d0';      // airy pastel lavender sky shadow fill (keeps Lite shadows luminous)
+const GROUND_BOUNCE = '#d8b082'; // warm sunlit ochre ground bounce
 
 // The shadow box grows with the camera zoom (so the bird's-eye view has shadows to the edges
 // of the screen, not a square round the child) and is re-rendered every `shadowEvery` frames
@@ -71,14 +73,16 @@ export function Lighting({ env }) {
     }
   });
 
-  const r = preset.shadowRange;
+  const r = preset.shadowRange, pbr = preset.shading === 'pbr';
+  // Toon steps low-angle sun (dot=0.28) to full 1.0, so toon tiers use a softer sun/hemi ratio
+  // (avoiding dark cast shadow bands on flat streets), while physical PBR uses a stronger key.
   return (
     <>
-      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={1.75} castShadow
+      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={pbr ? 2.35 : 1.65} castShadow
         shadow-mapSize={[preset.shadowMap, preset.shadowMap]} shadow-bias={-0.0004} shadow-normalBias={0.04} shadow-radius={2}
         shadow-camera-left={-r} shadow-camera-right={r} shadow-camera-top={r} shadow-camera-bottom={-r}
-        shadow-camera-near={1} shadow-camera-far={320} />
-      <hemisphereLight args={['#cbbcd4', '#bfa58c', Math.PI * 1.0]} />
+        shadow-camera-near={1} shadow-camera-far={340} />
+      <hemisphereLight args={[SKY_FILL, GROUND_BOUNCE, pbr ? 1.95 : 2.65]} />
     </>
   );
 }

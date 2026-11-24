@@ -12,6 +12,15 @@ const HINT = 'quran-journey-perf';
 export const autoLevel = () => { try { if (localStorage.getItem(HINT) === 'lite') return 'lite'; } catch { /* private mode */ } return resolvedQuality()?.level ?? guessLevel(); };
 export const rememberLite = on => { try { on ? localStorage.setItem(HINT, 'lite') : localStorage.removeItem(HINT); } catch { /* ignore */ } };
 
+// Optional URL override (`?q=lite|low|medium|high|ultra|auto`) for QA/tier captures so the
+// world builds once at the requested tier without localStorage overwriting it on boot.
+export const queryQuality = (() => {
+  try {
+    const q = typeof location !== 'undefined' ? new URLSearchParams(location.search).get('q') : null;
+    return PRESETS[q] || q === 'auto' ? q : null;
+  } catch { return null; }
+})();
+
 // Start from the saved choice (same key as systems/game.js) so the world is built once at the
 // right level instead of being built at the guess and rebuilt when the save is applied.
 const savedQuality = (() => {
@@ -21,11 +30,12 @@ const savedQuality = (() => {
     return PRESETS[q] || q === 'auto' ? q : null;
   } catch { return null; }
 })();
-const startLevel = !savedQuality ? 'lite' : savedQuality !== 'auto' ? savedQuality : autoLevel();   // first visit: Lite — the player raises it in Settings
+const initialSetting = queryQuality ?? savedQuality ?? 'lite';
+const startLevel = initialSetting !== 'auto' ? initialSetting : autoLevel();   // first visit: Lite — the player raises it in Settings
 
 export const useGame = create(set => ({
   mode: 'loading',             // loading | title | explore | dialogue | quran | panel
-  qualitySetting: savedQuality ?? 'lite',   // auto | lite | low | medium | high | ultra
+  qualitySetting: initialSetting,   // auto | lite | low | medium | high | ultra
   quality: startLevel,
   detail: startLevel,
   dprScale: 1,                 // adaptive resolution (PerformanceMonitor factor), applied on top of the preset
@@ -38,7 +48,7 @@ export const useGame = create(set => ({
   dropToLite: () => set(st => (st.quality === 'lite' ? {} : { quality: 'lite' })),
   setDprScale: k => set(st => (Math.abs(st.dprScale - k) < 0.05 ? {} : { dprScale: k })),
   setQualitySetting: s => set(st => {
-    if (s === st.qualitySetting) return {};
+    if (queryQuality || s === st.qualitySetting) return {};
     const level = s === 'auto' ? autoLevel() : s;
     return { qualitySetting: s, quality: level, detail: level };
   }),

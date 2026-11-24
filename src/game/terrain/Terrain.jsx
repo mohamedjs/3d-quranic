@@ -32,14 +32,21 @@ function tiles(geo, seg) {
 }
 
 export function Terrain({ data, onReady }) {
-  const material = useMemo(() => createTerrainMaterial(), []);
+  const preset = usePreset();
+  const shading = preset.shading ?? 'toon';
+  const material = useMemo(() => createTerrainMaterial({ shading }), [shading]);
+  useEffect(() => () => material.dispose(), [material]);
   const lite = !!useDetail().lite && data.seg;
   const parts = useMemo(() => (lite ? tiles(data.geometry, data.seg) : null), [lite, data]);
-  const fog = usePreset().fog, camera = useThree(s => s.camera), group = useRef(), acc = useRef(0);
+  const fog = preset.fog, envDist = preset.envDist, camera = useThree(s => s.camera), group = useRef(), acc = useRef(0);
   useEffect(() => { onReady?.(); }, [onReady]);
   useFrame((_, dt) => {
     if (!parts || !group.current || (acc.current += dt) < 0.25) return; acc.current = 0;
-    const far = (fog?.[1] ?? 620) + refs.view.dist * 3 + 20, p = camera.position;
+    const p = camera.position;
+    const d = Math.max(refs.view.dist, refs.view.height * 2.2, Math.max(0, p.y - 3.5) * 3.0);
+    // Keep ground-level Lite tile culling tight (<=6 tiles) while opening the valley from hills & bird's-eye
+    const baseFar = envDist ? envDist + 55 : (fog?.[1] ?? 620);
+    const far = baseFar + d * 4.5 + 20;
     group.current.children.forEach((m, i) => {
       const t = parts[i], dx = Math.max(t.x0 - p.x, 0, p.x - t.x1), dz = Math.max(t.z0 - p.z, 0, p.z - t.z1);
       m.visible = Math.hypot(dx, dz) < far;

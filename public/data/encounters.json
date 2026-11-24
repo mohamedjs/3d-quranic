@@ -1722,32 +1722,31 @@
         "en": "The Date Clusters: Give Your Best",
         "ru": "Грозди фиников: отдавай самое лучшее"
       },
-      "host": "hamdan",
+      "host": "aunt",
       "characters": [
         {
-          "id": "hamdan",
+          "id": "aunt",
           "name": {
-            "ar": "العمّ حمدان",
-            "en": "Uncle Hamdan",
-            "ru": "Дядя Хамдан"
+            "ar": "الخالة سلمى",
+            "en": "Aunt Salma",
+            "ru": "Тётя Сальма"
           },
           "role": {
-            "ar": "صاحب البستان",
+            "ar": "صاحبة البستان",
             "en": "The Orchard Keeper",
-            "ru": "Хозяин сада"
+            "ru": "Хозяйка сада"
           },
           "look": {
-            "robe": 3033695,
+            "robe": 13148000,
             "inner": 15329767,
             "skin": 11036482,
-            "beard": 3813417,
-            "headwear": "keffiyeh",
-            "cloth": 15724527,
-            "band": 1710618,
-            "staff": true,
-            "height": 1.78
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 12609136,
+            "staff": false,
+            "height": 1.58
           },
-          "model": "models/trader.glb",
+          "model": "models/aunt.glb",
           "position": [
             -127.3,
             -38.6
@@ -1833,15 +1832,15 @@
       "objective": {
         "ar": [
           "اذهب إلى بستان النخيل جنوب الواحة",
-          "العمّ حمدان والجدّ سالم عند سلال التمر"
+          "الخالة سلمى والجدّ سالم عند سلال التمر"
         ],
         "en": [
           "Go to the palm grove south of the oasis",
-          "Uncle Hamdan and Grandpa Salim are by the date baskets"
+          "Aunt Salma and Grandpa Salim are by the date baskets"
         ],
         "ru": [
           "Иди в пальмовый сад на юге оазиса",
-          "Дядя Хамдан и дедушка Салим у корзин с финиками"
+          "Тётя Сальма и дедушка Салим у корзин с финиками"
         ]
       },
       "greeting": {
@@ -1869,7 +1868,7 @@
       "steps": [
         {
           "type": "say",
-          "speaker": "hamdan",
+          "speaker": "aunt",
           "scene": "date_clusters",
           "ar": "أهلًا يا صغيري! انظر إلى هذه العذوق، ما أجمل التمر إذا نضج! كنتُ أنا والجدّ سالم نتذكّر قصةً عن التمر نزلت فيها آيةٌ من القرآن.",
           "en": "Hello, little one! Look at these clusters — how lovely dates are when they ripen! Grandpa Salim and I were remembering a story about dates, and a verse of the Quran that came down about it.",
@@ -1914,7 +1913,7 @@
         },
         {
           "type": "say",
-          "speaker": "hamdan",
+          "speaker": "aunt",
           "ar": "حكى البراء بن عازب رضي الله عنه فقال: نزلت فينا معشرَ الأنصار، كنّا أصحابَ نخل.",
           "en": "Al-Bara' ibn 'Azib, may Allah be pleased with him, said: “It was revealed about us, the Ansar. We were people of palm groves.”",
           "ru": "Аль-Бара ибн Азиб (р.а.) рассказал: «Этот аят был ниспослан о нас, ансарах. У нас были финиковые пальмы»."
@@ -1930,7 +1929,7 @@
               "en": "What did they do with their dates?",
               "reply": [
                 {
-                  "speaker": "hamdan",
+                  "speaker": "aunt",
                   "scene": "date_clusters",
                   "ar": "قال البراء: كان الرجل يأتي من نخله على قدر كثرته وقلّته. يأتي بالقِنو والقِنوين، فيعلّقه في المسجد.",
                   "en": "Al-Bara' said: each man brought from his palms as much as he had, a lot or a little. He would bring a cluster or two and hang it up in the mosque.",
@@ -1966,7 +1965,7 @@
                   "ru": "Нет, сынок. Аль-Бара сказал: были люди, которые не стремились к добру. Кто-то приносил гроздь с щуплыми и сухими плохими финиками или сломанную гроздь и подвешивал её."
                 },
                 {
-                  "speaker": "hamdan",
+                  "speaker": "aunt",
                   "ar": "الشِّيص تمرٌ ضامرٌ لم يكتمل، والحَشَف تمرٌ يابسٌ رديء. يعني: كانوا يعطون أسوأ ما عندهم!",
                   "en": "Shees are shrivelled dates that never filled out, and hashaf are dry, poor dates. In other words: they gave the worst they had!",
                   "ru": "«Шис» — это щуплые недозревшие финики, а «хашаф» — сухие и плохие. То есть они отдавали самое худшее, что у них было!"
@@ -1988,7 +1987,7 @@
               "en": "What did Allah reveal about that?",
               "reply": [
                 {
-                  "speaker": "hamdan",
+                  "speaker": "aunt",
                   "scene": "best_dates",
                   "ar": "أنزل الله آيةً يأمر فيها المؤمنين أن يُنفقوا من الطيّبات — من أطيب ما يكسبون وممّا يُخرج لهم من الأرض — وألّا يقصدوا الرديء الخبيث فيُعطوه.",
                   "en": "Allah revealed a verse telling the believers to give from the good things — the best of what they earn and of what He brings out of the earth for them — and not to pick out the bad to give away.",
@@ -2018,7 +2017,7 @@
               "en": "What did al-Bara' say after that?",
               "reply": [
                 {
-                  "speaker": "hamdan",
+                  "speaker": "aunt",
                   "ar": "قال: لو أنّ أحدكم أُهدي إليه مثلُ ما أعطى، لم يأخذه إلا على إغماضٍ أو حياء.",
                   "en": "He said: “If one of you were given the same as what he gave, he would only take it with his eyes shut, or out of shyness.”",
                   "ru": "Он сказал: если бы кому-то из вас подарили то же, что он отдал, он взял бы это, только закрыв глаза или из стеснения."
@@ -2038,7 +2037,7 @@
         },
         {
           "type": "question",
-          "speaker": "hamdan",
+          "speaker": "aunt",
           "ar": "لو أهداك أحدٌ تمرًا يابسًا مكسورًا، هل كنتَ ستفرح به؟",
           "en": "If someone gave you dry, broken dates as a gift, would you be happy with them?",
           "options": [
@@ -2085,7 +2084,7 @@
         },
         {
           "type": "say",
-          "speaker": "hamdan",
+          "speaker": "aunt",
           "scene": "best_dates",
           "ar": "ولهذا يا صغيري، إذا تصدّقتَ أو أهديت، فاختر الأطيب: التمرة اللامعة الممتلئة، لا اليابسة المكسورة.",
           "en": "So, little one, whenever you give charity or a gift, choose the best: the shiny, plump date — not the dry, broken one.",
@@ -2144,9 +2143,9 @@
         "ru": "Ты узнал историю «Грозди фиников: отдавай самое лучшее»."
       },
       "narration": {
-        "ar": "اذهب إلى بستان النخيل جنوب الواحة، فالعمّ حمدان والجدّ سالم عند سلال التمر.",
-        "en": "Go to the palm orchard south of the oasis — Uncle Hamdan and Grandpa Salim are by the date baskets.",
-        "ru": "Иди в пальмовый сад на юге оазиса: дядя Хамдан и дедушка Салим у корзин с финиками."
+        "ar": "اذهب إلى بستان النخيل جنوب الواحة، فالخالة سلمى والجدّ سالم عند سلال التمر.",
+        "en": "Go to the palm orchard south of the oasis — Aunt Salma and Grandpa Salim are by the date baskets.",
+        "ru": "Иди в пальмовый сад на юге оазиса: тётя Сальма и дедушка Салим у корзин с финиками."
       }
     },
     {
@@ -2524,30 +2523,31 @@
         "en": "The New Qibla",
         "ru": "Новая кибла"
       },
-      "host": "farmer",
+      "host": "sheikh",
       "characters": [
         {
-          "id": "farmer",
+          "id": "sheikh",
           "name": {
-            "ar": "الجدّ سالم",
-            "en": "Grandpa Salim",
-            "ru": "Дедушка Салим"
+            "ar": "الشيخ يونس",
+            "en": "Sheikh Younis",
+            "ru": "Шейх Юнус"
           },
           "role": {
-            "ar": "المزارع",
-            "en": "The Farmer",
-            "ru": "Земледелец"
+            "ar": "معلّم القرية",
+            "en": "The Village Teacher",
+            "ru": "Учитель деревни"
           },
           "look": {
-            "robe": 7031342,
+            "robe": 9409080,
+            "inner": 15724527,
             "skin": 10251080,
-            "beard": 15658730,
+            "beard": 12632256,
             "headwear": "turban",
-            "cloth": 15921126,
-            "staff": true,
-            "height": 1.74
+            "cloth": 16777215,
+            "staff": false,
+            "height": 1.76
           },
-          "model": "models/farmer.glb",
+          "model": "models/sheikh.glb",
           "position": [
             163.0,
             -139.4
@@ -2609,15 +2609,15 @@
       "objective": {
         "ar": [
           "اذهب إلى الساحة الواسعة في الدار القديمة",
-          "الجدّ سالم والعمّ حمدان ينتظرانك هناك"
+          "الشيخ يونس والعمّ حمدان ينتظرانك هناك"
         ],
         "en": [
           "Go to the wide courtyard at the Old Homestead",
-          "Grandpa Salim and Uncle Hamdan are waiting there"
+          "Sheikh Younis and Uncle Hamdan are waiting there"
         ],
         "ru": [
           "Иди на просторный двор старого дома",
-          "Дедушка Салим и дядя Хамдан ждут тебя там"
+          "Шейх Юнус и дядя Хамдан ждут тебя там"
         ]
       },
       "greeting": {
@@ -2645,7 +2645,7 @@
       "steps": [
         {
           "type": "say",
-          "speaker": "farmer",
+          "speaker": "sheikh",
           "scene": "qibla_ground",
           "ar": "السلام عليكم يا بُنيّ! نحن في ساحةٍ واسعة، مكانٍ جميلٍ للصلاة.",
           "en": "Peace be upon you, my son! Here we are in a wide courtyard — a lovely place to pray.",
@@ -2653,7 +2653,7 @@
         },
         {
           "type": "choice",
-          "speaker": "farmer",
+          "speaker": "sheikh",
           "ar": "قل لي: إلى أيّ جهةٍ نتّجه حين نصلّي؟",
           "en": "Tell me: which way do we face when we pray?",
           "options": [
@@ -2662,7 +2662,7 @@
               "en": "Toward the Kaaba in Makkah!",
               "reply": [
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "scene": "kaaba",
                   "ar": "أحسنت! الكعبة قِبلتنا. لكن هل تعلم أنّ المسلمين صلّوا مدّةً نحو جهةٍ أخرى؟",
                   "en": "Well done! The Kaaba is our qibla. But did you know the Muslims once prayed toward somewhere else for a while?",
@@ -2676,7 +2676,7 @@
               "en": "I don't know…",
               "reply": [
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "scene": "kaaba",
                   "ar": "نتّجه نحو الكعبة في مكة، وهي قِبلتنا. لكن هل تعلم أنّ المسلمين صلّوا مدّةً نحو جهةٍ أخرى؟",
                   "en": "We face the Kaaba in Makkah — it is our qibla. But did you know the Muslims once prayed toward somewhere else for a while?",
@@ -2706,7 +2706,7 @@
                   "ru": "Аль-Бара ибн Азиб (р.а.) рассказал, что Посланник Аллаха ﷺ молился в сторону Иерусалима шестнадцать или семнадцать месяцев."
                 },
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "ar": "وبيت المقدس فيه المسجد الأقصى المبارك، وكان ذلك بعد أن هاجر النبيّ ﷺ إلى المدينة.",
                   "en": "Bayt al-Maqdis is where the blessed al-Aqsa Mosque is — and this was after the Prophet ﷺ had moved to Madinah.",
                   "ru": "В Иерусалиме находится благословенная мечеть аль-Акса. Это было после того, как Пророк ﷺ переселился в Медину."
@@ -2728,7 +2728,7 @@
               "en": "Which qibla did the Prophet ﷺ love?",
               "reply": [
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "scene": "kaaba",
                   "ar": "قال البراء رضي الله عنه: وكان رسول الله ﷺ يحبّ أن يُوجَّه إلى الكعبة.",
                   "en": "Al-Bara' said: the Messenger of Allah ﷺ loved to be turned toward the Kaaba.",
@@ -2765,7 +2765,7 @@
                   "ru": "Аль-Бара (р.а.) сказал: один человек помолился вместе с Пророком ﷺ, а потом вышел и проходил мимо ансаров, которые совершали послеполуденный намаз в сторону Иерусалима."
                 },
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "scene": "qibla_ground",
                   "ar": "فقال: هو يشهد أنّه صلّى مع رسول الله ﷺ، وأنّه توجّه نحو الكعبة.",
                   "en": "He told them he bore witness that he had prayed with the Messenger of Allah ﷺ, and that he had turned toward the Kaaba.",
@@ -2788,7 +2788,7 @@
               "en": "What did they do, in the middle of their prayer?",
               "reply": [
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "scene": "qibla_ground",
                   "ar": "قال البراء رضي الله عنه: فتحرّف القوم حتى توجّهوا نحو الكعبة. استداروا وهم في صلاتهم، ولم ينتظروا حتى يُنهوها!",
                   "en": "Al-Bara' said: the people turned round until they were facing the Kaaba. They turned while still praying — they didn't even wait to finish!",
@@ -2846,7 +2846,7 @@
               "en": "And what about the prayers of people who died before the qibla changed?",
               "reply": [
                 {
-                  "speaker": "farmer",
+                  "speaker": "sheikh",
                   "ar": "سأل الناس عن ذلك فعلًا! فأنزل الله: «وما كان الله ليُضيع إيمانكم» — أي صلاتكم التي صلّيتموها نحو بيت المقدس لن تضيع. فالله لا يُضيع عمل أحد.",
                   "en": "People really did ask that! And Allah revealed: “Allah would never let your faith go to waste” — meaning the prayers they had prayed toward Bayt al-Maqdis were not lost. Allah never lets anyone's good deeds go to waste.",
                   "ru": "Люди и правда об этом спрашивали! И Аллах ниспослал: «Аллах не даст пропасть вашей вере» — то есть ваши намазы в сторону Иерусалима не пропадут. Аллах не даёт пропасть ничьим делам."
@@ -2871,7 +2871,7 @@
         },
         {
           "type": "say",
-          "speaker": "farmer",
+          "speaker": "sheikh",
           "scene": "kaaba",
           "ar": "ومن يومها يتّجه المسلمون في كلّ مكانٍ من العالم نحو الكعبة، في كلّ صلاة. ونحن هنا في هذه الساحة نتّجه نحوها أيضًا.",
           "en": "Ever since, Muslims all over the world face the Kaaba in every prayer — and here in this courtyard, we face it too.",
@@ -2879,7 +2879,7 @@
         },
         {
           "type": "question",
-          "speaker": "farmer",
+          "speaker": "sheikh",
           "ar": "فماذا نتعلّم من هذه القصة؟",
           "en": "So what do we learn from this story?",
           "options": [
@@ -2930,9 +2930,9 @@
         "ru": "Ты узнал историю о новой кибле."
       },
       "narration": {
-        "ar": "اذهب إلى الساحة الواسعة في الدار القديمة، فالجدّ سالم والعمّ حمدان ينتظرانك هناك.",
-        "en": "Go to the wide courtyard of the old house — Grandpa Salim and Uncle Hamdan are waiting there.",
-        "ru": "Иди на просторный двор старого дома: дедушка Салим и дядя Хамдан ждут тебя там."
+        "ar": "اذهب إلى الساحة الواسعة في الدار القديمة، فالشيخ يونس والعمّ حمدان ينتظرانك هناك.",
+        "en": "Go to the wide courtyard of the old house — Sheikh Younis and Uncle Hamdan are waiting there.",
+        "ru": "Иди на просторный двор старого дома: шейх Юнус и дядя Хамдан ждут тебя там."
       }
     },
     {
@@ -3397,6 +3397,769 @@
         "ar": "زُر الجدّة آمنة والجدّ سالم عند البيت ذي السراج، في شارع القرية الجنوبي.",
         "en": "Visit Grandma Amina and Grandpa Salim at the house with the lamp, on the south street of the village.",
         "ru": "Навести бабушку Амину и дедушку Салима у дома со светильником, на южной улице деревни."
+      }
+    },
+    {
+      "id": "companions-of-the-cave",
+      "category": "quran",
+      "order": 10,
+      "area": "mountains",
+      "requires": [
+        "the-guest-and-the-lamp"
+      ],
+      "title": {
+        "ar": "أصحاب الكهف",
+        "en": "The Companions of the Cave",
+        "ru": "Обитатели пещеры"
+      },
+      "host": "sheikh",
+      "characters": [
+        {
+          "id": "sheikh",
+          "name": {
+            "ar": "الشيخ يونس",
+            "en": "Sheikh Younis",
+            "ru": "Шейх Юнус"
+          },
+          "role": {
+            "ar": "معلّم القرية",
+            "en": "The Village Teacher",
+            "ru": "Учитель деревни"
+          },
+          "look": {
+            "robe": 9409080,
+            "inner": 15724527,
+            "skin": 10251080,
+            "beard": 12632256,
+            "headwear": "turban",
+            "cloth": 16777215,
+            "staff": false,
+            "height": 1.76
+          },
+          "model": "models/sheikh.glb",
+          "position": [
+            18.0,
+            152.0
+          ],
+          "facing": -2.8,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me",
+          "ru": "Я"
+        },
+        "role": {
+          "ar": "",
+          "en": "",
+          "ru": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الشيخ يونس عند التلال الشمالية",
+          "شمال شرق النهر، فوق السهل"
+        ],
+        "en": [
+          "Find Sheikh Younis by the northern hills",
+          "North-east of the river, above the plain"
+        ],
+        "ru": [
+          "Иди к шейху Юнусу на северные холмы",
+          "К северо-востоку от реки, над равниной"
+        ]
+      },
+      "greeting": {
+        "ar": "السلام عليكم يا بُنيّ! انظر إلى هذه التلال الهادئة؛ تعالَ أحكِ لك قصة أصحاب الكهف.",
+        "en": "Peace be upon you, my son! Look at these quiet hills — come, let me tell you the story of the Companions of the Cave.",
+        "ru": "Ассаляму алейкум, сынок! Посмотри на эти тихие холмы — подойди, я расскажу тебе историю обитателей пещеры."
+      },
+      "locked": {
+        "ar": "أهلًا يا بُنيّ! اسمع أولًا قصة «الضيف والسراج» في شارع القرية الجنوبي، ثم تعالَ إليّ.",
+        "en": "Hello, my son! First hear “The Guest and the Lamp” on the south village street, then come to me.",
+        "ru": "Здравствуй, сынок! Сначала послушай историю «Гость и светильник» на южной улице деревни, а потом приходи ко мне."
+      },
+      "after": {
+        "ar": "تمسّك بإيمانك وادعُ الله، فالله يحفظ مَن يثبت على الحقّ.",
+        "en": "Hold firm to your faith and pray to Allah — He protects those who stand by the truth.",
+        "ru": "Держись крепко за свою веру и моли Аллаха — Он оберегает тех, кто верен истине."
+      },
+      "sources": [
+        "Qur'an 18:9–26",
+        "Tafsir Ibn Kathir — Surat al-Kahf (18:9–26)",
+        "Tafsir al-Muyassar — Surat al-Kahf (18:9–26)"
+      ],
+      "_note": "Qur'an-only retelling (18:9–26). Left out for young children: the threat of stoning (18:20, told gently as fear of being forced away from faith), the dispute over building a structure/mosque over them (18:21), and their passing away. No invented names for the youths, the town, the ruler, or the dog; per 18:22 we explicitly state that Allah knows best their number, and per 18:25 that they remained 309 years. Verse 18:10 is played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "sheikh",
+          "ar": "السلام عليكم يا بُنيّ! هذه التلال الهادئة تُذكّرني بسورةٍ عظيمة نقرأها كثيرًا، وهي سورة «الكهف»، وفيها قصةٌ عجيبة عن شبابٍ مؤمنين: أصحاب الكهف.",
+          "en": "Peace be upon you, my son! These quiet hills remind me of a great surah we read often — Surat al-Kahf — with an amazing story about faithful young men: the Companions of the Cave.",
+          "ru": "Ассаляму алейкум, сынок! Эти тихие холмы напоминают мне великую суру «Аль-Кахф» («Пещера»), в которой есть удивительная история о верующих юношах — обитателях пещеры."
+        },
+        {
+          "type": "choice",
+          "speaker": "sheikh",
+          "ar": "هل سمعتَ من قبل بقصة أصحاب الكهف؟",
+          "en": "Have you heard the story of the Companions of the Cave before?",
+          "options": [
+            {
+              "ar": "شبابٌ ناموا في كهفٍ سنين طويلة!",
+              "en": "Young men who slept in a cave for many years!",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "أحسنت يا بُنيّ! قصتهم آيةٌ عظيمة من آيات الله. تعالَ نعرف كيف بدأت.",
+                  "en": "Well done, my son! Their story is one of Allah's great signs. Let's hear how it began.",
+                  "ru": "Молодец, сынок! Их история — одно из великих знамений Аллаха. Давай узнаем, как всё началось."
+                }
+              ],
+              "ru": "Юноши, которые проспали в пещере много лет!"
+            },
+            {
+              "ar": "لا، احكِ لي يا شيخ!",
+              "en": "No — tell me, Sheikh!",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "بكلّ سرور يا بُنيّ! اسمع كيف حفظ الله هؤلاء الفتية المؤمنين.",
+                  "en": "With pleasure, my son! Listen to how Allah protected these faithful young men.",
+                  "ru": "С радостью, сынок! Послушай, как Аллах защитил этих верующих юношей."
+                }
+              ],
+              "ru": "Нет, расскажи мне, шейх!"
+            }
+          ],
+          "ru": "Слышал ли ты раньше историю об обитателях пещеры?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "لماذا ذهبوا إلى الكهف؟",
+              "en": "Why did they go to the cave?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "قال الله عنهم: «إنّهم فتيةٌ آمنوا بربّهم وزدناهم هدًى» — كانوا شبابًا مؤمنين يعبدون الله وحده، في زمنٍ كان قومُهم يعبدون فيه غير الله.",
+                  "en": "Allah says of them: “Indeed, they were youths who believed in their Lord, and We increased them in guidance.” They worshipped Allah alone at a time when their people worshipped others.",
+                  "ru": "Аллах сказал о них: «Воистину, это были юноши, которые уверовали в своего Господа, и Мы увеличили их верное руководство». Они поклонялись одному Аллаху, когда их народ поклонялся иным божествам."
+                },
+                {
+                  "speaker": "sheikh",
+                  "ar": "ولمّا خافوا أن يؤذيهم قومُهم أو يُجبروهم على ترك دينهم، تركوا المدينة ولجؤوا إلى كهفٍ في الجبل ليحفظوا إيمانهم.",
+                  "en": "When they feared their people would harm them or force them to leave their faith, they left the town and took shelter in a mountain cave to keep their faith safe.",
+                  "ru": "Когда они испугались, что народ причинит им вред или заставит отказаться от веры, они покинули город и укрылись в горной пещере, чтобы сохранить свою веру."
+                }
+              ],
+              "ru": "Зачем они ушли в пещеру?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قالوا حين دخلوا الكهف؟",
+              "en": "What did they say when they entered the cave?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "رفعوا قلوبهم إلى الله ودَعَوه بدعاءٍ جميل: «ربّنا آتنا من لدنك رحمةً وهيّئ لنا من أمرنا رشدًا» — يعني: يا ربّ، ارحمنا واهدِنا إلى ما فيه خيرنا.",
+                  "en": "They turned their hearts to Allah with a beautiful prayer: “Our Lord, grant us mercy from Yourself and guide us rightly in our affair.”",
+                  "ru": "Они обратились сердцами к Аллаху с прекрасной мольбой: «Господь наш! Даруй нам милость от Тебя и устрой наше дело наилучшим образом»."
+                },
+                {
+                  "speaker": "sheikh",
+                  "ar": "وكان معهم كلبٌ وفيٌّ، استلقى عند مدخل الكهف مادًّا ذراعيه كأنه يحرسهم.",
+                  "en": "And their loyal dog lay at the entrance of the cave, stretching out its forelegs as if keeping watch.",
+                  "ru": "А рядом у входа в пещеру легла их верная собака, вытянув передние лапы, словно охраняя их."
+                }
+              ],
+              "ru": "А что они сказали, когда вошли в пещеру?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعل الله ليحفظهم داخل الكهف؟",
+              "en": "How did Allah protect them inside the cave?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "ألقى الله عليهم نومًا عميقًا هادئًا سنين طويلة، لا يسمعون فيه ضجيجًا ولا يخافون. وكانت الشمس تميل عنهم عند الشروق والغروب فلا تؤذيهم، وكان الله يُقلّبهم ذات اليمين وذات الشمال لتبقى أجسادهم سليمة.",
+                  "en": "Allah cast a deep, peaceful sleep over them for many years, untroubled by noise or fear. The sunlight passed gently aside at sunrise and sunset so it never harmed them, and Allah turned them to the right and to the left so their bodies stayed healthy.",
+                  "ru": "Аллах погрузил их в глубокий спокойный сон на долгие годы — ничто не тревожило их. Солнечные лучи мягко обходили их стороной на восходе и закате, а Аллах переворачивал их с одного бока на другой, сохраняя их тела здоровыми."
+                }
+              ],
+              "ru": "А как Аллах хранил их внутри пещеры?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "كم سنةً ناموا؟ وكم كان عددهم؟",
+              "en": "How many years did they sleep? And how many were they?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "أخبرنا الله في القرآن بمدّة بقائهم: «ولبثوا في كهفهم ثلاث مائةٍ سنين وازدادوا تسعًا» — أي ثلاث مئةٍ وتسع سنين!",
+                  "en": "Allah tells us in the Quran how long they stayed: “And they remained in their cave for three hundred years and exceeded by nine” — three hundred and nine years!",
+                  "ru": "Аллах сообщил нам в Коране, сколько они пробыли там: «Они пробыли в своей пещере триста лет и прибавили ещё девять» — триста девять лет!"
+                },
+                {
+                  "speaker": "sheikh",
+                  "ar": "أمّا عددهم، فقد اختلف الناس فيه، وعلّمنا القرآن ألّا نُخمّن ما لا نعلم، فقال: «قل ربّي أعلم بعدّتهم» — فالله وحده أعلم بعددهم، والمهمّ هو العبرة من إيمانهم.",
+                  "en": "As for their number, people disagreed about it, and the Quran teaches us not to guess what we do not know: “Say: My Lord knows best their number.” Allah alone knows best — what matters is the lesson of their faith.",
+                  "ru": "А об их числе люди спорили, и Коран учит нас не гадать о том, чего мы не знаем: «Скажи: мой Господь лучше знает их число». Одному Аллаху ведомо лучше, а главное — урок их веры."
+                }
+              ],
+              "ru": "Сколько лет они спали? И сколько их было?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "question",
+          "speaker": "sheikh",
+          "ar": "كم سنةً لبث أصحاب الكهف في كهفهم كما أخبرنا القرآن؟",
+          "en": "How many years did the Companions of the Cave stay in their cave, as the Quran tells us?",
+          "options": [
+            {
+              "ar": "ثلاث مئةٍ وتسع سنين (٣٠٩)",
+              "en": "Three hundred and nine years (309)",
+              "correct": true,
+              "ru": "Триста девять лет (309)"
+            },
+            {
+              "ar": "ثلاثة أيامٍ فقط",
+              "en": "Only three days",
+              "ru": "Всего три дня"
+            },
+            {
+              "ar": "عشر سنوات",
+              "en": "Ten years",
+              "ru": "Десять лет"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر الآية: ثلاث مئةٍ سنين وازدادوا تسعًا…",
+            "en": "Remember the verse: three hundred years and nine more…",
+            "ru": "Вспомни аят: триста лет и ещё девять…"
+          },
+          "praise": {
+            "ar": "أحسنت يا بُنيّ! ٣٠٩ سنين، حفظهم الله فيها جميعًا.",
+            "en": "Well done, my son! 309 years — and Allah kept them safe through it all.",
+            "ru": "Молодец, сынок! 309 лет — и всё это время Аллах хранил их."
+          },
+          "ru": "Сколько лет пробыли обитатели пещеры в пещере, как сказано в Коране?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث حين استيقظوا؟",
+              "en": "And what happened when they woke up?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "أيقظهم الله بعد كلّ هذه القرون، فظنّوا أنهم ناموا يومًا أو بعض يوم! فأرسلوا واحدًا منهم بهدوءٍ إلى المدينة ومعه عملتهم الفضّيّة ليشتري طعامًا طيّبًا.",
+                  "en": "Allah woke them after all those centuries, and they thought they had slept for a day or part of a day! They sent one of them quietly to town with their silver coin to buy good food.",
+                  "ru": "Аллах разбудил их спустя столько веков, а им показалось, что они спали день или часть дня! Они тихо послали одного из них в город со старой серебряной монетой купить хорошей еды."
+                },
+                {
+                  "speaker": "sheikh",
+                  "ar": "فأطلع الله الناسَ عليهم وعرفوا قصتهم؛ فأدرك الجميع أنّ وعد الله حقّ، وأنّ الله قادرٌ على كلّ شيء.",
+                  "en": "Then Allah let the people find out about them, and they learned their story — and everyone understood that Allah’s promise is true and that Allah is able to do all things.",
+                  "ru": "И Аллах дал людям узнать о них, и люди узнали их историю — и все поняли, что обещание Аллаха истинно и что Аллах властен над всякой вещью."
+                }
+              ],
+              "ru": "А что случилось, когда они проснулись?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "say",
+          "speaker": "sheikh",
+          "ar": "تعالَ نسمع الآية التي فيها دعاء أصحاب الكهف حين دخلوا الكهف، بصوت الشيخ.",
+          "en": "Come, let's hear the verse with the prayer of the Companions of the Cave when they entered it, in the sheikh's voice.",
+          "ru": "Давай послушаем в чтении шейха аят с мольбой обитателей пещеры, когда они вошли в неё."
+        },
+        {
+          "type": "verses",
+          "from": "18:10",
+          "to": "18:10"
+        },
+        {
+          "type": "question",
+          "speaker": "sheikh",
+          "ar": "فماذا نتعلّم من قصة أصحاب الكهف؟",
+          "en": "So what do we learn from the story of the Companions of the Cave?",
+          "options": [
+            {
+              "ar": "أن نثبت على إيماننا وندعو الله، فالله يحفظ المؤمنين",
+              "en": "To hold firm to our faith and pray to Allah, for Allah protects the believers",
+              "correct": true,
+              "ru": "Крепко держаться за веру и молить Аллаха, ведь Аллах хранит верующих"
+            },
+            {
+              "ar": "أن نترك ديننا إذا خالفنا الآخرون",
+              "en": "To give up our faith if others disagree with us",
+              "ru": "Отказаться от веры, если другие не согласны с нами"
+            },
+            {
+              "ar": "أن ننام طوال النهار",
+              "en": "To sleep all day long",
+              "ru": "Спать целый день"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: لماذا ترك الفتيةُ المدينة، ومَن الذي حفظهم ٣٠٩ سنين؟",
+            "en": "Remember why the youths left the town, and Who kept them safe for 309 years…",
+            "ru": "Вспомни, зачем юноши ушли из города и Кто хранил их 309 лет…"
+          },
+          "praise": {
+            "ar": "ممتاز يا بُنيّ! مَن تمسّك بالحقّ ولجأ إلى الله، هيّأ الله له الخير وحفظه.",
+            "en": "Excellent, my son! Whoever holds to the truth and turns to Allah, Allah guides and protects them.",
+            "ru": "Отлично, сынок! Кто держится за истину и обращается к Аллаху, того Аллах ведёт к добру и оберегает."
+          },
+          "ru": "Так чему нас учит история обитателей пещеры?"
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "ربّنا آتنا من لدنك رحمةً وهيّئ لنا من أمرنا رشدًا! سأتمسّك بإيماني دائمًا.",
+          "en": "Our Lord, grant us mercy from Yourself and guide us rightly! I will always hold firm to my faith.",
+          "ru": "Господь наш, даруй нам милость от Тебя и устрой наше дело наилучшим образом! Я всегда буду крепко держаться за свою веру."
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة أصحاب الكهف.",
+        "en": "You learned the story of the Companions of the Cave.",
+        "ru": "Ты узнал историю обитателей пещеры."
+      },
+      "narration": {
+        "ar": "اذهب إلى الشيخ يونس عند التلال الشمالية، شمال شرق النهر.",
+        "en": "Go to Sheikh Younis by the northern hills, north-east of the river.",
+        "ru": "Иди к шейху Юнусу на северные холмы, к северо-востоку от реки."
+      }
+    },
+    {
+      "id": "luqman-wisdom",
+      "category": "quran",
+      "order": 11,
+      "area": "village",
+      "requires": [
+        "companions-of-the-cave"
+      ],
+      "title": {
+        "ar": "وصايا لقمان لابنه",
+        "en": "Luqman's Advice to His Son",
+        "ru": "Наставления Лукмана сыну"
+      },
+      "host": "aunt",
+      "characters": [
+        {
+          "id": "aunt",
+          "name": {
+            "ar": "الخالة سلمى",
+            "en": "Aunt Salma",
+            "ru": "Тётя Сальма"
+          },
+          "role": {
+            "ar": "صاحبة البستان",
+            "en": "The Orchard Keeper",
+            "ru": "Хозяйка сада"
+          },
+          "look": {
+            "robe": 13148000,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 12609136,
+            "staff": false,
+            "height": 1.58
+          },
+          "model": "models/aunt.glb",
+          "position": [
+            31.0,
+            -5.0
+          ],
+          "facing": -2.8,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina",
+            "ru": "Бабушка Амина"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller",
+            "ru": "Рассказчица деревни"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            33.5,
+            -6.0
+          ],
+          "facing": -2.5,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me",
+          "ru": "Я"
+        },
+        "role": {
+          "ar": "",
+          "en": "",
+          "ru": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "زُر الخالة سلمى والجدّة آمنة شرق القرية",
+          "بجانب الطريق الشرقي الخارج من الساحة"
+        ],
+        "en": [
+          "Visit Aunt Salma and Grandma Amina in the east of the village",
+          "Beside the eastern road leading from the square"
+        ],
+        "ru": [
+          "Навести тётю Сальму и бабушку Амину на востоке деревни",
+          "У восточной дороги, ведущей от площади"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا حبيبي! تعالَ نتحدّث عن أجمل الوصايا في القرآن: وصايا لقمان الحكيم لابنه.",
+        "en": "Hello, my darling! Come let's talk about some of the loveliest advice in the Quran: Luqman the Wise's advice to his son.",
+        "ru": "Здравствуй, мой милый! Подойди, поговорим об одних из самых прекрасных наставлений в Коране — наставлениях мудрого Лукмана своему сыну."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «أصحاب الكهف» عند التلال الشمالية، ثم تعالَ إلينا.",
+        "en": "Hello, my darling! First hear “The Companions of the Cave” by the northern hills, then come to us.",
+        "ru": "Здравствуй, мой милый! Сначала послушай историю «Обитатели пещеры» на северных холмах, а потом приходи к нам."
+      },
+      "after": {
+        "ar": "الأدب وحُسن الخُلق زينة المؤمن: صلِّ، وبِرَّ والديك، وتواضع للناس.",
+        "en": "Good manners are a believer's ornament: pray, be good to your parents, and be humble with people.",
+        "ru": "Добрые манеры украшают верующего: совершай намаз, уважай родителей и будь скромным с людьми."
+      },
+      "sources": [
+        "Qur'an 31:12–19",
+        "Tafsir Ibn Kathir — Surat Luqman (31:12–19)",
+        "Tafsir al-Muyassar — Surat Luqman (31:12–19)"
+      ],
+      "_note": "Qur'an-only retelling (31:12–19). Luqman is presented as a wise, righteous man (not a prophet, following the majority of scholars). Left out for young children: the second clause of 31:15 (what to do if parents urge shirk) and the donkey-voice simile at the end of 31:19, keeping the tone gentle and focused on tawhid, gratitude to parents, prayer, enjoining good, patience, humility, walking modestly, and lowering one's voice. Uses Grandma Amina standing beside Aunt Salma (the village's only bench is occupied by people-of-the-elephant). Verses 31:17–18 are played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "aunt",
+          "ar": "أهلًا يا حبيبي! كنتُ أنا والجدّة آمنة نتحدّث عن جمال الأدب وحسن الخُلق. وفي القرآن سورةٌ كاملة اسمها سورة «لقمان»، فيها وصايا أبٍ صالحٍ حكيم لابنه.",
+          "en": "Hello, my darling! Grandma Amina and I were talking about how beautiful good manners are. In the Quran there is a whole surah called “Luqman”, filled with a wise, righteous father's advice to his son.",
+          "ru": "Здравствуй, мой милый! Мы с бабушкой Аминой говорили о том, как прекрасны добрые манеры. В Коране есть целая сура «Лукман», в которой собраны наставления мудрого и праведного отца своему сыну."
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "آتى الله لقمانَ «الحكمة». هل تعرف يا حبيبي ما معنى الحكمة؟",
+          "en": "Allah gave Luqman “hikmah” — wisdom. Do you know what wisdom means, my darling?",
+          "options": [
+            {
+              "ar": "أن نقول ونفعل الصواب بلطفٍ في وقته؟",
+              "en": "Saying and doing what is right, gently and at the right time?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "أحسنت يا حبيبي! الحكمة هي الفهم الصحيح والقول الطيّب والعمل الصالح. وقد نصح لقمان ابنه بحبٍّ ولطف.",
+                  "en": "Well done, my darling! Wisdom is right understanding, kind words, and good actions — and Luqman advised his son with love and gentleness.",
+                  "ru": "Молодец, мой милый! Мудрость — это верное понимание, добрые слова и хорошие поступки. И Лукман наставлял сына с любовью и мягкостью."
+                }
+              ],
+              "ru": "Говорить и делать правильное мягко и вовремя?"
+            },
+            {
+              "ar": "لا، علّماني!",
+              "en": "No — teach me!",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "الحكمة يا صغيري هي أن يفهم الإنسان الحقّ، ويضع كلّ شيءٍ في موضعه، ويتكلّم بلطفٍ وصواب. تعالَ نسمع وصايا لقمان لابنه!",
+                  "en": "Wisdom, little one, is understanding what is true, putting everything in its right place, and speaking gently and rightly. Let's hear Luqman's advice to his son!",
+                  "ru": "Мудрость, малыш, — это понимать истину, поступать правильно и говорить мягко и разумно. Давай послушаем наставления Лукмана сыну!"
+                }
+              ],
+              "ru": "Нет, научите меня!"
+            }
+          ],
+          "ru": "Аллах даровал Лукману «мудрость». Знаешь ли ты, мой милый, что значит мудрость?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "بماذا بدأ لقمان وصيّته لابنه؟",
+              "en": "What did Luqman begin his advice with?",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "ناداه بحنانٍ وقال: «يا بُنيّ لا تُشرك بالله إنّ الشرك لظلمٌ عظيم» — يعني: اعبُد الله وحده، ولا تجعل معه شريكًا أبدًا.",
+                  "en": "He called him tenderly and said: “O my dear son, do not associate anything with Allah — indeed, associating partners with Him is a great wrong.” That means: worship Allah alone, always.",
+                  "ru": "Он нежно обратился к нему: «О сынок мой! Не приобщай к Аллаху сотоварищей, ведь многобожие — великая несправедливость». То есть поклоняйся одному Аллаху."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "وبعد شكر الله، يذكّرنا القرآن بشكر الوالدين: «أن اشكر لي ولوالديك»، فالأمّ تتعب كثيرًا في حمل طفلها ورعايته، ويجب أن نبرّ أمّنا وأبانا ونعاملهما بالمعروف دائمًا.",
+                  "en": "And right after thanking Allah, the Quran reminds us to thank our parents: “Be grateful to Me and to your parents.” A mother works so hard carrying and caring for her child, and we must always honour our mother and father and treat them kindly.",
+                  "ru": "А сразу после благодарности Аллаху Коран напоминает о благодарности родителям: «Благодари Меня и своих родителей». Мама столько трудится, вынашивая и заботясь о ребёнке, и мы всегда должны уважать маму и папу и относиться к ним с добротой."
+                }
+              ],
+              "ru": "С чего Лукман начал своё наставление сыну?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا أوصاه عن الصلاة والصبر؟",
+              "en": "What did he advise him about prayer and patience?",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "ذكّره أوّلًا أنّ الله يعلم كلّ شيء، ولو كان عملًا صغيرًا كحبّة خردل! ثم أوصاه بأربع وصايا غالية: «يا بُنيّ أقم الصلاة وأْمر بالمعروف وانْهَ عن المنكر واصبر على ما أصابك».",
+                  "en": "First he reminded him that Allah knows everything — even a deed as tiny as a mustard seed! Then he gave him four precious rules: “O my son, establish prayer, encourage what is good, forbid what is wrong, and be patient over whatever befalls you.”",
+                  "ru": "Сначала он напомнил, что Аллах знает обо всём — даже о деле размером с горчичное зёрнышко! А затем дал четыре драгоценных совета: «О сынок мой! Совершай намаз, побуждай к одобряемому, удерживай от порицаемого и терпеливо переноси всё, что постигает тебя»."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "يعني: نحافظ على صلاتنا في وقتها، ونشجّع الناس على الخير بلطف، ونبتعد عن الخطأ، ونصبر إذا أصابنا تعبٌ أو ضيق.",
+                  "en": "That means: keep our prayers on time, encourage others gently to do good, stay away from wrong, and be patient whenever something hard happens.",
+                  "ru": "То есть вовремя совершать намаз, мягко побуждать людей к добру, избегать плохого и проявлять терпение, когда случается трудность."
+                }
+              ],
+              "ru": "А что он посоветовал ему о намазе и терпении?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "question",
+          "speaker": "aunt",
+          "ar": "بماذا بدأ لقمان الحكيم وصيّته لابنه؟",
+          "en": "What did Luqman the Wise begin his advice to his son with?",
+          "options": [
+            {
+              "ar": "ألّا يُشرك بالله، ويعبد الله وحده",
+              "en": "Not to associate partners with Allah, and to worship Allah alone",
+              "correct": true,
+              "ru": "Не приобщать к Аллаху сотоварищей и поклоняться одному Аллаху"
+            },
+            {
+              "ar": "أن يجمع مالًا كثيرًا",
+              "en": "To collect lots of money",
+              "ru": "Собрать побольше денег"
+            },
+            {
+              "ar": "أن يسافر إلى بلدٍ بعيد",
+              "en": "To travel to a faraway land",
+              "ru": "Уехать в далёкую страну"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر أوّل جملة قالها: «يا بُنيّ لا تُشرك…»",
+            "en": "Remember his very first sentence: “O my dear son, do not associate…”",
+            "ru": "Вспомни его первую фразу: «О сынок мой, не приобщай…»"
+          },
+          "praise": {
+            "ar": "أحسنت يا حبيبي! توحيد الله وعبادته وحده أعظم أساسٍ في الحياة.",
+            "en": "Well done, my darling! Worshipping Allah alone is the greatest foundation in life.",
+            "ru": "Молодец, мой милый! Поклонение одному Аллаху — самая главная основа в жизни."
+          },
+          "ru": "С чего мудрый Лукман начал своё наставление сыну?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال له عن التواضع ومعاملة الناس؟",
+              "en": "What did he tell him about humility and treating people?",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "قال له: «ولا تُصعّر خدّك للناس ولا تمشِ في الأرض مرحًا إنّ الله لا يحبّ كلّ مختالٍ فخور».",
+                  "en": "He told him: “And do not turn your cheek away from people in pride, and do not walk upon the earth boastfully. Indeed, Allah does not love anyone arrogant and boastful.”",
+                  "ru": "Он сказал ему: «Не отворачивай своего лица от людей из высокомерия и не ступай по земле кичливо. Воистину, Аллах не любит всяких гордецов и бахвалов»."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "يعني: لا تُعرض بوجهك عن الناس تكبّرًا حين تكلّمهم، ولا تتباهَ بنفسك، بل كن متواضعًا بشوشًا مع الجميع.",
+                  "en": "Meaning: never turn your face away from people proudly when they talk to you, and never show off — be humble and warm with everyone.",
+                  "ru": "То есть не отворачивайся от людей свысока, когда с ними разговариваешь, и не хвастайся — будь скромным и приветливым со всеми."
+                }
+              ],
+              "ru": "А что он сказал о скромности и отношении к людям?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وكيف أوصاه أن يمشي ويتكلّم؟",
+              "en": "And how did he advise him to walk and speak?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "قال له: «واقصد في مشيك واغضض من صوتك» — يعني: امشِ باعتدالٍ وتواضعٍ بلا استعجالٍ ولا تكبّر، واخفض صوتك وتكلّم بأدبٍ وهدوء، ولا تصرخ في وجوه الناس.",
+                  "en": "He said: “And be moderate in your pace and lower your voice” — walk calmly and modestly without showing off, and speak in a gentle, quiet voice instead of shouting at people.",
+                  "ru": "Он сказал: «Будь умерен в своей походке и понижай свой голос» — ходи спокойно и скромно, без важности, и говори тихо и вежливо, не крича на людей."
+                }
+              ],
+              "ru": "А как он посоветовал ему ходить и говорить?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "say",
+          "speaker": "amina",
+          "ar": "تعالَ نسمع الآيتين اللتين فيهما وصايا لقمان بالصلاة والصبر والتواضع، بصوت الشيخ.",
+          "en": "Come, let's hear the two verses with Luqman's advice on prayer, patience, and humility, in the sheikh's voice.",
+          "ru": "Давай послушаем в чтении шейха два аята с наставлениями Лукмана о намазе, терпении и скромности."
+        },
+        {
+          "type": "verses",
+          "from": "31:17",
+          "to": "31:18"
+        },
+        {
+          "type": "question",
+          "speaker": "aunt",
+          "ar": "فماذا نتعلّم من وصايا لقمان لابنه؟",
+          "en": "So what do we learn from Luqman's advice to his son?",
+          "options": [
+            {
+              "ar": "أن نعبد الله وحده، ونبرّ والدينا، ونصلّي، ونتحلّى بالتواضع وحُسن الخُلق",
+              "en": "To worship Allah alone, honour our parents, pray, and have humility and good manners",
+              "correct": true,
+              "ru": "Поклоняться одному Аллаху, уважать родителей, совершать намаз, быть скромными и воспитанными"
+            },
+            {
+              "ar": "أن نرفع صوتنا ونتباهى أمام الناس",
+              "en": "To raise our voices and show off in front of people",
+              "ru": "Кричать и хвастаться перед людьми"
+            },
+            {
+              "ar": "ألّا نصبر إذا واجهتنا مشكلة",
+              "en": "Not to be patient when we face a problem",
+              "ru": "Не проявлять терпения, когда возникает проблема"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر وصايا لقمان: التوحيد، وبرّ الوالدين، والصلاة، والتواضع، وخفض الصوت…",
+            "en": "Remember Luqman's advice: worshipping Allah alone, thanking parents, prayer, humility, and a gentle voice…",
+            "ru": "Вспомни наставления Лукмана: единобожие, уважение к родителям, намаз, скромность и тихий голос…"
+          },
+          "praise": {
+            "ar": "ممتاز يا حبيبي! حُسن الخُلق والأدب يجعلان الله يحبّنا والناس يحبّوننا.",
+            "en": "Excellent, my darling! Good manners and kindness make us beloved to Allah and to people.",
+            "ru": "Отлично, мой милый! Добрый нрав и воспитанность делают нас любимыми перед Аллахом и людьми."
+          },
+          "ru": "Так чему нас учат наставления Лукмана сыну?"
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأصلّي، وأبرّ والديّ، وأمشي بتواضع، وأتكلّم بصوتٍ هادئٍ لطيف!",
+          "en": "I will pray, honour my parents, walk modestly, and speak in a calm, gentle voice!",
+          "ru": "Я буду совершать намаз, уважать родителей, ходить скромно и говорить тихим и добрым голосом!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت وصايا لقمان الحكيم لابنه.",
+        "en": "You learned the advice of Luqman the Wise to his son.",
+        "ru": "Ты узнал наставления мудрого Лукмана сыну."
+      },
+      "narration": {
+        "ar": "زُر الخالة سلمى والجدّة آمنة شرق القرية، بجانب الطريق الشرقي.",
+        "en": "Visit Aunt Salma and Grandma Amina in the east of the village, beside the eastern road.",
+        "ru": "Навести тётю Сальму и бабушку Амину на востоке деревни, у восточной дороги."
       }
     },
     {
@@ -6349,8 +7112,8 @@
           },
           "model": "models/grandma_zainab.glb",
           "position": [
-            -93.0,
-            -8.1
+            -95.96,
+            -8.61
           ],
           "facing": 0.0,
           "pose": "sit",
@@ -7172,6 +7935,802 @@
         "ar": "اذهب إلى سفح التلال شمال النهر، الجدّ سالم والجدّة آمنة ينتظرانك.",
         "en": "Go to the foot of the hills north of the river — Grandpa Salim and Grandma Amina are waiting for you.",
         "ru": "Иди к подножию холмов к северу от реки, дедушка Салим и бабушка Амина ждут тебя."
+      }
+    },
+    {
+      "id": "yunus-and-the-whale",
+      "category": "prophets",
+      "order": 6,
+      "area": "fields",
+      "requires": [
+        "muhammad-the-trustworthy"
+      ],
+      "title": {
+        "ar": "يونس عليه السلام والحوت",
+        "en": "Yunus (Jonah) and the Whale",
+        "ru": "Юнус, мир ему, и кит"
+      },
+      "host": "sheikh",
+      "characters": [
+        {
+          "id": "sheikh",
+          "name": {
+            "ar": "الشيخ يونس",
+            "en": "Sheikh Younis",
+            "ru": "Шейх Юнус"
+          },
+          "role": {
+            "ar": "معلّم القرية",
+            "en": "The Village Teacher",
+            "ru": "Учитель деревни"
+          },
+          "look": {
+            "robe": 9409080,
+            "inner": 15724527,
+            "skin": 10251080,
+            "beard": 12632256,
+            "headwear": "turban",
+            "cloth": 16777215,
+            "staff": false,
+            "height": 1.76
+          },
+          "model": "models/sheikh.glb",
+          "position": [
+            -9.0,
+            62.0
+          ],
+          "facing": 2.6,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "farmer",
+          "name": {
+            "ar": "الجدّ سالم",
+            "en": "Grandpa Salim",
+            "ru": "Дедушка Салим"
+          },
+          "role": {
+            "ar": "المزارع",
+            "en": "The Farmer",
+            "ru": "Фермер"
+          },
+          "look": {
+            "robe": 7031342,
+            "skin": 10251080,
+            "beard": 15658730,
+            "headwear": "turban",
+            "cloth": 15921126,
+            "staff": true,
+            "height": 1.74
+          },
+          "model": "models/farmer.glb",
+          "position": [
+            -11.6,
+            61.0
+          ],
+          "facing": 2.2,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me",
+          "ru": "Я"
+        },
+        "role": {
+          "ar": "",
+          "en": "",
+          "ru": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الشيخ يونس والجدّ سالم عند شاطئ النهر",
+          "غرب الجسر، شمال الحقول"
+        ],
+        "en": [
+          "Find Sheikh Younis and Grandpa Salim by the riverbank",
+          "West of the bridge, north of the fields"
+        ],
+        "ru": [
+          "Иди к шейху Юнусу и дедушке Салиму на берег реки",
+          "К западу от моста, к северу от полей"
+        ]
+      },
+      "greeting": {
+        "ar": "السلام عليكم يا بُنيّ! تعالَ إلى شاطئ النهر؛ سنحكي لك قصة نبيّ الله يونس عليه السلام.",
+        "en": "Peace be upon you, my son! Come to the riverbank — we will tell you the story of Prophet Yunus, peace be upon him.",
+        "ru": "Ассаляму алейкум, сынок! Подойди к берегу реки — мы расскажем тебе историю пророка Юнуса, мир ему."
+      },
+      "locked": {
+        "ar": "أهلًا يا بُنيّ! اسمع أولًا قصة «محمد ﷺ: الصادق الأمين» عند سفح التلال، ثم تعالَ إلينا.",
+        "en": "Hello, my son! First hear “Muhammad ﷺ: The Truthful, the Trustworthy” at the foot of the hills, then come to us.",
+        "ru": "Здравствуй, сынок! Сначала послушай историю «Мухаммад ﷺ: правдивый и надёжный» у подножия холмов, а потом приходи к нам."
+      },
+      "after": {
+        "ar": "في كلّ شدّة، ارجع إلى الله وادعُه، فهو يسمعك وينجّيك.",
+        "en": "In every hardship, turn to Allah and call upon Him — He hears you and saves you.",
+        "ru": "В любой трудности обращайся к Аллаху с мольбой — Он слышит тебя и спасает."
+      },
+      "sources": [
+        "Qur'an 21:87–88",
+        "Qur'an 37:139–148",
+        "Qur'an 10:98",
+        "Qur'an 68:48–50",
+        "Tafsir Ibn Kathir — Surat al-Anbiya (21:87–88) & Surat as-Saffat (37:139–148)",
+        "Tafsir al-Muyassar — Surat al-Anbiya & Surat as-Saffat"
+      ],
+      "_note": "Qur'an-only retelling (21:87–88, 37:139–148, 10:98). For young children, the whale swallowing Yunus is told gently (without harm, by Allah's command) and details of the threatened punishment on his people (10:98) are left out, noting only that they believed and Allah blessed them. No invented whale name, number of days, or extra-Quranic details. 'Darknesses' = night, sea, and whale's belly (Ibn Kathir on 21:87); 'yaqtin' = gourd/squash plant giving shade and nourishment (Ibn Kathir on 37:146). Verses 21:87–88 are played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "sheikh",
+          "ar": "السلام عليكم يا بُنيّ! أنا الشيخ يونس، معلّم القرية. واسمي يذكّرني دائمًا بقصةٍ عظيمة في القرآن: قصة نبيّ الله يونس عليه السلام.",
+          "en": "Peace be upon you, my son! I am Sheikh Younis, the village teacher. My name always reminds me of a great story in the Quran: the story of Allah's prophet Yunus, peace be upon him.",
+          "ru": "Ассаляму алейкум, сынок! Я шейх Юнус, учитель деревни. Моё имя всегда напоминает мне великую историю из Корана: историю пророка Аллаха Юнуса, мир ему."
+        },
+        {
+          "type": "choice",
+          "speaker": "farmer",
+          "ar": "هل سمعتَ من قبل بقصة يونس عليه السلام، «ذي النون» — أي صاحب الحوت؟",
+          "en": "Have you ever heard the story of Yunus, peace be upon him — “Dha an-Nun”, the companion of the whale?",
+          "options": [
+            {
+              "ar": "نعم، نبيٌّ ابتلعه حوتٌ كبير!",
+              "en": "Yes, a prophet swallowed by a big whale!",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "أحسنت يا بُنيّ! وفي قصته دعاءٌ عظيم يحفظه المسلمون في كلّ مكان. تعالَ نسمع القصة من أوّلها.",
+                  "en": "Well done, my son! And in his story there is a great supplication that Muslims everywhere learn by heart. Let's hear the story from the beginning.",
+                  "ru": "Молодец, сынок! И в его истории есть великая мольба, которую знают мусульмане по всему миру. Давай послушаем историю с самого начала."
+                }
+              ],
+              "ru": "Да, пророк, которого проглотил большой кит!"
+            },
+            {
+              "ar": "لا، احكيا لي!",
+              "en": "No — tell me!",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "بكلّ سرور يا بُنيّ! اسمع كيف نجّى الله يونس عليه السلام حين دعاه بصدق.",
+                  "en": "Gladly, my son! Listen to how Allah saved Yunus, peace be upon him, when he called out to Him sincerely.",
+                  "ru": "С радостью, сынок! Послушай, как Аллах спас Юнуса, мир ему, когда он искренне воззвал к Нему."
+                }
+              ],
+              "ru": "Нет, расскажите мне!"
+            }
+          ],
+          "ru": "Ты слышал раньше историю Юнуса, мир ему, которого Коран называет «обладателем кита»?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "لماذا غادر يونس عليه السلام قومه؟",
+              "en": "Why did Yunus, peace be upon him, leave his people?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "أرسل الله يونس عليه السلام إلى قومه ليدعوهم إلى عبادة الله وحده. لكنّهم لم يستجيبوا له في البداية، فخرج من بينهم غاضبًا قبل أن يأذن الله له.",
+                  "en": "Allah sent Yunus, peace be upon him, to his people to call them to worship Allah alone. At first they did not listen, so he left them in anger before Allah gave him permission.",
+                  "ru": "Аллах послал Юнуса, мир ему, к его народу, чтобы он призвал их поклоняться одному Аллаху. Сначала они не послушались, и он в гневе ушёл от них раньше, чем Аллах позволил ему."
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "فذهب إلى البحر وركب سفينةً مملوءةً بالناس والبضائع، سماها القرآن «الفُلك المشحون».",
+                  "en": "He went to the sea and boarded a ship full of people and goods — called in the Quran “the laden ship”.",
+                  "ru": "Он пошёл к морю и сел на корабль, полный людей и грузов, который Коран называет «нагруженным кораблём»."
+                }
+              ],
+              "ru": "Почему Юнус, мир ему, ушёл от своего народа?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث في السفينة؟",
+              "en": "What happened on the ship?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "اضطربت السفينة في البحر، فاقترع الركّاب — أي أجرَوا قرعةً — ليعرفوا مَن ينزل لتخفّ السفينة. فوقعت القرعة على يونس عليه السلام.",
+                  "en": "The ship was in trouble at sea, so the passengers drew lots to see who should leave to lighten the ship. The lot fell on Yunus, peace be upon him.",
+                  "ru": "Корабль попал в беду в море, и путники бросили жребий, чтобы решить, кому сойти ради облегчения судна. Жребий выпал на Юнуса, мир ему."
+                },
+                {
+                  "speaker": "sheikh",
+                  "ar": "فأُلقِي في البحر، فأمر الله حوتًا عظيمًا أن يبتلعه برفقٍ دون أن يؤذيه، فبقي حيًّا في بطن الحوت.",
+                  "en": "He entered the sea, and Allah commanded a great whale to swallow him gently without harming him — so he stayed alive inside the whale's belly.",
+                  "ru": "Он оказался в море, и Аллах велел огромному киту проглотить его бережно, не причинив ему вреда, так что он остался жив во чреве кита."
+                }
+              ],
+              "ru": "А что случилось на корабле?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "في بطن الحوت؟! وماذا فعل يونس عليه السلام؟",
+              "en": "Inside the whale?! What did Yunus, peace be upon him, do?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "كان يونس عليه السلام في ظلماتٍ بعضها فوق بعض: ظلمة الليل، وظلمة البحر، وظلمة بطن الحوت. لكنّه لم ييأس أبدًا! بل سبّح الله وناداه بدعاءٍ عظيم: «لا إله إلا أنت سبحانك إني كنت من الظالمين».",
+                  "en": "Yunus, peace be upon him, was in layers of darkness: the darkness of night, the darkness of the sea, and the darkness of the whale's belly. Yet he never despaired! He glorified Allah and called out: “There is no god except You; Glory be to You; indeed I have been of the wrongdoers.”",
+                  "ru": "Юнус, мир ему, оказался во мраке ночи, во мраке моря и во мраке чрева кита. Но он не отчаялся! Он стал прославлять Аллаха и воззвал с великой мольбой: «Нет божества, кроме Тебя, Пречист Ты! Воистину, я был из числа несправедливых»."
+                },
+                {
+                  "speaker": "farmer",
+                  "ar": "يعني: يا ربّ، لا معبود بحقٍّ إلا أنت، أُنزّهك عن كلّ نقص، وأعترف بخطئي وأتوب إليك.",
+                  "en": "Meaning: O Lord, none deserves worship except You, You are perfect above all flaws, and I admit my mistake and turn back to You.",
+                  "ru": "То есть: о Господь, никто не достоин поклонения, кроме Тебя, Ты совершенен, а я признаю свою ошибку и каюсь перед Тобой."
+                }
+              ],
+              "ru": "Во чреве кита?! И что сделал Юнус, мир ему?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "question",
+          "speaker": "sheikh",
+          "ar": "ماذا فعل يونس عليه السلام حين كان في بطن الحوت؟",
+          "en": "What did Yunus, peace be upon him, do inside the belly of the whale?",
+          "options": [
+            {
+              "ar": "سبّح الله ودعاه بقلبٍ صادق",
+              "en": "He glorified Allah and called upon Him sincerely",
+              "correct": true,
+              "ru": "Прославлял Аллаха и искренне молил Его"
+            },
+            {
+              "ar": "يئس وسكت ولم يدعُ الله",
+              "en": "He gave up and stayed silent without praying",
+              "ru": "Отчаялся, замолчал и не стал молиться"
+            },
+            {
+              "ar": "غضب أكثر وترك التوبة",
+              "en": "He grew angrier and did not turn back",
+              "ru": "Ещё сильнее рассердился и не раскаялся"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر الدعاء الجميل الذي قاله في الظلمات…",
+            "en": "Remember the beautiful prayer he said in the darkness…",
+            "ru": "Вспомни прекрасную мольбу, которую он произнёс во мраке…"
+          },
+          "praise": {
+            "ar": "أحسنت! ذكر الله وسبّحه ودعاه بصدق.",
+            "en": "Well done! He remembered Allah, glorified Him, and prayed sincerely.",
+            "ru": "Молодец! Он поминал Аллаха, прославлял Его и искренне молился."
+          },
+          "ru": "Что делал Юнус, мир ему, находясь во чреве кита?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل استجاب الله لدعائه؟",
+              "en": "Did Allah answer his prayer?",
+              "reply": [
+                {
+                  "speaker": "farmer",
+                  "ar": "نعم يا بُنيّ! قال الله تعالى: «فاستجبنا له ونجّيناه من الغمّ وكذلك نُنجي المؤمنين». فأمر الله الحوتَ أن يُخرجه سالمًا إلى الشاطئ.",
+                  "en": "Yes, my son! Allah says: “So We answered him and saved him from distress — and thus do We save the believers.” Allah commanded the whale to place him safely on the shore.",
+                  "ru": "Да, сынок! Всевышний Аллах сказал: «Мы ответили ему и спасли его от печали. Так Мы спасаем верующих». И Аллах велел киту вынести его живым и невредимым на берег."
+                },
+                {
+                  "speaker": "sheikh",
+                  "ar": "وكان يونس عليه السلام متعبًا مريضًا، فأنبت الله فوقه «شجرةً من يقطين» — نباتًا أوراقه عريضة ناعمة تُظلّله وتحميه وتُغذّيه حتى شُفي وقوي.",
+                  "en": "Yunus, peace be upon him, was tired and unwell, so Allah made a gourd plant grow over him — with wide, soft leaves to shade, protect, and nourish him until he grew strong again.",
+                  "ru": "Юнус, мир ему, был слаб и болен, и Аллах вырастил над ним тыквенное растение с широкими мягкими листьями, которое укрывало его тенью и питало, пока он не поправился и не окреп."
+                }
+              ],
+              "ru": "И Аллах ответил на его мольбу?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث لقوم يونس بعد ذلك؟",
+              "en": "And what happened to the people of Yunus after that?",
+              "reply": [
+                {
+                  "speaker": "sheikh",
+                  "ar": "أرسله الله مرّةً أخرى إلى قومه، وكانوا مئة ألفٍ أو يزيدون. وهذه المرّة آمنوا بالله، فرحمهم الله ومتّعهم في حياتهم إلى حين!",
+                  "en": "Allah sent him again to his people — a hundred thousand or more. And this time they believed in Allah, so Allah had mercy on them and let them enjoy life for a while!",
+                  "ru": "Аллах снова послал его к его народу — их было сто тысяч или даже больше. И на этот раз они уверовали в Аллаха, и Аллах помиловал их и дал им пользоваться благами до определённого срока!"
+                }
+              ],
+              "ru": "А что случилось с народом Юнуса потом?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "say",
+          "speaker": "sheikh",
+          "ar": "تعالَ نسمع الآيتين اللتين فيهما دعاء يونس عليه السلام ونجاته، بصوت الشيخ.",
+          "en": "Come, let's hear the two verses with the prayer and rescue of Yunus, peace be upon him, in the sheikh's voice.",
+          "ru": "Давай послушаем в чтении шейха два аята о мольбе и спасении Юнуса, мир ему."
+        },
+        {
+          "type": "verses",
+          "from": "21:87",
+          "to": "21:88"
+        },
+        {
+          "type": "question",
+          "speaker": "farmer",
+          "ar": "فماذا نتعلّم من قصة يونس عليه السلام؟",
+          "en": "So what do we learn from the story of Yunus, peace be upon him?",
+          "options": [
+            {
+              "ar": "أن نلجأ إلى الله وندعوه في كلّ شدّة، ولا نيأس أبدًا",
+              "en": "To turn to Allah and pray to Him in every hardship, and never despair",
+              "correct": true,
+              "ru": "Обращаться к Аллаху с мольбой в любой беде и никогда не отчаиваться"
+            },
+            {
+              "ar": "أن نستسلم بسرعة إذا واجهنا صعوبة",
+              "en": "To give up quickly whenever we face trouble",
+              "ru": "Сразу сдаваться при любой трудности"
+            },
+            {
+              "ar": "أنّ الدعاء لا يُغيّر شيئًا",
+              "en": "That praying does not change anything",
+              "ru": "Что мольба ничего не меняет"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر: ماذا قال الله بعد دعاء يونس عليه السلام؟ «وكذلك نُنجي المؤمنين»…",
+            "en": "Remember what Allah said after Yunus's prayer: “And thus do We save the believers”…",
+            "ru": "Вспомни слова Аллаха после мольбы Юнуса: «Так Мы спасаем верующих»…"
+          },
+          "praise": {
+            "ar": "ممتاز يا بُنيّ! من دعا الله بصدقٍ في الضيق، فرّج الله همّه.",
+            "en": "Excellent, my son! Whoever calls on Allah sincerely in distress, Allah relieves their worry.",
+            "ru": "Отлично, сынок! Кто искренне обращается к Аллаху в трудную минуту, тому Аллах дарует облегчение."
+          },
+          "ru": "Так чему нас учит история Юнуса, мир ему?"
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "سأحفظ هذا الدعاء وأقوله في كلّ شدّة: لا إله إلا أنت سبحانك إني كنت من الظالمين!",
+          "en": "I'll learn this prayer by heart and say it in every hardship: There is no god except You, Glory be to You, indeed I have been of the wrongdoers!",
+          "ru": "Я выучу эту мольбу и буду повторять её в каждой трудности: нет божества, кроме Тебя, Пречист Ты, воистину я был несправедливым!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة يونس عليه السلام والحوت.",
+        "en": "You learned the story of Yunus, peace be upon him, and the whale.",
+        "ru": "Ты узнал историю Юнуса, мир ему, и кита."
+      },
+      "narration": {
+        "ar": "اذهب إلى الشيخ يونس والجدّ سالم على شاطئ النهر، غرب الجسر شمال الحقول.",
+        "en": "Go to Sheikh Younis and Grandpa Salim on the riverbank, west of the bridge north of the fields.",
+        "ru": "Иди к шейху Юнусу и дедушке Салиму на берег реки, к западу от моста, севернее полей."
+      }
+    },
+    {
+      "id": "sulayman-and-the-ant",
+      "category": "prophets",
+      "order": 7,
+      "area": "oasis",
+      "requires": [
+        "yunus-and-the-whale"
+      ],
+      "title": {
+        "ar": "سليمان عليه السلام والنملة",
+        "en": "Sulayman (Solomon) and the Ant",
+        "ru": "Сулейман, мир ему, и муравей"
+      },
+      "host": "aunt",
+      "characters": [
+        {
+          "id": "aunt",
+          "name": {
+            "ar": "الخالة سلمى",
+            "en": "Aunt Salma",
+            "ru": "Тётя Сальма"
+          },
+          "role": {
+            "ar": "صاحبة البستان",
+            "en": "The Orchard Keeper",
+            "ru": "Хозяйка сада"
+          },
+          "look": {
+            "robe": 13148000,
+            "inner": 15329767,
+            "skin": 11036482,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 12609136,
+            "staff": false,
+            "height": 1.58
+          },
+          "model": "models/aunt.glb",
+          "position": [
+            -88.0,
+            -27.5
+          ],
+          "facing": 0.4,
+          "pose": "stand",
+          "yOffset": 0
+        },
+        {
+          "id": "amina",
+          "name": {
+            "ar": "الجدّة آمنة",
+            "en": "Grandma Amina",
+            "ru": "Бабушка Амина"
+          },
+          "role": {
+            "ar": "حكّاءة القرية",
+            "en": "The Village Storyteller",
+            "ru": "Рассказчица деревни"
+          },
+          "look": {
+            "robe": 3822412,
+            "inner": 14140072,
+            "skin": 11564650,
+            "beard": null,
+            "headwear": "hijab",
+            "cloth": 15984612,
+            "staff": false,
+            "height": 1.6
+          },
+          "model": "models/grandma.glb",
+          "position": [
+            -90.6,
+            -28.5
+          ],
+          "facing": 0.7,
+          "pose": "stand",
+          "yOffset": 0
+        }
+      ],
+      "stage": {
+        "distance": 2.4,
+        "talkRadius": 3.8
+      },
+      "player": {
+        "name": {
+          "ar": "أنا",
+          "en": "Me",
+          "ru": "Я"
+        },
+        "role": {
+          "ar": "",
+          "en": "",
+          "ru": ""
+        }
+      },
+      "objective": {
+        "ar": [
+          "اذهب إلى الخالة سلمى والجدّة آمنة في بستان الواحة",
+          "شرق بحيرة الواحة بين النخيل"
+        ],
+        "en": [
+          "Find Aunt Salma and Grandma Amina in the oasis orchard",
+          "East of the oasis pond, among the palms"
+        ],
+        "ru": [
+          "Иди к тёте Сальме и бабушке Амине в сад оазиса",
+          "К востоку от пруда оазиса, среди пальм"
+        ]
+      },
+      "greeting": {
+        "ar": "أهلًا يا حبيبي! انتبِه أين تضع قدمك؛ هناك نملٌ صغير يمشي هنا! تعالَ أحكِ لك قصةً جميلة.",
+        "en": "Hello, my darling! Watch where you step — there are little ants walking here! Come, let me tell you a lovely story.",
+        "ru": "Здравствуй, мой милый! Смотри под ноги — тут бегут маленькие муравьи! Подойди, я расскажу тебе чудесную историю."
+      },
+      "locked": {
+        "ar": "أهلًا يا حبيبي! اسمع أولًا قصة «يونس عليه السلام والحوت» عند شاطئ النهر، ثم تعالَ إلينا.",
+        "en": "Hello, my darling! First hear “Yunus (Jonah) and the Whale” by the riverbank, then come to us.",
+        "ru": "Здравствуй, мой милый! Сначала послушай историю «Юнус, мир ему, и кит» на берегу реки, а потом приходи к нам."
+      },
+      "after": {
+        "ar": "ارحم المخلوقات الصغيرة، واشكر الله على نعمه في كلّ يوم.",
+        "en": "Be kind to tiny creatures, and thank Allah for His blessings every day.",
+        "ru": "Береги маленьких созданий и каждый день благодари Аллаха за Его милости."
+      },
+      "sources": [
+        "Qur'an 27:15–19",
+        "Tafsir Ibn Kathir — Surat an-Naml (27:15–19)",
+        "Tafsir al-Muyassar — Surat an-Naml (27:15–19)"
+      ],
+      "_note": "Qur'an-only retelling (27:15–19). No invented name or extra dialogue for the ant beyond 27:18. Jinn in Sulayman's army (27:17) are mentioned calmly as creations of Allah without frightening detail. The hoopoe and Saba' (27:20–44) are left out to keep the story focused on care for small creatures and gratitude. Verses 27:18–19 are played.",
+      "steps": [
+        {
+          "type": "say",
+          "speaker": "aunt",
+          "ar": "أهلًا يا حبيبي! أنا الخالة سلمى، صاحبة البستان. كنتُ أتفقد النخيل مع الجدّة آمنة، فرأيتُ صفًّا من النمل الصغير، فتذكّرنا قصة نبيّ الله سليمان عليه السلام والنملة.",
+          "en": "Hello, my darling! I am Aunt Salma, the orchard keeper. I was checking the palms with Grandma Amina when I saw a line of tiny ants, and we remembered the story of Allah's prophet Sulayman, peace be upon him, and the ant.",
+          "ru": "Здравствуй, мой милый! Я тётя Сальма, хозяйка сада. Я осматривала пальмы вместе с бабушкой Аминой, увидела цепочку маленьких муравьёв — и мы вспомнили историю пророка Аллаха Сулеймана, мир ему, и муравья."
+        },
+        {
+          "type": "choice",
+          "speaker": "amina",
+          "ar": "هل تعرف ما النعمة العجيبة التي أعطاها الله لنبيّه سليمان بن داود عليهما السلام؟",
+          "en": "Do you know the amazing blessing Allah gave to His prophet Sulayman, son of Dawud, peace be upon them?",
+          "options": [
+            {
+              "ar": "كان يفهم كلام الطير والحيوان!",
+              "en": "He could understand the speech of birds and animals!",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "أحسنت يا حبيبي! علّمه الله منطق الطير، وأعطاه مُلكًا عظيمًا، ومع ذلك كان متواضعًا شاكرًا لله دائمًا.",
+                  "en": "Well done, my darling! Allah taught him the language of birds and gave him a great kingdom — yet he was always humble and grateful to Allah.",
+                  "ru": "Молодец, мой милый! Аллах научил его языку птиц и даровал ему великое царство, но при этом он всегда оставался скромным и благодарным Аллаху."
+                }
+              ],
+              "ru": "Он понимал язык птиц и животных!"
+            },
+            {
+              "ar": "لا، أخبراني!",
+              "en": "No — tell me!",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "بكلّ حبّ يا صغيري! أعطى الله سليمان عليه السلام علمًا ومُلكًا عظيمًا، وعلّمه منطق الطير، فكان يفهم أصواتها وما تقوله مخلوقاتٌ صغيرة أيضًا!",
+                  "en": "With all my heart, little one! Allah gave Sulayman, peace be upon him, great knowledge and a kingdom, and taught him the language of birds — so he could understand them and tiny creatures too!",
+                  "ru": "С удовольствием, малыш! Аллах даровал Сулейману, мир ему, великое знание и царство, научил его языку птиц — он понимал даже крошечных созданий!"
+                }
+              ],
+              "ru": "Нет, расскажите мне!"
+            }
+          ],
+          "ru": "Знаешь ли ты, какой удивительный дар Аллах дал Своему пророку Сулейману, сыну Дауда, мир им обоим?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا حدث في قصة النملة؟",
+              "en": "What happened in the story of the ant?",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "في يومٍ من الأيام، خرج سليمان عليه السلام ومعه جيشه الكبير من الإنس والجنّ والطير، يسيرون بنظامٍ وترتيب.",
+                  "en": "One day, Sulayman, peace be upon him, set out with his great army of humans, jinn, and birds, all marching in neat order.",
+                  "ru": "Однажды Сулейман, мир ему, отправился в путь со своим большим войском из людей, джиннов и птиц — все они шли стройным порядком."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "ومرّوا بوادي النمل — مكانٍ يعيش فيه نملٌ كثير.",
+                  "en": "And they came upon the Valley of the Ants — a place where many ants lived.",
+                  "ru": "И они подошли к Долине муравьёв — месту, где жило много муравьёв."
+                }
+              ],
+              "ru": "А что случилось в истории про муравья?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا فعلت النملة؟",
+              "en": "What did the ant do?",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "رأت نملةٌ صغيرةٌ الجيشَ العظيم مقبلًا، فخافت على إخوتها من النمل، ونادت بأعلى صوتها: «يا أيّها النملُ ادخلوا مساكنكم لا يحطمنّكم سليمانُ وجنوده وهم لا يشعرون».",
+                  "en": "A tiny ant saw the mighty army approaching. Caring for her fellow ants, she called out: “O ants, enter your homes so that Sulayman and his soldiers do not crush you while they do not notice.”",
+                  "ru": "Маленький муравей увидел приближающееся огромное войско, позаботился о своих собратьях и крикнул: «О муравьи! Войдите в свои жилища, чтобы Сулейман и его воины не раздавили вас, сами того не замечая»."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "انظر إلى ذكاء النملة وإنصافها! حذّرت قومها، وقالت «وهم لا يشعرون» — يعني أنّهم لن يؤذونا عن قصد.",
+                  "en": "Look how wise and fair the ant was! She warned her fellows, and added “while they do not notice” — knowing they would never hurt them on purpose.",
+                  "ru": "Посмотри, какой умный и справедливый был муравей! Он предупредил остальных и добавил «сами того не замечая», зная, что они не причинят вреда нарочно."
+                }
+              ],
+              "ru": "И что сделал муравей?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وهل سمعها سليمان عليه السلام؟",
+              "en": "Did Sulayman, peace be upon him, hear her?",
+              "reply": [
+                {
+                  "speaker": "amina",
+                  "ar": "نعم! سمعها وفهم كلامها بمعجزةٍ من الله. ولم يتكبّر ولم يتجاهل هذه النملة الصغيرة؛ قال الله عنه: «فتبسّم ضاحكًا من قولها» — ابتسم فرحًا بحرصها على النمل وبنعمة الله عليه!",
+                  "en": "Yes! By Allah's miracle he heard and understood her. He was not proud and did not ignore the tiny ant — Allah says of him: “so he smiled, laughing at her words”, delighted by her care for the ants and by Allah's blessing!",
+                  "ru": "Да! По чуду Аллаха он услышал и понял его слова. Он не возгордился и не прошёл мимо крошечного муравья — Аллах сказал о нём: «он улыбнулся, засмеявшись его словам», радуясь его заботе и милости Аллаха!"
+                }
+              ],
+              "ru": "И Сулейман, мир ему, услышал его?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "question",
+          "speaker": "aunt",
+          "ar": "لماذا نادت النملةُ بقيّةَ النمل حين رأت الجيش؟",
+          "en": "Why did the ant call out to the other ants when she saw the army?",
+          "options": [
+            {
+              "ar": "لتحذّرهم فيدخلوا مساكنهم ويسلموا",
+              "en": "To warn them to go inside their homes and stay safe",
+              "correct": true,
+              "ru": "Чтобы предупредить их и они успели спрятаться в жилищах"
+            },
+            {
+              "ar": "لتلعب معهم في الطريق",
+              "en": "To play with them on the road",
+              "ru": "Чтобы поиграть с ними на дороге"
+            },
+            {
+              "ar": "لأنها كانت غاضبةً من النمل",
+              "en": "Because she was angry at the other ants",
+              "ru": "Потому что сердился на других муравьёв"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر قولها: «ادخلوا مساكنكم»…",
+            "en": "Remember what she said: “Enter your homes”…",
+            "ru": "Вспомни слова муравья: «Войдите в свои жилища»…"
+          },
+          "praise": {
+            "ar": "أحسنت يا حبيبي! كانت حريصةً على سلامة بقيّة النمل.",
+            "en": "Well done, my darling! She cared deeply about keeping the other ants safe.",
+            "ru": "Молодец, мой милый! Муравей заботился о безопасности всех остальных."
+          },
+          "ru": "Зачем муравей позвал остальных муравьёв, когда увидел войско?"
+        },
+        {
+          "type": "choice",
+          "speaker": "player",
+          "ar": "اسأل:",
+          "en": "Ask:",
+          "options": [
+            {
+              "ar": "وماذا قال سليمان عليه السلام بعد أن تبسّم؟",
+              "en": "What did Sulayman, peace be upon him, say after he smiled?",
+              "reply": [
+                {
+                  "speaker": "aunt",
+                  "ar": "توجّه فورًا إلى الله بالشكر والدعاء، فقال: «ربّ أوزعني أن أشكر نعمتك التي أنعمت عليّ وعلى والديّ وأن أعمل صالحًا ترضاه».",
+                  "en": "He immediately turned to Allah in gratitude and prayer, saying: “My Lord, enable me to be grateful for Your favour which You have bestowed upon me and upon my parents, and to do righteous deeds that please You.”",
+                  "ru": "Он сразу обратился к Аллаху с благодарностью и мольбой: «Господь мой! Внуши мне быть благодарным за Твою милость, которую Ты оказал мне и моим родителям, и совершать праведные дела, которыми Ты будешь доволен»."
+                },
+                {
+                  "speaker": "amina",
+                  "ar": "رغم أنّه نبيٌّ وملكٌ عظيم، تذكّر أنّ كلّ نعمةٍ من الله، فسأله أن يُعينه على الشكر والعمل الصالح، وأن يُدخله برحمته في عباده الصالحين.",
+                  "en": "Even though he was a great prophet and king, he remembered that every blessing comes from Allah, and asked Him to help him be grateful, do good, and include him among His righteous servants.",
+                  "ru": "Хотя он был великим пророком и царём, он помнил, что каждая милость — от Аллаха, и просил помочь ему быть благодарным, творить добро и ввести его по Своей милости в число праведных рабов."
+                }
+              ],
+              "ru": "А что сказал Сулейман, мир ему, после того как улыбнулся?"
+            }
+          ],
+          "ru": "Спроси:"
+        },
+        {
+          "type": "say",
+          "speaker": "aunt",
+          "ar": "تعالَ نسمع الآيتين اللتين فيهما كلام النملة ودعاء سليمان عليه السلام، بصوت الشيخ.",
+          "en": "Come, let's hear the two verses with the ant's words and the prayer of Sulayman, peace be upon him, in the sheikh's voice.",
+          "ru": "Давай послушаем в чтении шейха два аята о словах муравья и мольбе Сулеймана, мир ему."
+        },
+        {
+          "type": "verses",
+          "from": "27:18",
+          "to": "27:19"
+        },
+        {
+          "type": "question",
+          "speaker": "amina",
+          "ar": "فماذا نتعلّم من قصة سليمان عليه السلام والنملة؟",
+          "en": "So what do we learn from the story of Sulayman, peace be upon him, and the ant?",
+          "options": [
+            {
+              "ar": "أن نرحم المخلوقات الصغيرة، ونشكر الله على نعمه دائمًا",
+              "en": "To care for small creatures and always thank Allah for His blessings",
+              "correct": true,
+              "ru": "Беречь маленьких созданий и всегда благодарить Аллаха за Его милости"
+            },
+            {
+              "ar": "أنّ المخلوقات الصغيرة لا تهمّ أبدًا",
+              "en": "That tiny creatures do not matter at all",
+              "ru": "Что маленькие создания совсем не важны"
+            },
+            {
+              "ar": "أن نتكبّر إذا أعطانا الله نعمًا كثيرة",
+              "en": "To boast when Allah gives us many blessings",
+              "ru": "Гордиться, когда Аллах даёт нам много благ"
+            }
+          ],
+          "hint": {
+            "ar": "تذكّر كيف عامل سليمان عليه السلام النملة الصغيرة، وكيف شكر الله…",
+            "en": "Remember how Sulayman, peace be upon him, treated the tiny ant, and how he thanked Allah…",
+            "ru": "Вспомни, как Сулейман, мир ему, отнёсся к маленькому муравью и как поблагодарил Аллаха…"
+          },
+          "praise": {
+            "ar": "ممتاز يا حبيبي! كلّ مخلوقٍ صنعه الله يستحقّ الرحمة، وكلّ نعمةٍ تستحقّ الشكر.",
+            "en": "Excellent, my darling! Every creature Allah made deserves kindness, and every blessing deserves gratitude.",
+            "ru": "Отлично, мой милый! Каждое создание Аллаха достойно доброты, а каждая милость — благодарности."
+          },
+          "ru": "Так чему нас учит история Сулеймана, мир ему, и муравья?"
+        },
+        {
+          "type": "say",
+          "speaker": "player",
+          "ar": "الحمد لله على نعمه! وسأرفق بكلّ مخلوقٍ صغيرٍ ولا أؤذيه أبدًا!",
+          "en": "Praise be to Allah for His blessings! I will be gentle with every little creature and never hurt it!",
+          "ru": "Хвала Аллаху за Его милости! Я буду беречь каждое маленькое создание и никогда не обижу его!"
+        },
+        {
+          "type": "reward"
+        }
+      ],
+      "reward": {
+        "points": 50,
+        "ar": "تعلّمت قصة سليمان عليه السلام والنملة.",
+        "en": "You learned the story of Sulayman, peace be upon him, and the ant.",
+        "ru": "Ты узнал историю Сулеймана, мир ему, и муравья."
+      },
+      "narration": {
+        "ar": "اذهب إلى الخالة سلمى والجدّة آمنة في بستان الواحة، شرق البحيرة بين النخيل.",
+        "en": "Go to Aunt Salma and Grandma Amina in the oasis orchard, east of the pond among the palms.",
+        "ru": "Иди к тёте Сальме и бабушке Амине в сад оазиса, к востоку от пруда среди пальм."
       }
     }
   ],

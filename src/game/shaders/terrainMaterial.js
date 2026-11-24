@@ -7,7 +7,8 @@
 // No textures: one draw call, a handful of ALU ops per pixel.
 import * as THREE from 'three';
 import { toonGradient, RIM } from './toon.js';
-import { FIELD_COLORS } from '../terrain/heightfield.js';
+import { FIELD_COLORS, SIZE, HALF } from '../terrain/heightfield.js';
+import { getPathDistTexture } from '../terrain/terrainGeometry.js';
 
 const v3 = c => `vec3(${c.r.toFixed(4)}, ${c.g.toFixed(4)}, ${c.b.toFixed(4)})`;
 const SOIL = new THREE.Color(0x8A6A44);
@@ -17,6 +18,7 @@ export function createTerrainMaterial() {
   mat.customProgramCacheKey = () => 'toonTerrain';
   mat.onBeforeCompile = sh => {
     sh.uniforms.uRimColor = RIM;
+    sh.uniforms.uPathDist = { value: getPathDistTexture() };
     sh.vertexShader = sh.vertexShader
       .replace('#include <common>', `#include <common>
         attribute vec2 toonMask; varying vec2 vMask; varying vec3 vWPos;`)
@@ -25,6 +27,7 @@ export function createTerrainMaterial() {
     const [c0, c1, c2, c3] = FIELD_COLORS.crops;
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
+        uniform sampler2D uPathDist;
         varying vec2 vMask; varying vec3 vWPos;
         float th(vec2 p) { p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
         float tn(vec2 p) { vec2 i = floor(p), f = fract(p); f = f * f * (3. - 2. * f);
@@ -57,7 +60,9 @@ export function createTerrainMaterial() {
             }
             diffuseColor.rgb = mix(diffuseColor.rgb, fc, smoothstep(.45, .55, vMask.x));
           }
-          float path = smoothstep(.47, .53, vMask.y + wob * vMask.y);
+          float pd = texture2D(uPathDist, (wp + ${HALF.toFixed(1)}) / ${SIZE.toFixed(1)}).r * 8.;
+          float pm = 1. - smoothstep(1.2, 2.4, pd);
+          float path = smoothstep(.47, .53, pm + wob * pm);
           diffuseColor.rgb = mix(diffuseColor.rgb, ${v3(FIELD_COLORS.path)} * (.97 + .06 * tn(wp * .8)), path);
         }`)
       .replace('#include <lights_fragment_end>', `#include <lights_fragment_end>

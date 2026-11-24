@@ -1,27 +1,35 @@
 {
-  "_note": "Gemini prebuilt voice + a short English profile per character. Edit freely; delete a line's wav to regenerate it.",
   "zainab": {
     "voice": "Sulafat",
-    "profile": "Grandma Zainab, an elderly, loving Egyptian grandmother telling her grandson a Quran story; warm, gentle and unhurried."
+    "profile": "Grandma Zainab: an elderly, loving grandmother telling her grandson a Quran story. Warm, gentle, unhurried."
   },
   "amina": {
     "voice": "Vindemiatrix",
-    "profile": "Grandma Amina, a kind elderly grandmother; soft, patient and caring, like a bedtime storyteller."
+    "profile": "Grandma Amina: a kind elderly grandmother. Soft, patient and caring, like a bedtime storyteller."
   },
   "farmer": {
     "voice": "Algenib",
-    "profile": "Grandpa Salim, an old village farmer; deep, slightly gravelly, wise and kind, speaks slowly."
+    "profile": "Grandpa Salim: an old village farmer. Deep, slightly gravelly, wise and kind; speaks slowly."
   },
   "hamdan": {
     "voice": "Charon",
-    "profile": "Uncle Hamdan, a friendly middle-aged village man; clear, confident and warm."
+    "profile": "Uncle Hamdan: a friendly middle-aged village man. Clear, confident and warm."
   },
   "player": {
-    "voice": "Puck",
-    "profile": "A curious nine-year-old boy; bright, eager and polite, asking his grandparents questions."
+    "voice": "Leda",
+    "profile": "The player: a curious eight-year-old Arab boy. A small, light, high child's voice, bright and eager, never an adult's; short breaths, a little shy and excited."
   },
   "narrator": {
     "voice": "Mako",
-    "profile": "A warm, friendly narrator for a children's game; encouraging and clear."
+    "profile": "The game narrator: warm, friendly and encouraging, for children."
+  },
+  "_note": "Gemini prebuilt voice + a short English profile per character. Edit freely; delete a line's wav to regenerate it.",
+  "sheikh": {
+    "voice": "Iapetus",
+    "profile": "Sheikh Younis, the village teacher (about 60): a calm, kind, scholarly man; clear, warm and measured, like a gentle teacher telling children a Quran story."
+  },
+  "aunt": {
+    "voice": "Aoede",
+    "profile": "Aunt Salma, a cheerful village woman of about 35 who keeps the palm orchards; warm, bright and affectionate with children."
   }
 }

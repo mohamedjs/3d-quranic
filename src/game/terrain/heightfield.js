@@ -63,6 +63,33 @@ export function pathDist(x, z) {
   }
   return m;
 }
+// Bake pathDist over the whole map into a single-channel Uint8 buffer (0..8 m → 0..255).
+export function bakePathDist(res = 1024) {
+  const data = new Uint8Array(res * res), step = SIZE / res, o = -HALF + 0.5 * step, scale = 255 / 8;
+  const segs = SEGS.map(([[ax, az], [bx, bz]]) => {
+    const dx = bx - ax, dz = bz - az;
+    return [ax, az, dx, dz, 1 / (dx * dx + dz * dz), Math.min(ax, bx) - 8, Math.max(ax, bx) + 8, Math.min(az, bz) - 8, Math.max(az, bz) + 8];
+  });
+  for (let r = 0; r < res; r++) {
+    const z = o + r * step, row = r * res, active = [];
+    for (let s = 0; s < segs.length; s++) if (z >= segs[s][7] && z <= segs[s][8]) active.push(segs[s]);
+    if (!active.length) { data.fill(255, row, row + res); continue; }
+    for (let c = 0; c < res; c++) {
+      const x = o + c * step;
+      let m2 = 64;
+      for (let s = 0; s < active.length; s++) {
+        const g = active[s];
+        if (x < g[5] || x > g[6]) continue;
+        let t = ((x - g[0]) * g[2] + (z - g[1]) * g[3]) * g[4];
+        if (t < 0) t = 0; else if (t > 1) t = 1;
+        const px = x - g[0] - g[2] * t, pz = z - g[1] - g[3] * t, d2 = px * px + pz * pz;
+        if (d2 < m2) m2 = d2;
+      }
+      data[row + c] = m2 >= 64 ? 255 : Math.round(Math.sqrt(m2) * scale);
+    }
+  }
+  return data;
+}
 
 // Irrigation canals (ترع) running beside the roads — water along every path out of the village.
 export const ROAD_CANALS = [
@@ -80,8 +107,8 @@ export function canalDist(x, z) {
   }
   return m;
 }
-// footbridges across the road canals: { x, z, rot } (rot: plank direction across the water)
-export const FOOTBRIDGES = [{ x: 5, z: -76, rot: 0 }, { x: -65, z: -8.5, rot: Math.PI / 2 - 0.19 }, { x: 70, z: -23.8, rot: Math.PI / 2 + 0.32 }, { x: 4, z: 40, rot: 0 }];
+// footbridges across the canals: { x, z, rot } (rot: plank direction across the water)
+export const FOOTBRIDGES = [{ x: 5, z: -76, rot: 0 }, { x: -65, z: -8.5, rot: Math.PI / 2 - 0.19 }, { x: 70, z: -23.8, rot: Math.PI / 2 + 0.32 }, { x: 4, z: 40, rot: 0 }, { x: -15, z: 34.5, rot: 0 }];
 export const FOOTBRIDGE_DECK = 1.1;   // plank top height (the plain sits near 1.0)
 
 // Farm plots, 15 × 10 m, over the whole plain except the village, street, oasis, ruins,

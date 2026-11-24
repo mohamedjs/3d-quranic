@@ -161,7 +161,7 @@ function layout(grid, avoid) {
 // Route coins have string ids "<story>:<k>"; cluster coins/stars keep their numeric ids and may
 // belong to several sets. Sets are computed a few ms per frame (title screen included) and
 // cached in localStorage (they only depend on the world and the endpoints).
-const SET_VERSION = 2, CACHE_KEY = 'quran-journey-coinsets', SLOTS = 64;
+const SET_VERSION = 3, CACHE_KEY = 'quran-journey-coinsets', SLOTS = 64;
 const MIN_SET = 20, ROUTE_COINS_MAX = 30, EXTRA_MAX = 14, NEAR_CLUSTER = 6, NEAR_STAR = 12;
 // the story order of the old breadcrumb ids (ROUTE_ID + index·1e6 + cell) in saves before sets
 const OLD_ORDER = ['people-of-the-elephant', 'quraysh-journeys', 'yusuf-dream', 'threads-of-dawn', 'qays-the-fasting-farmer', 'best-dates', 'houses-by-their-doors', 'the-new-qibla', 'the-guest-and-the-lamp'];
@@ -192,7 +192,12 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
   const _m = new THREE.Matrix4(), _q = new THREE.Quaternion(), _p = new THREE.Vector3(), _s = new THREE.Vector3(), _up = new THREE.Vector3(0, 1, 0), _v = new THREE.Vector3();
 
   // ---- set building (time-sliced A*, cached) ----
-  const sig = `${SET_VERSION}/${nStatic}/${nStar}`;
+  let ah = 2166136261;
+  for (const [ax, az] of avoid) {
+    ah = Math.imul(ah ^ Math.round(ax * 10), 16777619);
+    ah = Math.imul(ah ^ Math.round(az * 10), 16777619);
+  }
+  const sig = `${SET_VERSION}/${nStatic}/${nStar}/${(ah >>> 0).toString(36)}`;
   let cache = { sig, sets: {} };
   try { const c = JSON.parse(localStorage.getItem(CACHE_KEY)); if (c?.sig === sig && c.sets) cache = c; } catch { /* private mode */ }
   const writeCache = () => { try { localStorage.setItem(CACHE_KEY, JSON.stringify(cache)); } catch { /* full / private */ } };
@@ -288,6 +293,14 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
       else front ? queue.unshift(id) : queue.push(id);
     }
   }
+  function complete(j, cells) {
+    const { id, ep, s } = j;
+    const route = cells.length > 1 ? buildRoute(grid, cells, s[0], s[1]) : null;
+    if (route) route.reached = cells.reached;
+    const def = placeSet(id, route, ep);
+    if (def.reached) { cache.sets[id] = def; writeCache(); }   // never cache unreached routes
+    finish(id, def);
+  }
   function build(ms) {
     if (!job) {
       while (queue.length && !job) {
@@ -303,12 +316,28 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
     }
     const cells = search.step(ms);
     if (!cells) return;
-    const { id, ep, s } = job; job = null;
-    const route = cells.length > 1 ? buildRoute(grid, cells, s[0], s[1]) : null;
-    if (route) route.reached = cells.reached;
-    const def = placeSet(id, route, ep);
-    cache.sets[id] = def; writeCache();
-    finish(id, def);
+    const j = job; job = null;
+    complete(j, cells);
+  }
+  // finish a queued or running set synchronously so the current target appears on the same frame
+  function ensure(id) {
+    if (sets.has(id)) return;
+    let j = null;
+    if (job?.id === id) { j = job; job = null; }
+    else {
+      const q = queue.indexOf(id);
+      if (q < 0) return;
+      queue.splice(q, 1);
+      const ep = endpoints(id); if (!ep) return;
+      const c = cache.sets[id];
+      if (c && near(c.from, ep.from) && near(c.to, ep.to)) { finish(id, c); return; }
+      if (job) { queue.unshift(job.id); job = null; search.cancel(); }
+      const s = snap(ep.from);
+      search.start(s[0], s[1], ep.to[0], ep.to[1], ep.r);
+      j = { id, ep, s };
+    }
+    const cells = search.step(1e9);
+    if (cells) complete(j, cells);
   }
 
   function load() {
@@ -323,13 +352,23 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
   // lay out the route coins of one story's set (the current target), in the pool slots
   function show(id) {
     shown = id; shownVersion = setsVersion;
-    for (let i = S0; i < total; i++) if (ST[i] !== POP) ST[i] = 0;
+    for (let i = S0; i < total; i++) ST[i] = 0;                 // cut short any lingering POP so new slots aren't skipped
     const set = id ? sets.get(id) : null;
     if (!set) return;
     set.route.forEach(([x, z, h], k) => {
-      const i = S0 + k; if (i >= total || ST[i] === POP) return;
+      const i = S0 + k; if (i >= total) return;
       X[i] = x; Z[i] = z; Y[i] = groundAt(x, z); Hh[i] = h; KEY[i] = set.keys[k]; ST[i] = collected.has(KEY[i]) ? GONE : IDLE;
     });
+  }
+  // cheap horizontal overlap query against the shown set's uncollected route coins (≤ SLOTS)
+  function occupied(x, z, r = 0.9) {
+    const r2 = r * r;
+    for (let i = S0; i < total; i++) {
+      if (ST[i] !== IDLE) continue;
+      const dx = X[i] - x, dz = Z[i] - z;
+      if (dx * dx + dz * dz < r2) return true;
+    }
+    return false;
   }
   // {have, total} of a story's set, or null while it is still being worked out
   function progress(id) {
@@ -425,7 +464,7 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
     return rows;
   }
 
-  return { load, update, want, progress, nextCoin, balance, sets, get building() { return !!job || queue.length > 0; },
+  return { load, update, want, ensure, occupied, progress, nextCoin, balance, sets, get building() { return !!job || queue.length > 0; },
     get total() { return total; }, get collectedCount() { return collectedCount; },
     debug: () => ({ static: nStatic, stars: nStar, shown, slots: Array.from(ST.subarray(S0)).filter(s => s === IDLE).length, positions: { X, Z, ST, BIG, KEY } }) };
 }

@@ -4,8 +4,13 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { toonMaterial } from '../shaders/toon.js';
+import { getFoliageAlbedo, registerFoliageMaterial } from './envAssets.js';
 
 const _q = new THREE.Quaternion(), _e = new THREE.Euler(), _p = new THREE.Vector3(), _s = new THREE.Vector3();
+
+// Small ground-flush props whose tiny shadows cost draw calls in the 2K shadow map without
+// contributing visible silhouettes (they sit on ground with baked vertex AO + contact shading).
+const NO_SHADOW_MODELS = new Set(['jar', 'jar_b', 'basket', 'hoe', 'pot_plant', 'canal_stones', 'canal_bank', 'stream_channel', 'hay']);
 
 export function instanceModels(assets, placements, { shadow = true, blocker = false, lodDistance = 45, outlines = true, merge = null } = {}) {
   if (merge) return mergeModels(assets, placements, { shadow, blocker, ...merge });
@@ -14,16 +19,22 @@ export function instanceModels(assets, placements, { shadow = true, blocker = fa
   for (const pl of placements) { if (!byModel.has(pl.model)) byModel.set(pl.model, []); byModel.get(pl.model).push(pl); }
   for (const [model, list] of byModel) {
     const a = assets[model]; if (!a) { console.warn('missing model', model); continue; }
+    const castModel = shadow && !NO_SHADOW_MODELS.has(model);
     const matrices = list.map(pl => new THREE.Matrix4().compose(_p.set(pl.x, pl.y, pl.z), _q.setFromEuler(_e.set(pl.tilt ?? 0, pl.rot ?? 0, 0, 'YXZ')), _s.set(pl.sx ?? 1, pl.sy ?? pl.sx ?? 1, pl.sz ?? pl.sx ?? 1)));
-    const mk = parts => parts?.filter(p => outlines || !p.outline).map(({ geometry, material, outline }) => {
+    const mk = (parts, isFar = false) => parts?.filter(p => outlines || !p.outline).map(({ geometry, material, outline }) => {
       const m = new THREE.InstancedMesh(geometry, material, list.length);
       matrices.forEach((mx, i) => m.setMatrixAt(i, mx));
       m.computeBoundingSphere();                  // over all instances: stays valid as we re-sort
-      m.castShadow = shadow && !outline && !material.userData?.noShadow; m.receiveShadow = !outline && !material.userData?.noShadow;
+      // Far LOD1 instances live beyond lodDistance (outside the shadow camera box), so skip shadow pass on them.
+      m.castShadow = castModel && !isFar && !outline && !material.userData?.noShadow;
+      m.receiveShadow = !outline && !material.userData?.noShadow;
       m.userData.blocker = blocker && !outline; m.userData.shared = true; // geometry/material belong to the asset cache
       group.add(m); return m;
     });
-    sets.push({ list, matrices, near: mk(a.lod0), far: mk(a.lod1) });
+    // Skip splitting tiny models (< 250 tris, e.g. bougainvillea/canal_bank) into 2 separate LOD draw calls!
+    const lod0Tris = (a.lod0 ?? []).reduce((s, p) => s + (p.geometry.index ? p.geometry.index.count : p.geometry.attributes.position.count) / 3, 0);
+    const useFar = Boolean(a.lod1) && lod0Tris >= 280;
+    sets.push({ list, matrices, near: mk(a.lod0, false), far: useFar ? mk(a.lod1, true) : null });
   }
   const cam = new THREE.Vector3();
   function update(cameraPos) {
@@ -48,15 +59,16 @@ export function instanceModels(assets, placements, { shadow = true, blocker = fa
 // mesh per model. Three tiers by distance from the camera:
 //   near  (< near m, 24 m cells)  the detailed meshes of everything
 //   mid   (24 m cells)            LOD1 (or LOD0 when a model has none), tiny props left out
-//   far   (from `mid` m)             LOD1 of the big shapes only (houses, palms, trees…); a 48 m
-//                                    super-cell wholly beyond `mid` is merged as one
-// beyond `far` nothing — the fog has swallowed it. All toon parts share two materials
-// (single- / double-sided vertex colour); wind is dropped (a merged frond no longer knows
-// where its trunk is) and ink hulls are skipped, so a cell costs 2 draw calls. Merges are
-// built lazily (a couple per update, never leaving a hole) and kept.
+//   far   (from `mid` m)          LOD1 of the big shapes only (houses, palms, trees…); a 48 m
+//                                 super-cell wholly beyond `mid` is merged as one
+// All untextured parts share 2 toon materials (`s`, `d`) and all textured foliage parts share
+// 2 atlas toon materials (`fa` alpha-cutout leaves/fronds + `fb` opaque bark), keeping draw calls
+// ultra-low while giving Lite full feathery alpha-cutout palms, sycamores, acacias & vines!
 const LITE_MAT = {
-  s: () => toonMaterial('vc|s|', { vertexColors: true, side: THREE.FrontSide }),
-  d: () => toonMaterial('vc|d|', { vertexColors: true, side: THREE.DoubleSide }),
+  s:  () => toonMaterial('vc|s|', { vertexColors: true, side: THREE.FrontSide }),
+  d:  () => toonMaterial('vc|d|', { vertexColors: true, side: THREE.DoubleSide }),
+  fa: () => registerFoliageMaterial(toonMaterial('lite_fol_cut', { vertexColors: true, map: getFoliageAlbedo(), alphaTest: 0.44, side: THREE.DoubleSide, rim: 0.16, sss: 0.45 })),
+  fb: () => registerFoliageMaterial(toonMaterial('lite_fol_bark', { vertexColors: true, map: getFoliageAlbedo(), alphaTest: 0, side: THREE.FrontSide, rim: 0.12 })),
 };
 const radius = a => (a._r ??= Math.max(0, ...(a.lod0 ?? []).map(p => (p.geometry.boundingSphere ?? (p.geometry.computeBoundingSphere(), p.geometry.boundingSphere)).radius)));
 export const liteBlockers = new Set();                  // near-tier walls/trunks the camera must not pass through
@@ -80,9 +92,23 @@ function mergeModels(assets, placements, { shadow, blocker, chunk = 32, near = 2
       for (const part of parts) {
         if (part.outline) continue;
         const g = part.geometry, water = !g.attributes.color;             // UV'd stream ribbon keeps its own shader
-        const side = part.material.side === THREE.DoubleSide ? 'd' : 's';
-        const key = water ? 'w:' + part.material.uuid : side + (tier === 'near' && block && side === 's' ? 'b' : '');
-        if (!groups.has(key)) groups.set(key, { list: [], material: water ? part.material : LITE_MAT[side](), block: key === 'sb' });
+        const isFolAtlas = part.material.userData?.atlas === 'foliage';
+        let key, mat, isBlocker = false;
+        if (water) {
+          key = 'w:' + part.material.uuid;
+          mat = part.material;
+        } else if (isFolAtlas) {
+          // Bark pixels in foliage_albedo.webp have alpha=1.0, so merging bark + leaf cards into ONE
+          // shared Lite foliage atlas bucket cuts Lite chunk draw calls by ~12 calls cleanly!
+          key = 'fa';
+          mat = LITE_MAT.fa();
+        } else {
+          const side = part.material.side === THREE.DoubleSide ? 'd' : 's';
+          isBlocker = tier === 'near' && block && side === 's';
+          key = side + (isBlocker ? 'b' : '');
+          mat = LITE_MAT[side]();
+        }
+        if (!groups.has(key)) groups.set(key, { list: [], material: mat, block: isBlocker });
         groups.get(key).list.push(g.clone().applyMatrix4(m));
       }
     }

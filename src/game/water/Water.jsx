@@ -1,6 +1,6 @@
 // World water plane with 5-tier quality scaling:
 //  - Lite / Low / Medium: 1-pass water shader (depth bands, foam, wave normals, analytic sky refl)
-//  - High  : + half-res (0.5x) planar reflection RT (skips LAYER_NO_REFLECT) + caustics
+//  - High  : + half-res (0.5x) planar reflection RT (skips LAYER_NO_REFLECT & shadow re-render) + caustics
 //  - Ultra : + full-res (1.0x) planar reflection RT + 2048^2 bank map + refracted pebbles
 // Also syncs the shared street-rill shader tier (`streamWaterTier`).
 import { useEffect, useMemo, useRef } from 'react';
@@ -8,7 +8,7 @@ import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
 import { createWaterMaterial, bindWater, waterTime, streamWaterTier, WATER_TIERS } from '../shaders/waterMaterial.js';
 import { buildWaterBank } from './waterBank.js';
-import { SIZE, WATER_Y } from '../terrain/heightfield.js';
+import { SIZE, WATER_Y, OASIS } from '../terrain/heightfield.js';
 import { useGame, usePreset } from '../systems/store.js';
 
 const _pos = new THREE.Vector3();
@@ -19,12 +19,33 @@ const _plane = new THREE.Plane();
 const _normal = new THREE.Vector3(0, 1, 0);
 const _clip4 = new THREE.Vector4();
 const _q4 = new THREE.Vector4();
+const _frustum = new THREE.Frustum();
+const _projView = new THREE.Matrix4();
 const _bias = new THREE.Matrix4().set(
   0.5, 0.0, 0.0, 0.5,
   0.0, 0.5, 0.0, 0.5,
   0.0, 0.0, 0.5, 0.5,
   0.0, 0.0, 0.0, 1.0,
 );
+
+// World water surface bounding boxes with per-body planar reflection cutoff distances
+// (wide Nile & Oasis reflect from afar; narrow canals & distant bodies skip when hidden behind alleys).
+const WATER_REGIONS = [
+  { box: new THREE.Box3(new THREE.Vector3(-250, WATER_Y - 0.5, 54), new THREE.Vector3(250, WATER_Y + 0.5, 108)), dist: 95 },
+  { box: new THREE.Box3(new THREE.Vector3(-52, WATER_Y - 0.5, 16), new THREE.Vector3(52, WATER_Y + 0.5, 76)), dist: 56 },
+  { box: new THREE.Box3(new THREE.Vector3(OASIS.x - 18, WATER_Y - 0.5, OASIS.z - 18), new THREE.Vector3(OASIS.x + 18, WATER_Y + 0.5, OASIS.z + 18)), dist: 82 },
+];
+const _closest = new THREE.Vector3();
+
+function waterInView(camera, scale = 1.0) {
+  _projView.multiplyMatrices(camera.projectionMatrix, camera.matrixWorldInverse);
+  _frustum.setFromProjectionMatrix(_projView);
+  for (const { box, dist } of WATER_REGIONS) {
+    box.clampPoint(camera.position, _closest);
+    if (_closest.distanceTo(camera.position) <= dist * scale && _frustum.intersectsBox(box)) return true;
+  }
+  return false;
+}
 
 export function Water({ clock }) {
   const preset = usePreset();
@@ -42,7 +63,7 @@ export function Water({ clock }) {
   const meshRef = useRef();
   const mirrorCam = useMemo(() => {
     const c = new THREE.PerspectiveCamera();
-    c.layers.set(0); // skips LAYER_NO_REFLECT (grass, crops, bushes, motes, coins, guide)
+    c.layers.set(0); // skips LAYER_NO_REFLECT (grass, crops, bushes, motes, birds, coins, guide)
     return c;
   }, []);
 
@@ -82,6 +103,13 @@ export function Water({ clock }) {
     const mode = useGame.getState().mode;
     if (mode === 'quran' || mode === 'panel') return;
 
+    // Skip planar reflection pass when no Nile/canal/oasis water surface is within view range
+    if (!waterInView(camera, tier >= 4 ? 1.25 : 1.0)) {
+      material.uniforms.uHasReflect.value = 0.0;
+      return;
+    }
+    material.uniforms.uHasReflect.value = 1.0;
+
     // Reflect main camera position, forward target, and up vector across horizontal plane y = WATER_Y
     camera.getWorldPosition(_pos);
     camera.getWorldDirection(_dir);
@@ -91,7 +119,7 @@ export function Water({ clock }) {
     mirrorCam.fov = camera.fov;
     mirrorCam.aspect = camera.aspect;
     mirrorCam.near = camera.near;
-    mirrorCam.far = camera.far;
+    mirrorCam.far = Math.min(camera.far, tier >= 4 ? 320 : 240);
     mirrorCam.position.set(_pos.x, 2 * WATER_Y - _pos.y, _pos.z);
     mirrorCam.up.set(_up.x, -_up.y, _up.z);
     mirrorCam.lookAt(_look.x, 2 * WATER_Y - _look.y, _look.z);
@@ -102,8 +130,7 @@ export function Water({ clock }) {
     const tm = material.uniforms.uTexMatrix.value;
     tm.copy(_bias).multiply(mirrorCam.projectionMatrix).multiply(mirrorCam.matrixWorldInverse);
 
-    // Oblique near-plane clipping at y = WATER_Y (Lengyel's method): clips submerged riverbeds
-    // across all shaders with zero recompiles while Sky.js (p.xyww) stays safely on far plane.
+    // Oblique near-plane clipping at y = WATER_Y (Lengyel's method)
     _plane.set(_normal, -WATER_Y + 0.03);
     _plane.applyMatrix4(mirrorCam.matrixWorldInverse);
     _clip4.set(_plane.normal.x, _plane.normal.y, _plane.normal.z, _plane.constant);
@@ -121,15 +148,23 @@ export function Water({ clock }) {
       el[14] = _clip4.w;
     }
 
+    // Reuse main pass's already-rendered shadow map during planar reflection (prevent stealing
+    // Lighting.jsx's `shadowMap.needsUpdate = true` flag into the reflection pass!).
     const prevRT = renderer.getRenderTarget();
     const prevXr = renderer.xr.enabled;
+    const prevShadowAuto = renderer.shadowMap.autoUpdate;
+    const prevShadowNeeds = renderer.shadowMap.needsUpdate;
     renderer.xr.enabled = false;
+    renderer.shadowMap.autoUpdate = false;
+    renderer.shadowMap.needsUpdate = false;
     mesh.visible = false;
     renderer.setRenderTarget(reflRT);
     renderer.clear();
     renderer.render(scene, mirrorCam);
     mesh.visible = true;
     renderer.setRenderTarget(prevRT);
+    renderer.shadowMap.autoUpdate = prevShadowAuto;
+    renderer.shadowMap.needsUpdate = prevShadowNeeds;
     renderer.xr.enabled = prevXr;
   });
 

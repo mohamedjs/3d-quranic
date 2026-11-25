@@ -1,10 +1,12 @@
-"""Headless Blender v3 build entry point for Environment v3 assets.
+"""Headless Blender v3 build entry point for Environment v3 assets (`build_all.py`).
 
 Usage:
   blender -b --python blender/v3/env/build_all.py -- [asset_names...]
+  blender -b --python blender/v3/env/build_all.py -- foliage     # build all M3 foliage & crops
 
-With no keys, builds all currently implemented v3 assets (M1: backdrop_hills;
-M2: river_bridge, footbridge, canal_bank, stream_channel).
+With no keys, builds all implemented v3 assets (M1: backdrop_hills;
+M2: river_bridge, footbridge, canal_bank, stream_channel;
+M3: palms, sycamores, acacia, bougainvillea, bushes, lotus_pad, pot_plant, crops, grass, reeds, papyrus, wildflowers, field_bund).
 Exports Draco-6 GLBs to public/models/env/<name>.glb and writes a JSON budget report.
 """
 import json
@@ -15,6 +17,8 @@ HERE = Path(__file__).resolve().parent
 if str(HERE) not in sys.path:
     sys.path.insert(0, str(HERE))
 
+import crops
+import foliage
 import landmarks
 import lib
 import water_props
@@ -25,14 +29,32 @@ BUILDERS = {
     'footbridge': water_props.build_footbridge,
     'canal_bank': water_props.build_canal_bank,
     'stream_channel': water_props.build_stream_channel,
+    **foliage.FOLIAGE_BUILDERS,
+    **crops.CROP_BUILDERS,
+}
+
+GROUPS = {
+    'm1': ['backdrop_hills'],
+    'm2': ['river_bridge', 'footbridge', 'canal_bank', 'stream_channel'],
+    'm3': list(foliage.FOLIAGE_BUILDERS.keys()) + list(crops.CROP_BUILDERS.keys()),
+    'foliage': list(foliage.FOLIAGE_BUILDERS.keys()),
+    'crops': list(crops.CROP_BUILDERS.keys()),
 }
 
 
 def parse_keys():
     if '--' not in sys.argv:
         return list(BUILDERS.keys())
-    args = [a for a in sys.argv[sys.argv.index('--') + 1:] if not a.startswith('-')]
-    return args or list(BUILDERS.keys())
+    raw = [a for a in sys.argv[sys.argv.index('--') + 1:] if not a.startswith('-')]
+    if not raw:
+        return list(BUILDERS.keys())
+    out = []
+    for k in raw:
+        if k in GROUPS:
+            out.extend(GROUPS[k])
+        else:
+            out.append(k)
+    return out
 
 
 def main():

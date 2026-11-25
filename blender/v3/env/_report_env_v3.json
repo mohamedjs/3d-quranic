@@ -1,39 +1,257 @@
 [
   {
-    "name": "river_bridge",
-    "tris": 4012,
-    "tris_lod1": 1604,
-    "kb": 27.0,
+    "name": "palm_a",
+    "tris": 698,
+    "tris_lod1": 228,
+    "kb": 13.2,
     "mats": [
-      "env_v3_water_prop"
+      "foliage_bark",
+      "foliage_frond"
     ]
   },
   {
-    "name": "footbridge",
-    "tris": 800,
-    "tris_lod1": 359,
-    "kb": 9.4,
+    "name": "palm_b",
+    "tris": 786,
+    "tris_lod1": 240,
+    "kb": 14.2,
     "mats": [
-      "env_v3_water_prop"
+      "foliage_bark",
+      "foliage_frond"
     ]
   },
   {
-    "name": "canal_bank",
-    "tris": 250,
-    "tris_lod1": 111,
-    "kb": 9.5,
+    "name": "palm_c",
+    "tris": 610,
+    "tris_lod1": 216,
+    "kb": 12.3,
     "mats": [
-      "env_v3_water_prop"
+      "foliage_bark",
+      "foliage_frond"
     ]
   },
   {
-    "name": "stream_channel",
-    "tris": 468,
-    "tris_lod1": 44,
-    "kb": 9.8,
+    "name": "palm_d",
+    "tris": 698,
+    "tris_lod1": 228,
+    "kb": 13.3,
     "mats": [
-      "env_v3_water_prop",
-      "toon_water"
+      "foliage_bark",
+      "foliage_frond"
+    ]
+  },
+  {
+    "name": "sycamore",
+    "tris": 805,
+    "tris_lod1": 312,
+    "kb": 18.5,
+    "mats": [
+      "foliage_bark",
+      "foliage_leaf"
+    ]
+  },
+  {
+    "name": "sycamore_a",
+    "tris": 805,
+    "tris_lod1": 312,
+    "kb": 18.5,
+    "mats": [
+      "foliage_bark",
+      "foliage_leaf"
+    ]
+  },
+  {
+    "name": "sycamore_b",
+    "tris": 805,
+    "tris_lod1": 312,
+    "kb": 18.5,
+    "mats": [
+      "foliage_bark",
+      "foliage_leaf"
+    ]
+  },
+  {
+    "name": "acacia",
+    "tris": 452,
+    "tris_lod1": 227,
+    "kb": 12.6,
+    "mats": [
+      "foliage_bark",
+      "foliage_leaf"
+    ]
+  },
+  {
+    "name": "bougainvillea",
+    "tris": 197,
+    "tris_lod1": 133,
+    "kb": 8.7,
+    "mats": [
+      "foliage_bark",
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "bougainvillea_bush",
+    "tris": 197,
+    "tris_lod1": 133,
+    "kb": 8.8,
+    "mats": [
+      "foliage_bark",
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "bougainvillea_vine",
+    "tris": 135,
+    "tris_lod1": 79,
+    "kb": 7.5,
+    "mats": [
+      "foliage_bark",
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "bush_a",
+    "tris": 120,
+    "tris_lod1": 0,
+    "kb": 3.2,
+    "mats": [
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "bush_b",
+    "tris": 120,
+    "tris_lod1": 0,
+    "kb": 3.3,
+    "mats": [
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "lotus_pad",
+    "tris": 140,
+    "tris_lod1": 0,
+    "kb": 2.5,
+    "mats": [
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "pot_plant",
+    "tris": 192,
+    "tris_lod1": 0,
+    "kb": 4.3,
+    "mats": [
+      "foliage_bark",
+      "foliage_shrub"
+    ]
+  },
+  {
+    "name": "crop_berseem",
+    "tris": 32,
+    "tris_lod1": 0,
+    "kb": 2.0,
+    "mats": [
+      "foliage_crop_card"
+    ]
+  },
+  {
+    "name": "crop_maize",
+    "tris": 56,
+    "tris_lod1": 0,
+    "kb": 2.4,
+    "mats": [
+      "foliage_crop_vc"
+    ]
+  },
+  {
+    "name": "crop_wheat",
+    "tris": 177,
+    "tris_lod1": 0,
+    "kb": 3.5,
+    "mats": [
+      "foliage_crop_vc"
+    ]
+  },
+  {
+    "name": "crop_cotton",
+    "tris": 144,
+    "tris_lod1": 0,
+    "kb": 2.7,
+    "mats": [
+      "foliage_crop_card"
+    ]
+  },
+  {
+    "name": "crop_cabbage",
+    "tris": 104,
+    "tris_lod1": 0,
+    "kb": 2.9,
+    "mats": [
+      "foliage_crop_vc"
+    ]
+  },
+  {
+    "name": "grass_a",
+    "tris": 24,
+    "tris_lod1": 0,
+    "kb": 2.0,
+    "mats": [
+      "foliage_grass"
+    ]
+  },
+  {
+    "name": "grass_b",
+    "tris": 33,
+    "tris_lod1": 0,
+    "kb": 2.2,
+    "mats": [
+      "foliage_grass"
+    ]
+  },
+  {
+    "name": "grass_c",
+    "tris": 24,
+    "tris_lod1": 0,
+    "kb": 2.0,
+    "mats": [
+      "foliage_grass"
+    ]
+  },
+  {
+    "name": "reeds",
+    "tris": 75,
+    "tris_lod1": 0,
+    "kb": 2.4,
+    "mats": [
+      "foliage_crop_vc"
+    ]
+  },
+  {
+    "name": "papyrus",
+    "tris": 110,
+    "tris_lod1": 0,
+    "kb": 3.0,
+    "mats": [
+      "foliage_crop_card"
+    ]
+  },
+  {
+    "name": "wildflowers",
+    "tris": 24,
+    "tris_lod1": 0,
+    "kb": 1.9,
+    "mats": [
+      "foliage_crop_card"
+    ]
+  },
+  {
+    "name": "field_bund",
+    "tris": 96,
+    "tris_lod1": 0,
+    "kb": 2.5,
+    "mats": [
+      "foliage_solid"
     ]
   }
 ]

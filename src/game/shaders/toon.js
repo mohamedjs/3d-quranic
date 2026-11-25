@@ -6,7 +6,7 @@
 import * as THREE from 'three';
 import { TOON, INK } from './toonPalette.js';
 import { injectWind } from './wind.js';
-import { injectAerialFog } from './stylizedPbr.js';
+import { AERIAL, injectAerialFog } from './stylizedPbr.js';
 
 let gradient;
 export function toonGradient() {
@@ -36,30 +36,49 @@ export const WIND = {
 export function windFor(name) {
   if (/frond/.test(name)) return WIND.frond;
   if (/leaf|flower_(pink|magenta)/.test(name)) return WIND.leaf;
+  if (/shrub/.test(name)) return WIND.shrub;
   if (/grass/.test(name)) return WIND.grass;
   if (/wheat/.test(name)) return WIND.wheat;
   if (/maize/.test(name)) return WIND.maize;
-  if (/berseem|cabbage|cotton/.test(name)) return WIND.crop;
-  if (/reed/.test(name)) return WIND.reed;
+  if (/berseem|cabbage|cotton|crop/.test(name)) return WIND.crop;
+  if (/reed|papyrus/.test(name)) return WIND.reed;
   return null;
 }
 
 const cache = new Map();
-// opts: color, map, side, vertexColors, wind (preset object), rim (strength), alphaTest
-export function toonMaterial(key, { color = 0xffffff, map = null, side = THREE.FrontSide, vertexColors = false, wind = null, rim = 0.22, alphaTest = 0 } = {}) {
+// opts: color, map, side, vertexColors, wind (preset object), rim (strength), alphaTest, sss, rootBlend
+export function toonMaterial(key, {
+  color = 0xffffff, map = null, side = THREE.FrontSide, vertexColors = false,
+  wind = null, rim = 0.22, alphaTest = 0, sss = 0, sssColor = 0xb8d954, rootBlend = 0,
+} = {}) {
   if (cache.has(key)) return cache.get(key);
   const m = new THREE.MeshToonMaterial({ color, map, side, vertexColors, alphaTest, gradientMap: toonGradient() });
   m.name = key;
   const w = wind ? `${wind.strength}|${wind.factor}|${wind.flutter ?? 0}` : '';
-  m.customProgramCacheKey = () => `toon_v3|${w}|${rim}`;
+  m.customProgramCacheKey = () => `toon_v3|${w}|${rim.toFixed(2)}|${sss.toFixed(2)}|${rootBlend.toFixed(1)}|${alphaTest > 0 ? 1 : 0}`;
   m.onBeforeCompile = sh => {
     if (wind) injectWind(sh, wind);
     injectAerialFog(sh);
-    if (rim) {
+    if (sss > 0) sh.uniforms.uSssColor = { value: new THREE.Color(sssColor) };
+    if (rootBlend > 0) {
+      sh.uniforms.uRootColor = AERIAL.uRootColor;
+      sh.vertexShader = sh.vertexShader
+        .replace('#include <common>', '#include <common>\nvarying float vRootY;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvRootY = position.y;');
+    }
+    if (rim || sss > 0 || rootBlend > 0) {
       sh.uniforms.uRimColor = RIM;
-      sh.fragmentShader = 'uniform vec3 uRimColor;\n' + sh.fragmentShader.replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
-        { float rimF = 1. - clamp(dot(normalize(vViewPosition), normal), 0., 1.);
-          reflectedLight.directDiffuse += diffuseColor.rgb * uRimColor * smoothstep(.62, .84, rimF) * ${rim.toFixed(3)}; }`);
+      sh.fragmentShader = sh.fragmentShader
+        .replace('#include <common>', `#include <common>
+          uniform vec3 uRimColor;${sss > 0 ? '\nuniform vec3 uSssColor;' : ''}${rootBlend > 0 ? '\nuniform vec3 uRootColor;\nvarying float vRootY;' : ''}`)
+        .replace('#include <color_fragment>', `#include <color_fragment>
+          ${rootBlend > 0 ? `{ float rb = 1.0 - smoothstep(0.0, 0.18, vRootY); diffuseColor.rgb = mix(diffuseColor.rgb, uRootColor * 0.92, rb * ${(0.55 * rootBlend).toFixed(3)}); }` : ''}`)
+        .replace('#include <lights_fragment_end>', `#include <lights_fragment_end>
+          { ${rim ? `float rimF = 1. - clamp(abs(dot(normalize(vViewPosition), normal)), 0., 1.);
+            reflectedLight.directDiffuse += diffuseColor.rgb * uRimColor * smoothstep(.62, .86, rimF) * ${rim.toFixed(3)};` : ''}
+            ${sss > 0 ? `vec3 wDir = normalize(vAerialPos - cameraPosition);
+            float back = pow(clamp(dot(wDir, uAerialSunDir), 0.0, 1.0), 2.5);
+            reflectedLight.directDiffuse += diffuseColor.rgb * uSssColor * (back * 0.55 + 0.10) * ${sss.toFixed(3)};` : ''} }`);
     }
   };
   cache.set(key, m);

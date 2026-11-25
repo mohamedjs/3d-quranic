@@ -156,7 +156,7 @@ def transfer_spherical_normals(obj, center=None, blend=0.85):
         c = sum(pts, Vector((0, 0, 0))) / max(len(pts), 1)
     else:
         c = Vector(center)
-    norms = []
+    norms = [Vector((0, 0, 1))] * len(me.loops)
     for poly in me.polygons:
         for li in poly.loop_indices:
             v = me.vertices[me.loops[li].vertex_index]
@@ -165,8 +165,7 @@ def transfer_spherical_normals(obj, center=None, blend=0.85):
                 out.normalize()
             else:
                 out = Vector((0, 0, 1))
-            n = v.normal.lerp(out, blend).normalized()
-            norms.append(n)
+            norms[li] = v.normal.lerp(out, blend).normalized()
     me.normals_split_custom_set(norms)
 
 

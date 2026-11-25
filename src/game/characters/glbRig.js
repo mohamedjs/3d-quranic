@@ -56,7 +56,9 @@ class GlbRig {
       if (cut) o.castShadow = false;
     });
     this.hulls = hulls;
-    if (PRESETS[useGame.getState().detail]?.lite) mergeSkinned(model);
+    // Merge flat-color toon sub-meshes sharing a skeleton into 2–3 skinned draws on every tier
+    // (preserves textured faces/cloth, ink hulls, and identical cel shading while cutting ~150 calls on High).
+    mergeSkinned(model);
     const box = new THREE.Box3().setFromObject(model), h = box.max.y - box.min.y || 1;
     model.scale.setScalar(targetHeight / h);
     model.position.y = -box.min.y * (targetHeight / h);

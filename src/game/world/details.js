@@ -56,17 +56,22 @@ export function buildCanalScene(npcPos, home = null) {
   for (const [x, z, rot] of [[CX - 1.15, 33.2, 0], [CX + 1.15, 33.2, Math.PI], [CX - 1.15, 36, 0.1], [CX + 1.15, 36, Math.PI - 0.1], [CX - 1.15, 20.2, 0], [CX + 1.15, 20.2, Math.PI]])
     placements.push({ model: 'canal_stones', x, y: WATER_Y + 0.05, z, rot });
 
-  // puddles and footprints are thin overlays, not merged into the lit geometry
+  // puddles and footprints are thin overlays, merged into 2 meshes (+1 instanced footprints)
   const overlays = new THREE.Group();
   const puddleMat = new THREE.MeshBasicMaterial({ color: 0x5E9A94, polygonOffset: true, polygonOffsetFactor: -2 });   // toon water, mid tone
   const rimMat = new THREE.MeshBasicMaterial({ color: 0x6A4E34, polygonOffset: true, polygonOffsetFactor: -1 });        // wet mud ring
+  const puddleGeos = [], rimGeos = [];
   for (const [x, z, s] of [[CX + 2.1, 17.6, 0.9], [CX + 3.2, 16.9, 0.5], ...(home ? [] : [[nx + 0.6, nz - 1.4, 0.6]]), [-1.6, 6, 0.8]]) {
     const g = new THREE.CircleGeometry(1, 20), p = g.attributes.position;
     for (let i = 1; i < p.count; i++) { const k = 0.7 + r() * 0.45; p.setXY(i, p.getX(i) * k, p.getY(i) * k * 0.7); }
-    const m = new THREE.Mesh(g, puddleMat); m.rotation.x = -Math.PI / 2; m.scale.setScalar(s);
-    m.position.set(x, groundAt(x, z) + 0.015, z); overlays.add(m);
-    const ring = new THREE.Mesh(g, rimMat); ring.rotation.x = -Math.PI / 2; ring.scale.setScalar(s * 1.18);
-    ring.position.set(x, groundAt(x, z) + 0.012, z); overlays.add(ring);
+    const gy = groundAt(x, z);
+    const pg = g.clone().rotateX(-Math.PI / 2).scale(s, 1, s).translate(x, gy + 0.015, z);
+    const rg = g.rotateX(-Math.PI / 2).scale(s * 1.18, 1, s * 1.18).translate(x, gy + 0.012, z);
+    puddleGeos.push(pg); rimGeos.push(rg);
+  }
+  if (puddleGeos.length) {
+    overlays.add(new THREE.Mesh(merge(puddleGeos), puddleMat));
+    overlays.add(new THREE.Mesh(merge(rimGeos), rimMat));
   }
   const printMat = new THREE.MeshBasicMaterial({ color: 0x9A7550, transparent: true, opacity: 0.55, depthWrite: false, polygonOffset: true, polygonOffsetFactor: -3 });
   const printGeo = new THREE.CircleGeometry(1, 10).scale(0.07, 0.13, 1);

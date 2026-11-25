@@ -89,6 +89,9 @@ export function World() {
   const [treePl, setTreePl] = useState(null);
   const litePl = useMemo(() => (lite ? [...world.village.placements.map(p => ({ ...p, blocker: true })), ...world.canal.placements, ...world.props, ...(treePl ?? [])] : null), [lite, world, treePl]);
 
+  // Non-Lite: combine non-blocker canal & encounter props into one instanced set (saves duplicate model calls)
+  const extraPl = useMemo(() => (!lite ? [...world.canal.placements, ...world.props] : null), [lite, world]);
+
   // order matters: meshes the player needs (terrain, walls) mount first; <Player/> updates
   // the camera before <Water/> renders its passes; <GameSystem/> starts once all exist
   return (
@@ -99,9 +102,8 @@ export function World() {
       <Built geometries={world.village.geometries} blocker />
       {!lite && <Props assets={assets} placements={world.village.placements} blocker lodDistance={55} />}
       <Built geometries={world.canal.geometries} />
-      {!lite && <Props assets={assets} placements={world.canal.placements} lodDistance={40} />}
+      {!lite && extraPl.length > 0 && <Props assets={assets} placements={extraPl} lodDistance={40} />}
       {!lite && <primitive object={world.canal.overlays} />}{/* puddles + footprints: 7 draw calls, not on LITE */}
-      {!lite && world.props.length > 0 && <Props assets={assets} placements={world.props} lodDistance={40} />}
       {lite && <Props assets={assets} placements={litePl} />}
       {world.lanterns.map((l, i) => <primitive key={'lantern' + i} object={l} />)}
       <Vegetation colliders={world.colliders} clearings={world.clearings} assets={assets} gardens={world.village.gardens} onTrees={lite ? setTreePl : null} />

@@ -22,7 +22,7 @@ def compute_landmarks(p):
     chest_z = hip_z + (sh_z - hip_z) * 0.78
 
     ankle_z = h * p.get('ankle_frac', 0.052)
-    knee_z = ankle_z + (hip_z - ankle_z) * 0.50
+    knee_z = ankle_z + (hip_z - ankle_z) * p.get('knee_frac', 0.50)
 
     sh_x = h * p.get('shoulder_w', 0.125)
     hip_x = h * p.get('hip_w', 0.068)

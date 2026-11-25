@@ -53,6 +53,25 @@ def _aim(rig, name, direction):
         _rot(rig, name, axis, math.degrees(ang))
 
 
+def _twist(rig, name, deg):
+    """Rotate bone around its current longitudinal axis (e.g. forearm/wrist open-palm supination)."""
+    pb = rig.pose.bones.get(name)
+    if not pb or abs(deg) < 1e-4:
+        return
+    axis = (pb.tail - pb.head)
+    if axis.length < 1e-5:
+        return
+    _rot(rig, name, axis.normalized(), deg)
+
+
+def _pulse(t, t0, dur, power=1.30):
+    """Smooth one-beat bell curve in [0, 1] active on [t0, t0 + dur]."""
+    u = (t - t0) / dur
+    if u <= 0.0 or u >= 1.0:
+        return 0.0
+    return math.sin(math.pi * u) ** power
+
+
 def _move(rig, name, offset):
     pb = rig.pose.bones.get(name)
     if not pb:
@@ -146,12 +165,15 @@ class Animator:
         self.hip_z = b['thigh_l'].head_local.z
         self.ankle_z = b['foot_l'].head_local.z
 
-    def _arms_relaxed(self, out=0.22, fwd=0.08, elbow=16.0):
+    def _arms_relaxed(self, out=0.23, fwd=0.02, elbow=28.0):
         r = self.rig
+        er = math.radians(elbow)
         for sd, s in (('l', 1.0), ('r', -1.0)):
             _aim(r, f'upperarm_{sd}', (s * out, -fwd, -1.0))
-            _aim(r, f'lowerarm_{sd}', (s * out * 0.52, -fwd - math.sin(math.radians(elbow)), -1.0))
-            _rot(r, f'hand_{sd}', Z, -s * 8.0)
+            _aim(r, f'lowerarm_{sd}', (s * out * 0.38, -fwd - math.sin(er), -math.cos(er)))
+            _twist(r, f'hand_{sd}', -s * 14.0)
+            _rot(r, f'hand_{sd}', Z, -s * 10.0)
+            _rot(r, f'hand_{sd}', X, 6.0)
         if self.st.get('staff'):
             # Grandpa Salim holds his shepherd's staff comfortably forward-left
             _aim(r, 'upperarm_l', (0.28, -0.24, -1.0))
@@ -168,7 +190,7 @@ class Animator:
 
     def idle(self, rig, t):
         e = self.st.get('energy', 1.0)
-        self._arms_relaxed(out=self.st.get('arm_out', 0.22), elbow=self.st.get('elbow', 15.0))
+        self._arms_relaxed(out=self.st.get('arm_out', 0.23), elbow=self.st.get('elbow', 28.0))
         self._stoop()
 
         br = _sin(t, 1.0)
@@ -177,6 +199,9 @@ class Animator:
         for sd in ('l', 'r'):
             _rot(rig, f'clavicle_{sd}', X, 0.9 * br)
             _rot(rig, f'upperarm_{sd}', X, 1.8 * br)
+            if not (sd == 'l' and self.st.get('staff')):
+                _rot(rig, f'lowerarm_{sd}', X, -2.4 * br)
+                _rot(rig, f'hand_{sd}', X, 2.8 * _sin(t, 1.0, 0.12))
 
         sway = _sin(t, 1.0, 0.25)
         _rot(rig, 'pelvis', Y, 1.3 * e * sway)
@@ -235,7 +260,7 @@ class Animator:
 
     def talk(self, rig, t):
         e = self.st.get('energy', 1.0)
-        self._arms_relaxed(out=self.st.get('arm_out', 0.22), elbow=16.0)
+        self._arms_relaxed(out=self.st.get('arm_out', 0.23), elbow=26.0)
         self._stoop()
 
         br = _sin(t, 1.0)
@@ -243,27 +268,38 @@ class Animator:
         _rot(rig, 'spine_02', X, -1.4 * br)
         _rot(rig, 'pelvis', Y, 1.1 * e * _sin(t, 1.0, 0.25))
 
-        # Expressive storybook explaining gestures (right hand leads)
-        g1 = max(0.0, _sin(t, 2.0, -0.04)) ** 1.35
-        _rot(rig, 'upperarm_r', X, -36.0 * g1 * e)
-        _rot(rig, 'upperarm_r', Y, -10.0 * g1)
-        _rot(rig, 'lowerarm_r', X, -58.0 * g1)
-        _rot(rig, 'lowerarm_r', Z, -22.0 * g1)
-        _rot(rig, 'hand_r', Y, 24.0 * g1)
-        _rot(rig, 'hand_r', X, 12.0 * g1 * _sin(t, 6.0))
+        # Two expressive storytelling open-palm beats:
+        # Beat 1 (peak t~0.26, frame 26): warm right open-palm presentation
+        # Beat 2 (peak t~0.72, frame 70): warm welcoming two-hand open-palm gesture (right-hand arc if staff)
+        b1 = _pulse(t, 0.05, 0.42, 1.25)
+        b2 = _pulse(t, 0.50, 0.44, 1.25)
+        r_g = min(1.0, b1 + 0.85 * b2)
 
-        # Left hand joins warmly unless holding a staff
+        _rot(rig, 'upperarm_r', X, -(26.0 * b1 + 20.0 * b2) * e)
+        _rot(rig, 'upperarm_r', Y, -(10.0 * b1 + 14.0 * b2))
+        _rot(rig, 'upperarm_r', Z, -(10.0 * b1 + 14.0 * b2))
+        _rot(rig, 'lowerarm_r', X, -(54.0 * b1 + 48.0 * b2))
+        _rot(rig, 'lowerarm_r', Z, -(16.0 * b1 + 22.0 * b2))
+        # Supinate forearm & wrist so the open palm turns warmly upward toward the listener!
+        _twist(rig, 'lowerarm_r', 46.0 * r_g)
+        _twist(rig, 'hand_r', 36.0 * r_g)
+        _rot(rig, 'hand_r', X, 18.0 * r_g + 6.0 * r_g * _sin(t, 6.0))
+
+        # Left hand joins with a warm welcoming open palm on Beat 2 (unless holding a staff)
         if not self.st.get('staff'):
-            g2 = max(0.0, _sin(t, 1.0, 0.54)) ** 1.45
-            _rot(rig, 'upperarm_l', X, -26.0 * g2 * e)
-            _rot(rig, 'upperarm_l', Y, 10.0 * g2)
-            _rot(rig, 'lowerarm_l', X, -52.0 * g2)
-            _rot(rig, 'lowerarm_l', Z, 18.0 * g2)
-            _rot(rig, 'hand_l', Y, -24.0 * g2)
+            l_g = min(1.0, 0.22 * b1 + b2)
+            _rot(rig, 'upperarm_l', X, -(8.0 * b1 + 22.0 * b2) * e)
+            _rot(rig, 'upperarm_l', Y, 14.0 * b2)
+            _rot(rig, 'upperarm_l', Z, 14.0 * b2)
+            _rot(rig, 'lowerarm_l', X, -(18.0 * b1 + 52.0 * b2))
+            _rot(rig, 'lowerarm_l', Z, 20.0 * b2)
+            _twist(rig, 'lowerarm_l', -46.0 * l_g)
+            _twist(rig, 'hand_l', -36.0 * l_g)
+            _rot(rig, 'hand_l', X, 16.0 * l_g + 5.0 * b2 * _sin(t, 6.0, 0.2))
 
-        _rot(rig, 'spine_02', X, 2.8 * g1)
-        _rot(rig, 'spine_01', Z, -3.5 * g1)
-        _rot(rig, 'head', X, -5.5 * max(0.0, _sin(t, 4.0)) + 2.0)
+        _rot(rig, 'spine_02', X, 2.6 * b1 + 2.0 * b2)
+        _rot(rig, 'spine_01', Z, -3.5 * b1 + 2.2 * b2)
+        _rot(rig, 'head', X, -5.2 * max(0.0, _sin(t, 4.0)) + 2.0)
         _rot(rig, 'head', Z, 6.5 * _sin(t, 1.0, 0.28))
         _rot(rig, 'head', Y, -3.0 * _sin(t, 2.0, 0.18))
 
@@ -271,53 +307,68 @@ class Animator:
         m = abs(_sin(t, 5.0)) * 0.62 + abs(_sin(t, 7.0, 0.30)) * 0.38
         pause = (
             1.0
-            - max(0.0, 1.0 - abs(t - 0.50) / 0.065)
+            - max(0.0, 1.0 - abs(t - 0.48) / 0.065)
             - max(0.0, 1.0 - abs(t - 0.97) / 0.05)
             - max(0.0, 1.0 - t / 0.03)
         )
-        _face(rig, _blink_at(t, (0.24, 0.72)), max(0.0, min(1.0, m * pause * 1.10)))
+        _face(rig, _blink_at(t, (0.46, 0.94)), max(0.0, min(1.0, m * pause * 1.10)))
 
     def sitting(self, rig, t, talk=False, seat=0.45):
-        """Grounded mastaba-bench seated pose at seat=0.45 m, feet on z=0, zero dress/arm clip."""
-        hip_target = seat + 0.088
+        """Grounded mastaba-bench seated pose: hips resting ON seat=0.45 m, feet flat on z=0 in front of bench."""
+        # Pelvis sits at seat + 0.048 so buttocks & rear thighs rest flush ON z = 0.45 m (zero float/sink!)
+        hip_target = seat + 0.048
         drop_hip = hip_target - self.hip_z
+        thigh_deg = 87.0
 
-        # Thighs rest horizontally on the 0.45m bench; calves drop smoothly so slippers kiss z=0
+        # Shift pelvis slightly forward (-0.025) so knees clear the -0.35 m bench front edge cleanly
+        _move(rig, 'pelvis', (0.0, -0.025, drop_hip))
+
         for sd, s in (('l', 1.0), ('r', -1.0)):
-            _rot(rig, f'thigh_{sd}', X, -86.0)
+            _rot(rig, f'thigh_{sd}', X, -thigh_deg)
             _rot(rig, f'thigh_{sd}', Y, -4.5 * s)
-            vert_drop = max(0.15, hip_target - 0.025 - self.ankle_z)
-            # Small forward knee tuck so feet sit squarely on floor
+            knee_z = rig.pose.bones[f'thigh_{sd}'].tail.z
+            vert_drop = max(0.10, knee_z - self.ankle_z)
+            # Exact acos so ankle lands right at self.ankle_z -> slipper soles rest flat on z = 0.000 m!
             calf_ang = math.degrees(math.acos(min(1.0, vert_drop / max(0.15, self.calf_len))))
-            _rot(rig, f'calf_{sd}', X, 86.0 - calf_ang * 0.45)
-            _rot(rig, f'foot_{sd}', X, -2.0)
-
-        _move(rig, 'pelvis', (0.0, 0.04, drop_hip))
+            _rot(rig, f'calf_{sd}', X, thigh_deg - calf_ang)
+            _rot(rig, f'foot_{sd}', X, calf_ang)
 
         br = _sin(t, 1.0)
         _rot(rig, 'spine_01', X, 3.0 + 1.0 * br)
         _rot(rig, 'spine_02', X, 3.5 + 1.2 * br)
         _rot(rig, 'neck', X, -3.0)
 
-        # Warm relaxed arms held clearly OUTSIDE dress bodice, hands resting warmly above lap
+        # Warm relaxed arms bent naturally at elbows, softly curled hands resting cleanly above lap
         for sd, s in (('l', 1.0), ('r', -1.0)):
-            _aim(rig, f'upperarm_{sd}', (s * 0.26, -0.44, -1.0))
-            _aim(rig, f'lowerarm_{sd}', (-s * 0.14, -1.00, -0.24))
-            _rot(rig, f'hand_{sd}', X, 16.0)
+            _aim(rig, f'upperarm_{sd}', (s * 0.30, -0.34, -1.0))
+            _aim(rig, f'lowerarm_{sd}', (-s * 0.14, -0.98, -0.14))
+            _twist(rig, f'hand_{sd}', -s * 22.0)
+            _rot(rig, f'hand_{sd}', X, 12.0)
 
         if talk:
-            g1 = max(0.0, _sin(t, 2.0, -0.05)) ** 1.35
-            _rot(rig, 'upperarm_r', X, -24.0 * g1)
-            _rot(rig, 'lowerarm_r', X, -48.0 * g1)
-            _rot(rig, 'lowerarm_r', Z, -18.0 * g1)
-            _rot(rig, 'hand_r', Y, 24.0 * g1)
+            b1 = _pulse(t, 0.05, 0.42, 1.25)
+            b2 = _pulse(t, 0.50, 0.44, 1.25)
+            r_g = min(1.0, b1 + 0.85 * b2)
 
-            g2 = max(0.0, _sin(t, 1.0, 0.58)) ** 1.55
-            _rot(rig, 'upperarm_l', X, -14.0 * g2)
-            _rot(rig, 'lowerarm_l', X, -32.0 * g2)
-            _rot(rig, 'hand_l', Y, -20.0 * g2)
+            _rot(rig, 'upperarm_r', X, -(20.0 * b1 + 16.0 * b2))
+            _rot(rig, 'upperarm_r', Y, -(8.0 * b1 + 12.0 * b2))
+            _rot(rig, 'lowerarm_r', X, -(34.0 * b1 + 28.0 * b2))
+            _rot(rig, 'lowerarm_r', Z, -(18.0 * b1 + 22.0 * b2))
+            # Open-palm storytelling supination (palms open & upward!)
+            _twist(rig, 'lowerarm_r', 42.0 * r_g)
+            _twist(rig, 'hand_r', 46.0 * r_g)
+            _rot(rig, 'hand_r', X, 14.0 * r_g + 5.0 * r_g * _sin(t, 6.0))
 
-            _rot(rig, 'spine_02', X, 2.0 * g1)
+            l_g = min(1.0, 0.20 * b1 + b2)
+            _rot(rig, 'upperarm_l', X, -(6.0 * b1 + 18.0 * b2))
+            _rot(rig, 'upperarm_l', Y, 12.0 * b2)
+            _rot(rig, 'lowerarm_l', X, -(10.0 * b1 + 30.0 * b2))
+            _rot(rig, 'lowerarm_l', Z, 20.0 * b2)
+            _twist(rig, 'lowerarm_l', -42.0 * l_g)
+            _twist(rig, 'hand_l', -46.0 * l_g)
+            _rot(rig, 'hand_l', X, 14.0 * l_g)
+
+            _rot(rig, 'spine_02', X, 2.0 * b1 + 1.6 * b2)
             _rot(rig, 'head', X, -5.0 * max(0.0, _sin(t, 4.0)) + 1.5)
             _rot(rig, 'head', Z, 6.5 * _sin(t, 1.0, 0.28))
             _rot(rig, 'head', Y, 2.8 * _sin(t, 1.0, 0.12))
@@ -325,11 +376,11 @@ class Animator:
             m = abs(_sin(t, 5.0)) * 0.62 + abs(_sin(t, 7.0, 0.30)) * 0.38
             pause = (
                 1.0
-                - max(0.0, 1.0 - abs(t - 0.50) / 0.065)
+                - max(0.0, 1.0 - abs(t - 0.48) / 0.065)
                 - max(0.0, 1.0 - abs(t - 0.97) / 0.05)
                 - max(0.0, 1.0 - t / 0.03)
             )
-            _face(rig, _blink_at(t, (0.28, 0.76)), max(0.0, min(1.0, m * pause * 1.10)))
+            _face(rig, _blink_at(t, (0.46, 0.94)), max(0.0, min(1.0, m * pause * 1.10)))
         else:
             _rot(rig, 'head', Z, 4.8 * _sin(t, 1.0, 0.10))
             _rot(rig, 'head', X, 2.0 * _sin(t, 2.0))

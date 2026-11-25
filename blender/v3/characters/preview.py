@@ -70,10 +70,11 @@ def _bench(on, x=0.0):
         bpy.data.objects.remove(old, do_unlink=True)
     if not on:
         return
-    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, 0.24, 0.225))
+    # Exact mastaba seat geometry matching village.js (seat top z = 0.45 m, depth 0.60 m: y = -0.35..+0.25)
+    bpy.ops.mesh.primitive_cube_add(size=1.0, location=(x, -0.05, 0.225))
     obj = bpy.context.active_object
     obj.name = '_prev_bench'
-    obj.scale = (0.96, 0.48, 0.45)
+    obj.scale = (0.96, 0.60, 0.45)
     obj.data.materials.append(L.toon_mat('toon_prev_bench', '#D9A066', shadow='#B8887A', rim=0.14))
 
 
@@ -300,20 +301,20 @@ def render_poses():
     shots = [
         ('player', 'walk', 7, 58.0),
         ('player', 'run', 5, 65.0),
-        ('player', 'talk', 14, 18.0),
+        ('player', 'talk', 26, 18.0),
         ('farmer', 'walk', 7, 58.0),
-        ('farmer', 'talk', 14, 20.0),
-        ('grandma_zainab', 'sit', 10, 32.0),
-        ('grandma_zainab', 'sit_talk', 14, 18.0),
+        ('farmer', 'talk', 26, 20.0),
+        ('grandma_zainab', 'sit', 10, 38.0),
+        ('grandma_zainab', 'sit_talk', 70, 22.0),
         ('grandma_zainab', 'idle', 10, 22.0),
         ('grandma', 'walk', 7, 58.0),
-        ('grandma', 'talk', 14, 18.0),
+        ('grandma', 'talk', 70, 18.0),
         ('trader', 'walk', 7, 58.0),
-        ('trader', 'talk', 14, 20.0),
+        ('trader', 'talk', 26, 20.0),
         ('sheikh', 'walk', 7, 58.0),
-        ('sheikh', 'talk', 14, 18.0),
+        ('sheikh', 'talk', 70, 18.0),
         ('aunt', 'walk', 7, 58.0),
-        ('aunt', 'talk', 14, 18.0),
+        ('aunt', 'talk', 70, 18.0),
     ]
     paths = []
     for k, clip, frame, yaw in shots:

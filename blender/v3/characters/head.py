@@ -62,29 +62,29 @@ def head_shape(p, F):
     brow_g = math.exp(-((z - brow_z) / 0.14) ** 2 - (x / 0.65) ** 2) * front
     y -= 0.048 * brow_g
 
-    # Real 3D sculpted storybook nose!
+    # Real 3D sculpted storybook nose (clear bridge, soft button tip, gentle alae & crisp underside)!
     nz = F.get('nose_z', -0.34)
-    n_len = F.get('nose_len', 0.17)
+    n_len = F.get('nose_len', 0.17) * 1.26
     n_w = F.get('nose_w', 0.13)
     n_lift = F.get('nose_lift', 0.02)
-    if y < -0.35:
-        bridge_t = smoothstep(ez + 0.08, nz + 0.02, z) * smoothstep(nz - 0.10, nz - 0.01, z)
-        bridge_x = math.exp(-(x / (n_w * 0.68)) ** 2)
-        tip_g = math.exp(-((x / (n_w * 0.85)) ** 2 + ((z - nz) / (n_w * 0.74)) ** 2))
-        ala_g = math.exp(-(((abs(x) - n_w * 0.72) / (n_w * 0.44)) ** 2 + ((z - (nz - 0.024)) / (n_w * 0.40)) ** 2))
-        nose_push = (0.62 * bridge_t * bridge_x + 0.96 * tip_g + 0.24 * ala_g) * n_len * front
+    if y < -0.32:
+        bridge_t = smoothstep(ez + 0.06, nz + 0.01, z) * smoothstep(nz - 0.095, nz - 0.015, z)
+        bridge_x = math.exp(-(x / (n_w * 0.64)) ** 2)
+        tip_g = math.exp(-((x / (n_w * 0.84)) ** 2 + ((z - nz) / (n_w * 0.68)) ** 2))
+        ala_g = math.exp(-(((abs(x) - n_w * 0.72) / (n_w * 0.44)) ** 2 + ((z - (nz - 0.026)) / (n_w * 0.38)) ** 2))
+        nose_push = (0.68 * bridge_t * bridge_x + 1.02 * tip_g + 0.30 * ala_g) * n_len * front
         y -= nose_push
         z += n_lift * tip_g * front
 
-    # Gentle warm lip cushion + soft rounded chin pad
+    # Gentle warm lip cushion + smooth soft rounded chin pad (no harsh lower-face shadow shelf!)
     mz = F.get('mouth_z', -0.60)
     if y < -0.30:
-        muzzle = math.exp(-((x / 0.34) ** 2 + ((z - (mz - 0.02)) / 0.19) ** 2)) * front
-        y -= 0.052 * muzzle
-        groove = math.exp(-((x / 0.24) ** 2 + ((z - (mz - 0.15)) / 0.065) ** 2)) * front
-        y += 0.030 * groove
-        chin_pad = math.exp(-((x / 0.26) ** 2 + ((z - (mz - 0.26)) / 0.11) ** 2)) * front
-        y -= 0.045 * chin_pad
+        muzzle = math.exp(-((x / 0.36) ** 2 + ((z - (mz - 0.02)) / 0.21) ** 2)) * front
+        y -= 0.046 * muzzle
+        groove = math.exp(-((x / 0.24) ** 2 + ((z - (mz - 0.15)) / 0.075) ** 2)) * front
+        y += 0.014 * groove
+        chin_pad = math.exp(-((x / 0.28) ** 2 + ((z - (mz - 0.26)) / 0.12) ** 2)) * front
+        y -= 0.036 * chin_pad
 
     return Vector((x, y, z))
 
@@ -182,12 +182,21 @@ def paint_face_texture(key, F):
         d = np.hypot((fx - s * (ex + 0.14)) / 0.26, (fz - (ez - eh - 0.13)) / 0.16)
         c.blend((np.clip(1.0 - d, 0.0, 1.0) ** 1.7) * blush * in_face, blush_col)
 
-    dn = np.hypot(fx / 0.14, (fz - (nz + 0.015)) / 0.11)
-    c.blend((np.clip(1.0 - dn, 0.0, 1.0) ** 1.8) * (blush * 0.65) * in_face, blush_col)
+    n_w = F.get('nose_w', 0.13)
+    dn = np.hypot(fx / (n_w * 1.12), (fz - (nz + 0.015)) / 0.10)
+    c.blend((np.clip(1.0 - dn, 0.0, 1.0) ** 1.8) * (blush * 0.58) * in_face, blush_col)
 
-    # Subtle nose under-shadow cue so the 3D nose reads warmly even in flat front lighting!
-    d_nsh = np.hypot(fx / (F.get('nose_w', 0.13) * 0.72), (fz - (nz - 0.075)) / 0.042)
-    c.blend((np.clip(1.0 - d_nsh, 0.0, 1.0) ** 1.8) * 0.26 * in_face, F.get('socket_col', '#8D523A'))
+    # Soft nose bridge + tip light catch so the 3D nose reads gently forward
+    d_nhi = np.hypot(fx / (n_w * 0.42), (fz - (nz + 0.045)) / 0.090)
+    c.blend((np.clip(1.0 - d_nhi, 0.0, 1.0) ** 1.7) * 0.16 * in_face, '#FFF3E4')
+
+    # Warm painted crescent shade under the nose tip + subtle nostril wing cues
+    n_arc_z = nz - 0.066 + 0.022 * np.clip((fx / max(n_w * 0.85, 1e-4)) ** 2, 0.0, 1.4)
+    d_nsh = np.hypot(fx / (n_w * 0.94), (fz - n_arc_z) / 0.036)
+    c.blend((np.clip(1.0 - d_nsh, 0.0, 1.0) ** 1.45) * 0.50 * in_face, F.get('socket_col', '#8D523A'))
+    for s in (1.0, -1.0):
+        d_nost = np.hypot((fx - s * n_w * 0.58) / (n_w * 0.34), (fz - (nz - 0.048)) / 0.024)
+        c.blend((np.clip(1.0 - d_nost, 0.0, 1.0) ** 1.55) * 0.30 * in_face, F.get('socket_col', '#8D523A'))
 
     # Subtle upper eyelid crease & soft socket warmth
     sock_col = F.get('socket_col', '#985C42')
@@ -347,6 +356,63 @@ def build_head_mesh(name, col, center, R, F, face_mat):
         v.co = C + v.co * R
 
     return bm_to_obj(bm, name, col, face_mat)
+
+
+def apply_soft_face_normals(mesh_obj, head_center, R, F):
+    """Smooth and lift cheek/mouth/jaw vertex normals so toon cel shadow wraps softly and never stains the mouth."""
+    me = mesh_obj.data
+    C = Vector(head_center)
+    face_slots = {
+        idx for idx, m in enumerate(me.materials)
+        if m is not None and m.name.startswith('toon_face_')
+    }
+    if not face_slots or not me.uv_layers:
+        return
+
+    uv_data = me.uv_layers[0].data
+    head_skin_verts = set()
+    for poly in me.polygons:
+        if poly.material_index not in face_slots:
+            continue
+        for li in poly.loop_indices:
+            # Face skin occupies U <= FACE_U1 (0.58); 3D eyeballs occupy U >= EYE_U0 (0.64)
+            if uv_data[li].uv[0] <= FACE_U1 + 0.01:
+                head_skin_verts.add(me.loops[li].vertex_index)
+
+    if not head_skin_verts:
+        return
+
+    nz_pos = F.get('nose_z', -0.34)
+    n_w = F.get('nose_w', 0.13)
+    ez = F.get('eye_z', -0.06)
+
+    norms = [v.normal.copy() for v in me.vertices]
+    for vi in head_skin_verts:
+        p = (me.vertices[vi].co - C) / R
+        if p.y > 0.22:
+            continue
+        front_m = smoothstep(0.20, -0.30, p.y) * smoothstep(0.94, 0.72, abs(p.x))
+        if front_m <= 1e-4:
+            continue
+        # Keep the entire front face (forehead, cheeks, mouth, chin front) gently lifted;
+        # only fade back toward downward geometric normal beneath the very bottom of the chin.
+        chin_keep = smoothstep(-1.16, -0.92, p.z)
+        n_soft = Vector((
+            p.x * 0.72,
+            -0.90,
+            0.24 + 0.24 * max(-0.45, p.z),
+        )).normalized()
+
+        # Preserve ~74% of true 3D sculpted normals on the nose bridge/tip/underside so the nose pops cleanly!
+        nose_x = math.exp(-(p.x / (n_w * 1.18)) ** 2)
+        nose_z = smoothstep(nz_pos - 0.15, nz_pos - 0.04, p.z) * smoothstep(ez + 0.05, nz_pos + 0.08, p.z)
+        nose_y = smoothstep(-0.66, -0.92, p.y)
+        nose_m = nose_x * nose_z * nose_y
+
+        blend = 0.92 * front_m * chin_keep * (1.0 - 0.74 * nose_m)
+        norms[vi] = norms[vi].lerp(n_soft, blend).normalized()
+
+    me.normals_split_custom_set_from_vertices([tuple(n) for n in norms])
 
 
 def build_eyes_and_lids(key, col, center, R, F, face_mat, skin_mat, lash_mat):
@@ -589,22 +655,45 @@ def build_talking_mouth(key, col, center, R, F, mouth_mat, teeth_mat):
 
 
 # ------------------------------------------------------------------ cohesive Pixar hair & beards
-def _add_hair_lock(bm, pts, r0, r_mid, r_tip, flat=0.72, segs=6):
-    """Build a smooth Pixar-stylized sculpted hair lock along a 3D spline."""
+def _sample_bezier_curve(ctrl_pts, n_samples=8):
+    """Evaluate a smooth cubic/quadratic Bezier spline through ctrl_pts for silky curved hair locks."""
+    pts = [Vector(q) for q in ctrl_pts]
+    m = len(pts) - 1
+    out = []
+    for k in range(n_samples):
+        u = k / max(1, n_samples - 1)
+        # De Casteljau's algorithm -> guaranteed C-infinity smooth curve with zero boxy bends!
+        work = [p.copy() for p in pts]
+        for r in range(m):
+            work = [work[i].lerp(work[i + 1], u) for i in range(len(work) - 1)]
+        out.append(work[0])
+    return out
+
+
+def _add_hair_lock(bm, pts, r0, r_mid, r_tip, flat=0.72, segs=7):
+    """Build a smooth Pixar-stylized sculpted hair lock along a 3D spline with soft rounded tips."""
     n = len(pts)
     rings = []
+    # Smooth parallel-transport framing so curved locks never twist or kink!
+    tangents = [(pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]).normalized() for i in range(n)]
+    t0 = tangents[0]
+    ax = t0.cross(Vector((0.0, 0.0, 1.0)))
+    ax = t0.orthogonal() if ax.length < 1e-3 else ax.normalized()
+    bx = t0.cross(ax).normalized()
     for i, p in enumerate(pts):
         u = i / max(1, n - 1)
-        t_vec = (pts[min(i + 1, n - 1)] - pts[max(i - 1, 0)]).normalized()
-        ax = t_vec.cross(Vector((0.0, 0.0, 1.0)))
-        ax = t_vec.orthogonal() if ax.length < 1e-3 else ax.normalized()
-        bx = t_vec.cross(ax).normalized()
-        if u < 0.45:
-            t2 = u / 0.45
+        ti = tangents[i]
+        if i > 0:
+            q = tangents[i - 1].rotation_difference(ti)
+            ax = (q @ ax)
+            ax = (ax - ti * ax.dot(ti)).normalized()
+            bx = ti.cross(ax).normalized()
+        if u < 0.38:
+            t2 = u / 0.38
             r = r0 + (r_mid - r0) * math.sin(t2 * math.pi * 0.5)
         else:
-            t2 = (u - 0.45) / 0.55
-            r = r_mid * (1.0 - t2 ** 1.45) + r_tip * (t2 ** 1.45)
+            t2 = (u - 0.38) / 0.62
+            r = r_mid * math.cos(t2 * math.pi * 0.48) + r_tip * (t2 ** 1.35)
         rings.append([
             bm.verts.new(p + ax * (math.cos(a) * r) + bx * (math.sin(a) * r * flat))
             for a in (k / segs * math.tau for k in range(segs))
@@ -613,12 +702,12 @@ def _add_hair_lock(bm, pts, r0, r_mid, r_tip, flat=0.72, segs=6):
 
 
 def build_boy_hair(name, col, center, R, F, hair_mat):
-    """Build cohesive, soft tousled Pixar/Ghibli boy hair: sculpted wavy dome, sideburns & sweeping bangs."""
+    """Build cohesive, soft tousled Pixar/Ghibli boy hair with smooth wavy crown, back & nape tufts."""
     C = Vector(center)
     bm = bmesh.new()
 
-    # 1) Sculpted organic wavy hair volume (compact 26x12 grid -> ~620 tris, zero bowl-cut buzz edge!)
-    u_segs, v_segs = 26, 12
+    # 1) Sculpted organic wavy hair dome (compact 24x11 grid -> lush rear volume & comfortable tri budget!)
+    u_segs, v_segs = 24, 11
     rings = []
     for j in range(v_segs + 1):
         tv = j / v_segs
@@ -629,17 +718,16 @@ def build_boy_hair(name, col, center, R, F, hair_mat):
             back_f = max(0.0, math.sin(th))
             side_f = abs(math.cos(th))
 
-            # Soft natural hairline: open forehead, curved sideburn dip in front of ears, clean ear arch, cozy nape!
-            hl_z = 0.45 * front_f - 0.72 * back_f - 0.06 * side_f
-            # Ear sits slightly behind the lateral midline (th ~ +0.16 and pi - 0.16)
+            # Soft natural hairline: open forehead, curved sideburn dip, clean ear arch, gentle nape curve
+            hl_z = 0.45 * front_f - 0.68 * back_f - 0.05 * side_f
             ear_ang_l = abs((th - 0.18 + math.pi) % math.tau - math.pi)
             ear_ang_r = abs((th - (math.pi - 0.18) + math.pi) % math.tau - math.pi)
             ear_arch = (math.exp(-(ear_ang_l / 0.28) ** 2) + math.exp(-(ear_ang_r / 0.28) ** 2)) * 0.22
-            # Cute gentle sideburn dip just in front of each ear (th ~ -0.25 and pi + 0.25)
             sb_l = abs((th + 0.26 + math.pi) % math.tau - math.pi)
             sb_r = abs((th - (math.pi + 0.26) + math.pi) % math.tau - math.pi)
             sb_dip = (math.exp(-(sb_l / 0.20) ** 2) + math.exp(-(sb_r / 0.20) ** 2)) * 0.22
-            hl_z = hl_z + ear_arch - sb_dip
+            nape_wave = 0.045 * back_f * math.sin(5.0 * th + 0.4)
+            hl_z = hl_z + ear_arch - sb_dip + nape_wave
 
             phi_bot = math.asin(max(-0.88, min(0.75, hl_z)))
             phi = math.pi * 0.495 * (1.0 - tv) + phi_bot * tv
@@ -647,17 +735,17 @@ def build_boy_hair(name, col, center, R, F, hair_mat):
             sdir = Vector((math.cos(phi) * math.cos(th), math.cos(phi) * math.sin(th), math.sin(phi)))
             p_base = head_shape(sdir, F)
 
-            # Lively organic tousled storybook wave ridges sculpted right into the hair silhouette!
+            # Soft sculpted storybook hair waves flowing asymmetrically across crown & back
             wave = (
                 1.0
-                + 0.18 * math.sin(5.0 * th + 0.7 + 2.0 * tv) * math.sin(tv * math.pi * 0.92)
-                + 0.11 * math.cos(7.0 * th - 1.4 * tv) * math.sin(tv * math.pi)
+                + 0.16 * math.sin(4.0 * th + 0.6 + 2.0 * tv) * math.sin(tv * math.pi * 0.90)
+                + 0.10 * math.cos(6.0 * th - 1.5 * tv) * math.sin(tv * math.pi)
             )
-            crown_tuft = 0.14 * math.exp(-((th + 0.85) ** 2) / 1.5 - ((tv - 0.30) / 0.28) ** 2)
-            back_fluff = 0.10 * back_f * math.sin(tv * math.pi * 0.85)
-            edge_taper = smoothstep(1.0, 0.74, tv)
-            puff = (0.17 + 0.10 * (1.0 - tv) + back_fluff + crown_tuft) * wave * (0.30 + 0.70 * edge_taper)
-            p_out = p_base + sdir * (0.018 if tv > 0.94 else puff)
+            crown_lift = 0.20 * math.exp(-((th - 1.10) ** 2) / 2.2 - ((tv - 0.24) / 0.28) ** 2)
+            back_fluff = 0.22 * back_f * math.sin(tv * math.pi * 0.84)
+            edge_taper = smoothstep(1.0, 0.72, tv)
+            puff = (0.20 + 0.12 * (1.0 - tv) + back_fluff + crown_lift) * wave * (0.36 + 0.64 * edge_taper)
+            p_out = p_base + sdir * (0.022 if tv > 0.94 else puff)
             ring.append(bm.verts.new(C + p_out * R))
         rings.append(ring)
 
@@ -666,34 +754,46 @@ def build_boy_hair(name, col, center, R, F, hair_mat):
     for i in range(u_segs):
         bm.faces.new((rings[-1][(i + 1) % u_segs], rings[-1][i], inner_c))
 
-    # 2) Sweeping soft storybook bangs across upper forehead (CLEAR of eyebrows!)
+    # 2) Sweeping smooth Bezier bangs across upper forehead (soft curved tips, CLEAR of eyebrows!)
     bangs_spec = [
-        (-0.56, 0.65, -0.78, 0.22, 0.14, 0.11),
-        (-0.34, 0.74, -0.10, 0.42, 0.16, 0.16),
-        (-0.04, 0.76,  0.26, 0.40, 0.17, 0.18),
-        ( 0.26, 0.72,  0.54, 0.34, 0.15, 0.15),
-        ( 0.56, 0.62,  0.78, 0.20, 0.14, 0.11),
+        (-0.56, 0.66, -0.76, 0.24, 0.145, 0.10),
+        (-0.34, 0.74, -0.10, 0.44, 0.165, 0.15),
+        (-0.02, 0.77,  0.26, 0.42, 0.175, 0.16),
+        ( 0.28, 0.72,  0.54, 0.36, 0.155, 0.14),
+        ( 0.56, 0.62,  0.76, 0.22, 0.145, 0.10),
     ]
     for sx, sz, ex2, ez2, rmid, fpuff in bangs_spec:
         pts = []
-        for k in range(5):
-            u = k / 4.0
-            ux = sx + (ex2 - sx) * (u ** 1.15)
-            uz = sz + (ez2 - sz) * (u ** 1.10) + 0.04 * math.sin(u * math.pi)
+        for k in range(6):
+            u = k / 5.0
+            ux = sx + (ex2 - sx) * (u ** 1.12)
+            uz = sz + (ez2 - sz) * (u ** 1.08) + 0.045 * math.sin(u * math.pi)
             surf = head_front_y(F, max(-0.88, min(0.88, ux)), max(-0.2, min(0.95, uz)))
-            out_y = surf.y - (0.06 + fpuff * math.sin(u * math.pi * 0.80))
+            out_y = surf.y - (0.065 + fpuff * math.sin(u * math.pi * 0.80))
             pts.append(C + Vector((ux, out_y, uz)) * R)
-        _add_hair_lock(bm, pts, rmid * 0.75 * R, rmid * R, 0.022 * R, flat=0.62, segs=6)
+        _add_hair_lock(bm, pts, rmid * 0.72 * R, rmid * R, 0.014 * R, flat=0.64, segs=6)
 
-    # 3) Playful tousled crown & back curls so silhouette is lively from front, side, AND behind!
-    tousle_waves = [
-        [(-0.30, -0.22, 0.94), (-0.06, -0.28, 1.20), (0.22, -0.18, 1.26), (0.46, 0.02, 1.08)],
-        [(-0.14, 0.16, 1.02), (0.14, 0.26, 1.24), (0.44, 0.36, 1.16), (0.64, 0.46, 0.92)],
-        [(-0.56, 0.32, 0.76), (-0.72, 0.56, 0.68), (-0.78, 0.68, 0.40), (-0.72, 0.64, 0.12)],
-        [( 0.56, 0.32, 0.76), ( 0.72, 0.56, 0.68), ( 0.78, 0.68, 0.40), ( 0.72, 0.64, 0.12)],
+    # 3) Silky curved Ghibli/Pixar cowlicks, layered rear wave tufts & feathered nape wisps
+    #    (De Casteljau Bezier curves -> smooth flowing arcs with zero boxy facets or crisscrossing cracks!)
+    smooth_tufts = [
+        # Playful crown cowlick sweeping gracefully up-right-back (soft charming silhouette from ALL angles!)
+        ([(-0.18, 0.08, 1.04), (0.08, 0.22, 1.44), (0.44, 0.44, 1.40), (0.64, 0.62, 1.08)], 0.14, 0.19, 0.015, 0.72, 7),
+        # Gentle upper-back crest wave arcing softly up-and-back (charming profile in side view!)
+        ([(-0.10, 0.44, 1.02), (-0.28, 0.94, 1.32), (-0.42, 1.24, 1.08), (-0.44, 1.28, 0.76)], 0.14, 0.19, 0.016, 0.74, 7),
+        # Soft right-back sweeping wave tuft curving cleanly along upper-mid back
+        ([( 0.20, 0.62, 0.92), ( 0.64, 1.18, 0.76), ( 0.96, 1.16, 0.30), ( 0.86, 1.02, -0.06)], 0.14, 0.20, 0.016, 0.72, 7),
+        # Soft left-back sweeping wave tuft curving cleanly along mid-back
+        ([(-0.26, 0.66, 0.88), (-0.72, 1.16, 0.68), (-0.98, 1.12, 0.24), (-0.86, 0.98, -0.10)], 0.14, 0.20, 0.016, 0.72, 7),
+        # Cozy center-back layered curl sweeping gently down-right (catches golden cel highlight from behind!)
+        ([(-0.04, 0.78, 0.72), ( 0.08, 1.34, 0.42), ( 0.26, 1.32, -0.04), ( 0.14, 1.10, -0.36)], 0.15, 0.21, 0.016, 0.72, 7),
+        # Soft curved nape wisps feathering organically along the rear neckline
+        ([(-0.48, 0.72, -0.08), (-0.70, 0.98, -0.38), (-0.48, 1.02, -0.66)], 0.10, 0.135, 0.012, 0.68, 6),
+        ([(-0.08, 0.86, -0.14), (-0.22, 1.16, -0.46), ( 0.04, 1.14, -0.74)], 0.11, 0.150, 0.012, 0.68, 6),
+        ([( 0.36, 0.78, -0.10), ( 0.58, 1.06, -0.40), ( 0.40, 1.04, -0.66)], 0.10, 0.140, 0.012, 0.68, 6),
     ]
-    for w_pts in tousle_waves:
-        _add_hair_lock(bm, [C + Vector(q) * R for q in w_pts], 0.13 * R, 0.18 * R, 0.04 * R, flat=0.72, segs=6)
+    for ctrl, r0, rmid, rtip, fl, sg in smooth_tufts:
+        curve = _sample_bezier_curve(ctrl, n_samples=7)
+        _add_hair_lock(bm, [C + q * R for q in curve], r0 * R, rmid * R, rtip * R, flat=fl, segs=sg)
 
     return bm_to_obj(bm, name, col, hair_mat)
 

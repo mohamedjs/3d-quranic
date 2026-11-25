@@ -130,30 +130,44 @@ def build_forearms_and_hands(name, col, lm, p, mat, rig_obj, forearm_start=0.38)
                 for a in (k / segs * math.tau for k in range(segs))
             ])
 
-        # 2) Soft chunky mitten hand using SAME right-handed basis (u_hand, v_hand) so zero twist/flip!
+        # 2) Natural curled mitten hand (smooth curved finger-block arc, cupped palm, zero twist/flip!)
+        in_sign = -1.0 if (u_hand.dot(inward) < 0.0) else 1.0
+        fwd_sign = 1.0 if (v_hand.dot(fwd_palm) > 0.0) else -1.0
         hand_profile = [
-            # (t_along, thick_mul, width_mul, curl_in)
-            (0.10, 0.96, 0.92, 0.00),
-            (0.32, 1.04, 1.10, 0.03),
-            (0.58, 0.96, 1.06, 0.08),
-            (0.80, 0.80, 0.90, 0.14),
-            (0.95, 0.56, 0.64, 0.19),
-            (1.00, 0.30, 0.34, 0.21),
+            # (step_len_frac, thick_mul, width_mul, curl_deg, tip_slant)
+            (0.10, 0.96, 0.92,  2.0, 0.00),
+            (0.24, 1.04, 1.12,  7.0, 0.00),
+            (0.24, 0.94, 1.06, 18.0, 0.04),
+            (0.20, 0.78, 0.92, 34.0, 0.08),
+            (0.15, 0.58, 0.68, 48.0, 0.09),
+            (0.08, 0.30, 0.36, 54.0, 0.05),
         ]
-        for u, tm, wm, curl in hand_profile:
-            c = wri + t_hd * (u * hand_len) + inward * (curl * hand_len * 0.38)
+        cur_p = wri.copy()
+        for ds_f, tm, wm, curl_deg, slant in hand_profile:
+            ang = math.radians(curl_deg)
+            ca_c, sa_c = math.cos(ang), math.sin(ang)
+            t_ring = (t_hd * ca_c + inward * sa_c).normalized()
+            in_ring = (-t_hd * sa_c + inward * ca_c).normalized()
+            u_ring = in_ring * in_sign   # preserves exact right-handed basis (u_ring, v_hand, t_ring)
+            cur_p = cur_p + t_ring * (ds_f * hand_len)
             ru = palm_t * tm
             rv = palm_w * wm
-            rings.append([
-                bm.verts.new(c + u_hand * (math.cos(a) * ru) + v_hand * (math.sin(a) * rv))
-                for a in (k / segs * math.tau for k in range(segs))
-            ])
+            ring = []
+            for k in range(segs):
+                a = k / segs * math.tau
+                ca_a, sa_a = math.cos(a), math.sin(a)
+                # Subtle natural cupped palm hollow + index-to-pinky tip slant
+                cup = -0.12 * ru * max(0.0, ca_a * in_sign) * (1.0 - abs(sa_a) ** 1.4)
+                sl = slant * hand_len * (sa_a * fwd_sign)
+                pt = cur_p + u_ring * (ca_a * ru + cup * in_sign) + v_hand * (sa_a * rv) + t_ring * sl
+                ring.append(bm.verts.new(pt))
+            rings.append(ring)
 
         loft_rings(bm, rings, closed_u=True, cap_start=True, cap_end=True)
 
-        # 3) Cute rounded thumb on the forward-inner side of the palm
-        thumb_base = wri + t_hd * (0.20 * hand_len) + fwd_palm * (palm_w * 0.72) + inward * (palm_t * 0.25)
-        thumb_dir = (t_hd * 0.68 + fwd_palm * 0.56 + inward * 0.46).normalized()
+        # 3) Softly opposing curved thumb nestled naturally along the forward-inner palm
+        thumb_base = wri + t_hd * (0.20 * hand_len) + fwd_palm * (palm_w * 0.74) + inward * (palm_t * 0.30)
+        thumb_dir = (t_hd * 0.66 + fwd_palm * 0.44 + inward * 0.60).normalized()
         thumb_len = hand_len * 0.46
         th_u = thumb_dir.cross(inward)
         if th_u.length < 1e-4:
@@ -162,8 +176,8 @@ def build_forearms_and_hands(name, col, lm, p, mat, rig_obj, forearm_start=0.38)
         th_v = thumb_dir.cross(th_u).normalized()
         th_r = palm_t * 0.56
         th_rings = []
-        for u, rm, bend in ((0.0, 1.12, 0.0), (0.38, 1.0, 0.02), (0.76, 0.84, 0.08), (1.0, 0.36, 0.12)):
-            c = thumb_base + thumb_dir * (u * thumb_len) + inward * (bend * thumb_len)
+        for u, rm, bend in ((0.0, 1.12, 0.0), (0.38, 0.98, 0.05), (0.76, 0.80, 0.16), (1.0, 0.36, 0.24)):
+            c = thumb_base + thumb_dir * (u * thumb_len) + inward * (bend * thumb_len) - fwd_palm * (bend * 0.28 * thumb_len)
             th_rings.append([
                 bm.verts.new(c + (th_u * math.cos(a) + th_v * math.sin(a)) * (th_r * rm))
                 for a in (k / 8.0 * math.tau for k in range(8))

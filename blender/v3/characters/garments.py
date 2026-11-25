@@ -197,7 +197,15 @@ def build_galabiya(
             z_mod = z
             if idx == 0:
                 z_mod -= 0.016 * scale * max(0.0, -math.sin(th)) ** 1.6
-            ring.append(bm.verts.new((rx * f * math.cos(th), cy + ry * f * math.sin(th), z_mod)))
+            py = ry * f * math.sin(th)
+            # For seated_mode (Grandma Zainab), trim rear (+Y) skirt cushion so buttocks/thighs sit flush
+            # at z=0.45 m on the mastaba and lower back hem hangs cleanly in front of the bench edge!
+            if seated_mode and py > 0.0 and z < z_hip + 0.05 * scale:
+                t_seat = smoothstep(z_hip + 0.05 * scale, z_hip - 0.10 * scale, z)
+                t_low = smoothstep(lm['knee_z'] + 0.06 * scale, hem_z, z)
+                back_mul = 1.0 - 0.48 * t_seat - 0.16 * t_low
+                py *= back_mul
+            ring.append(bm.verts.new((rx * f * math.cos(th), cy + py, z_mod)))
         rings.append(ring)
 
     hem_inner = [bm.verts.new((v.co.x * 0.92, v.co.y * 0.92, v.co.z + 0.020 * scale)) for v in rings[-1]]
@@ -695,35 +703,67 @@ def build_hijab(
     asymmetric_tail=False,
     bun_puff=0.22,
 ):
-    """Build a modest, graceful 2-part hijab/tarha (sculpted head wrap + flowing shoulder drape)."""
+    """Build a modest, graceful fabric hijab/tarha (plush rolled front edge + chin/shoulder folds + drape)."""
     C = lm['head_center']
     R_h = lm['head_r']
     scale = lm['height'] / 1.60
     parts = []
 
-    # --- 1) Sculpted head wrap with graceful back bun + clean oval face opening (rigid to head)
+    # --- 1) Sculpted head wrap with smooth 32-seg crown, thick rounded rolled front edge & soft back bun
     bm_h = bmesh.new()
-    u_segs = 24
-    v_segs = 10
+    u_segs = 32
+    v_segs = 11
     face_rx = 0.78
-    face_top = 0.44
+    face_top = 0.45
     face_bot = -0.96
     face_cz = 0.5 * (face_top + face_bot)
     face_rz = 0.5 * (face_top - face_bot)
 
     rings = []
-    # Sweep from face opening oval (tv = 0) smoothly over crown/cheeks/back bun to tv = 0.93 (avoid back-pole pinch!)
-    for j in range(v_segs + 1):
-        tv = (j / v_segs) * 0.93
+    open_pts = []
+    for i in range(u_segs):
+        a = i / u_segs * math.tau
+        fx = face_rx * math.cos(a)
+        fz = face_cz + face_rz * math.sin(a)
+        f_surf = head_front_y(F, fx, fz)
+        d_open = Vector((fx, f_surf.y, fz)).normalized()
+        open_pts.append((a, d_open, head_shape(d_open, F)))
+
+    # 3-ring plush rolled fabric front edge (tuck -> thick rounded front roll -> smooth outer crest)
+    rim_in = []
+    rim_lip = []
+    rim_outer = []
+    for a, d_open, p_head in open_pts:
+        brow_w = max(0.0, math.sin(a)) ** 1.25
+        chin_w = max(0.0, -math.sin(a)) ** 1.25
+        # Soft gentle scarf-overlap swell across upper-left temple so it reads as folded woven cloth
+        wrap_swell = 0.032 * math.exp(-(((a - 1.08 + math.pi) % math.tau - math.pi) / 0.58) ** 2)
+        p_tuck = p_head + d_open * (0.028 + 0.010 * brow_w) + Vector((0.0, 0.024, 0.0))
+        p_roll = (
+            p_head
+            + d_open * (0.125 + 0.042 * brow_w + wrap_swell)
+            + Vector((0.0, -0.068 - 0.028 * brow_w - 0.022 * chin_w, -0.056 * chin_w))
+        )
+        p_crest = (
+            p_head
+            + d_open * (0.158 + 0.036 * brow_w + wrap_swell * 0.85)
+            + Vector((0.0, -0.032 - 0.012 * brow_w - 0.018 * chin_w, -0.042 * chin_w))
+        )
+        rim_in.append(bm_h.verts.new(C + p_tuck * R_h))
+        rim_lip.append(bm_h.verts.new(C + p_roll * R_h))
+        rim_outer.append(bm_h.verts.new(C + p_crest * R_h))
+
+    rings.append(rim_in)
+    rings.append(rim_lip)
+    rings.append(rim_outer)
+
+    # Sweep from behind the plush rolled edge over crown & bun to smooth back cap
+    d_back = Vector((0.0, 1.0, -0.04)).normalized()
+    for j in range(1, v_segs + 1):
+        tv = 0.06 + (j / v_segs) * 0.87
         ring = []
         for i in range(u_segs):
-            a = i / u_segs * math.tau
-            fx = face_rx * math.cos(a)
-            fz = face_cz + face_rz * math.sin(a)
-            f_surf = head_front_y(F, fx, fz)
-            d_open = Vector((fx, f_surf.y, fz)).normalized()
-            d_back = Vector((0.0, 1.0, -0.04)).normalized()
-
+            a, d_open, _ = open_pts[i]
             ang = d_open.angle(d_back)
             if ang < 1e-4:
                 sdir = d_back
@@ -734,15 +774,17 @@ def build_hijab(
 
             p_head = head_shape(sdir, F)
             bun = bun_puff * math.exp(-((sdir.y - 0.88) / 0.36) ** 2 - ((sdir.z + 0.05) / 0.42) ** 2)
-            fold = 0.022 * math.sin(tv * 4.5 * math.pi + 0.5 * math.cos(a)) * smoothstep(0.0, 0.25, tv)
-            thick = 0.115 + 0.045 * smoothstep(0.0, 0.35, tv) + bun + fold
-            if tv < 0.08:
-                thick = 0.078 + 0.037 * (tv / 0.08)
+            # Soft organic cloth wrap folds arcing subtly across crown & sides
+            fold = (
+                0.024 * math.sin(tv * 4.0 * math.pi + 0.7 * math.cos(a - 0.4)) * smoothstep(0.06, 0.30, tv)
+                + 0.014 * math.cos(3.0 * a + 2.2 * tv) * smoothstep(0.08, 0.36, tv)
+            )
+            thick = 0.146 + 0.038 * smoothstep(0.06, 0.38, tv) + bun + fold
             p_out = p_head + sdir * thick
-            if math.sin(a) < -0.50 and tv < 0.28:
-                chin_f = (-math.sin(a) - 0.50) / 0.50
-                p_out.z -= 0.07 * chin_f * (1.0 - tv / 0.28)
-                p_out.y -= 0.03 * chin_f * (1.0 - tv / 0.28)
+            if math.sin(a) < -0.45 and tv < 0.32:
+                chin_f = (-math.sin(a) - 0.45) / 0.55
+                p_out.z -= 0.072 * chin_f * (1.0 - tv / 0.32)
+                p_out.y -= 0.032 * chin_f * (1.0 - tv / 0.32)
             ring.append(bm_h.verts.new(C + p_out * R_h))
         rings.append(ring)
 
@@ -751,23 +793,18 @@ def build_hijab(
     back_n = (back_c - C).normalized()
     rings.append([bm_h.verts.new(back_c.lerp(v.co, 0.42) + back_n * (0.018 * R_h)) for v in rings[-1]])
 
-    rim_in = [
-        bm_h.verts.new(C + ((v.co - C) * 0.90 + Vector((0.0, 0.015 * R_h, 0.0))))
-        for v in rings[0]
-    ]
-    rings.insert(0, rim_in)
     loft_rings(bm_h, rings, closed_u=True, cap_start=False, cap_end=True)
 
     rim_pts = None
     if trim_mat is not None:
-        # Clean continuous upper arch framing forehead & cheeks without atan2 wrap discontinuity!
+        # Clean continuous upper arch framing forehead & cheeks flush along the plush rolled edge
         ordered = []
         for i in range(u_segs):
             a = i / u_segs * math.tau
             if a > math.pi * 1.5:
-                a -= math.tau   # map [-0.5*pi .. 1.5*pi] continuously across right cheek -> brow -> left cheek
-            if -math.pi * 0.20 <= a <= math.pi * 1.20:
-                ordered.append((a, rings[1][i].co.copy() + Vector((0.0, -0.005 * scale, 0.0))))
+                a -= math.tau
+            if -math.pi * 0.22 <= a <= math.pi * 1.22:
+                ordered.append((a, rings[1][i].co.copy() + Vector((0.0, -0.004 * scale, 0.0))))
         ordered.sort(key=lambda pair: pair[0])
         rim_pts = [pt for _, pt in ordered]
     head_wrap = bm_to_obj(bm_h, name + '_head', col, mat)
@@ -781,26 +818,39 @@ def build_hijab(
         R.skin_rigid(tr_h, rig_obj, 'head')
         parts.append(tr_h)
 
-    # --- 2) Flowing modest shoulder drape with softly sloped rounded shoulders & full chest/back clearance
+    # --- 2) Flowing modest shoulder drape with crisp sculpted chin & shoulder fabric folds (zero harsh tubes!)
     sh_z = lm['sh_z']
     z_nb = lm['neck_bot'].z
     z_top_d = C.z - R_h * 0.72
-    neck_r = R_h * 0.68
+    neck_r = R_h * 0.70
     bx_s, by_s, cy_s = torso_radii(lm, p, sh_z)
     bx_c, by_c, cy_c = torso_radii(lm, p, lm['chest_z'])
     bx_w, by_w, cy_w = torso_radii(lm, p, lm['waist_z'])
 
-    levels = [
+    # Dense smooth vertical profile (12 rings) so the sculpted chin-wrap & shoulder-drape folds
+    # create genuine downward-tilted shadow undersides and upward-tilted sunlit fabric ridges!
+    ctrl_levels = [
         # (z_base, rx, ry, cy, t_drop, side_slope)
-        (z_top_d, neck_r, neck_r * 1.04, C.y + 0.01 * scale, 0.00, 0.00),
-        (z_nb + 0.022 * scale, neck_r * 1.18, neck_r * 1.22, 0.004, 0.04, 0.00),
-        (z_nb - 0.004 * scale, lm['sh_x'] * 0.76 + 0.032 * scale, by_s + 0.078 * scale, cy_s, 0.14, 0.016),
-        (sh_z - 0.004 * scale, lm['sh_x'] + 0.062 * scale, by_c + 0.094 * scale, cy_c, 0.36, 0.026),
-        (sh_z - 0.058 * scale, lm['sh_x'] + 0.076 * scale, by_c + 0.100 * scale, cy_c, 0.68, 0.018),
-        (sh_z - 0.112 * scale, lm['sh_x'] + 0.082 * scale, by_w + 0.104 * scale, cy_w, 1.00, 0.008),
+        (z_top_d, neck_r, neck_r * 1.04, C.y + 0.008 * scale, 0.00, 0.00),
+        (C.z - R_h * 0.94, neck_r * 1.14, neck_r * 1.18, C.y + 0.002 * scale, 0.04, 0.00),
+        (z_nb + 0.022 * scale, neck_r * 1.32, neck_r * 1.36, 0.002, 0.10, 0.004),
+        (z_nb - 0.004 * scale, lm['sh_x'] * 0.68 + 0.028 * scale, by_s + 0.074 * scale, cy_s, 0.19, 0.012),
+        (z_nb - 0.024 * scale, lm['sh_x'] * 0.94 + 0.046 * scale, by_s + 0.092 * scale, cy_s, 0.31, 0.020),
+        (sh_z - 0.020 * scale, lm['sh_x'] + 0.068 * scale, by_c + 0.100 * scale, cy_c, 0.48, 0.022),
+        (sh_z - 0.066 * scale, lm['sh_x'] + 0.078 * scale, by_c + 0.105 * scale, cy_c, 0.74, 0.015),
+        (sh_z - 0.112 * scale, lm['sh_x'] + 0.084 * scale, by_w + 0.107 * scale, cy_w, 1.00, 0.008),
     ]
+    # Subdivide upper/mid drape smoothly to 13 rings so folds read crisply under cel-shading!
+    levels = []
+    for idx in range(len(ctrl_levels) - 1):
+        a0, a1 = ctrl_levels[idx], ctrl_levels[idx + 1]
+        levels.append(a0)
+        if idx in (1, 2, 3, 4, 5):
+            levels.append(tuple(0.5 * (x + y) for x, y in zip(a0, a1)))
+    levels.append(ctrl_levels[-1])
+
     bm_d = bmesh.new()
-    d_segs = 24
+    d_segs = 32
     d_rings = []
     for z, rx, ry, cy, t, s_slope in levels:
         ring = []
@@ -809,13 +859,30 @@ def build_hijab(
             front_w = max(0.0, -math.sin(th))
             back_w = max(0.0, math.sin(th))
             side_w = abs(math.cos(th)) ** 1.4
-            fold = 1.0 + 0.034 * t * (0.65 * math.sin(6.0 * th + 0.6) + 0.35 * math.cos(10.0 * th))
+
+            # Subtle sculpted cloth drapery ripples integrated into the drape surface
+            t1_c = 0.14 + 0.14 * math.cos(th)
+            u1 = (t - t1_c) / 0.065
+            fold1 = (0.012 * math.exp(-u1 * u1) - 0.006 * math.exp(-((t - (t1_c + 0.07)) / 0.055) ** 2))
+            fold1 *= scale * (0.20 + 0.80 * front_w) * smoothstep(0.01, 0.06, t)
+
+            t2_c = 0.42 - 0.18 * math.cos(th)
+            u2 = (t - t2_c) / 0.085
+            fold2 = (0.016 * math.exp(-u2 * u2) - 0.008 * math.exp(-((t - (t2_c + 0.09)) / 0.070) ** 2))
+            fold2 *= scale * (0.25 + 0.75 * front_w) * smoothstep(0.14, 0.26, t)
+
+            flute = 1.0 + 0.032 * t * (0.62 * math.sin(6.0 * th + 0.6) + 0.38 * math.cos(10.0 * th))
+            dr = fold1 + fold2
             drop = t * (drop_front * (front_w ** 1.25) + drop_back * (back_w ** 1.25)) * scale
             drop += s_slope * side_w * scale
             if asymmetric_tail:
                 dth = (th + math.pi * 0.28 + math.pi) % math.tau - math.pi
                 drop += t * 0.085 * scale * math.exp(-(dth / 0.65) ** 2)
-            ring.append(bm_d.verts.new((rx * fold * math.cos(th), cy + ry * fold * math.sin(th), z - drop)))
+            ring.append(bm_d.verts.new((
+                (rx * flute + dr * 0.55) * math.cos(th),
+                cy + (ry * flute + dr) * math.sin(th),
+                z - drop + 0.18 * dr,
+            )))
         d_rings.append(ring)
 
     # Turned-in hem edge for rich cloth volume
@@ -824,9 +891,65 @@ def build_hijab(
     loft_rings(bm_d, d_rings, closed_u=True, cap_start=False, cap_end=False)
 
     hem_pts = [v.co.copy() for v in d_rings[-2]] if trim_mat is not None else None
+    # Sample surface points on the drape along two gentle flush-hugging cloth fold arcs BEFORE bm_to_obj!
+    def _sample_drape(ring_i, th_rad, out_pad):
+        # Smooth linear interpolation around d_rings[ring_i] at angle th_rad
+        u_k = (th_rad % math.tau) / math.tau * d_segs
+        k0 = int(u_k) % d_segs
+        k1 = (k0 + 1) % d_segs
+        frac = u_k - math.floor(u_k)
+        pt = d_rings[ring_i][k0].co.lerp(d_rings[ring_i][k1].co, frac)
+        radial = Vector((pt.x, pt.y - cy_s, 0.0))
+        if radial.length > 1e-4:
+            pt = pt + radial.normalized() * out_pad
+        return pt
+
+    # Fold 1: gentle crescent scarf fold cradling softly under the chin & tapering onto left shoulder
+    # Fold 2: subtle lower drapery pleat sweeping across upper chest toward right shoulder
+    # Built as flush low-profile rounded cloth folds WITHOUT ink outline (0.0) so they read as pure soft fabric!
+    fold_specs = [
+        # ([(ring_idx, th_deg, pad_m), ...], half_width, half_thick)
+        ([
+            (1, -142.0, 0.002 * scale),
+            (2, -112.0, 0.009 * scale),
+            (3,  -84.0, 0.011 * scale),
+            (4,  -56.0, 0.010 * scale),
+            (5,  -28.0, 0.007 * scale),
+            (6,   -4.0, 0.001 * scale),
+        ], 0.022 * scale, 0.009 * scale),
+        ([
+            (5,  -58.0, 0.002 * scale),
+            (6,  -82.0, 0.010 * scale),
+            (7, -108.0, 0.012 * scale),
+            (8, -134.0, 0.009 * scale),
+            (9, -158.0, 0.002 * scale),
+        ], 0.026 * scale, 0.010 * scale),
+    ]
+    fold_curves = [
+        ([_sample_drape(ri, math.radians(deg), pad) for ri, deg, pad in spec], hw, ht)
+        for spec, hw, ht in fold_specs
+    ]
+
     drape_obj = bm_to_obj(bm_d, name + '_drape', col, mat)
     R.skin_cape_drape(drape_obj, rig_obj, lm, z_top_d, sh_z)
     parts.append(drape_obj)
+
+    bm_fl = bmesh.new()
+    for pts, hw, ht in fold_curves:
+        add_tube(
+            bm_fl,
+            pts,
+            radius=lambda u, hw=hw, ht=ht: (
+                hw * (0.35 + 0.65 * math.sin(u * math.pi)),
+                ht * (0.28 + 0.72 * math.sin(u * math.pi)),
+            ),
+            segs=8,
+            closed_caps=True,
+            ref_up=Vector((0.0, -1.0, 0.35)),
+        )
+    fold_obj = bm_to_obj(bm_fl, name + '_folds', col, mat)
+    R.skin_cape_drape(fold_obj, rig_obj, lm, z_top_d, sh_z)
+    parts.append(fold_obj)
 
     if hem_pts is not None:
         bm_td = bmesh.new()

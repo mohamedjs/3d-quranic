@@ -32,11 +32,11 @@ CAST = {
             nose_z=-0.35, nose_len=0.155, nose_w=0.13, nose_lift=0.032,
             mouth_z=-0.61, mouth_w=0.20, smile=0.068, lip_col='#C46F5A', lip_alpha=0.28,
             blush=0.34, blush_col='#E47D69', lash_thick=0.034, lashes=False,
-            brow_col='#341F14', brow_thick=0.044, brow_gap=0.08, brow_arch=0.055, brow_tilt=-0.02,
+            brow_col='#4B2D1A', brow_thick=0.044, brow_gap=0.08, brow_arch=0.055, brow_tilt=-0.02,
             ears=True, ear_scale=1.06,
         ),
         clips=['idle', 'walk', 'run', 'talk'],
-        style=dict(energy=1.25, arm_out=0.24, elbow=16.0, robe=False),
+        style=dict(energy=1.25, arm_out=0.24, elbow=28.0, robe=False),
     ),
     'farmer': dict(
         label='Grandpa Salim',
@@ -66,9 +66,10 @@ CAST = {
         label='Grandma Zainab',
         props=dict(
             height=1.58, head_ratio=5.4, neck_frac=0.20, neck_ratio=0.36,
-            hip_frac=0.45, ankle_frac=0.050, shoulder_w=0.126, hip_w=0.076,
-            chest_d=0.078, belly_d=0.086, pelvis_d=0.088,
-            waist_ratio=0.86, chest_ratio=0.94, hip_full=1.18, belly_full=1.16, chest_full=1.08, belly_fwd=0.85,
+            hip_frac=0.535, knee_frac=0.525, ankle_frac=0.050, shoulder_w=0.126, hip_w=0.076,
+            chest_d=0.078, belly_d=0.086, pelvis_d=0.084,
+            waist_ratio=0.86, chest_ratio=0.94, hip_full=1.14, belly_full=1.14, chest_full=1.08, belly_fwd=0.80,
+            upperarm_frac=0.72, lowerarm_frac=0.63,
             arm_thick=1.02, hand_scale=0.96, leg_thick=1.02, foot_len=0.108, foot_w=1.00,
         ),
         skin='#CB946F',
@@ -205,7 +206,7 @@ def _outfit_player(col, lm, p, F, M, rig_obj):
     M['trim'] = L.toon_mat('toon_trim_turquoise', '#2F8B8C', shadow='#8BA0AE', rim=0.16)
     M['sash'] = L.toon_mat('toon_sash_gold', '#DFA543', shadow='#BA9380', rim=0.18)
     M['sirwal'] = L.toon_mat('toon_sirwal_sand', '#D8C7A8', shadow='#B39E92', rim=0.16)
-    M['hair'] = L.toon_mat('toon_hair_chestnut', '#3B2316', shadow='#7E6B7A', rim=0.14)
+    M['hair'] = L.toon_mat('toon_hair_chestnut', '#6A4227', shadow='#987A7F', rim=0.22)
     M['bag'] = L.toon_mat('toon_leather_cognac', '#9B5B30', shadow='#A88384', rim=0.18)
     M['strap'] = L.toon_mat('toon_leather_dark', '#63381D', shadow='#987A82', rim=0.14)
     M['brass'] = L.toon_mat('toon_gold_brass', '#F0BE59', shadow='#C69C72', rim=0.28)
@@ -329,7 +330,7 @@ def _outfit_grandma_zainab(col, lm, p, F, M, rig_obj):
         'zainab_tarha', col, lm, p, F, M['tarha'], rig_obj,
         trim_mat=M['gold'], drop_front=0.14, drop_back=0.26, bun_puff=0.22,
     ):
-        parts.append((o, 0.0 if 'trim' in o.name else OUTLINE_CLOTH))
+        parts.append((o, 0.0 if ('trim' in o.name or 'folds' in o.name) else OUTLINE_CLOTH))
     return parts
 
 
@@ -362,7 +363,7 @@ def _outfit_grandma(col, lm, p, F, M, rig_obj):
         'grandma_hijab', col, lm, p, F, M['hijab'], rig_obj,
         trim_mat=None, drop_front=0.23, drop_back=0.30, bun_puff=0.22,
     ):
-        parts.append((o, OUTLINE_CLOTH))
+        parts.append((o, 0.0 if 'folds' in o.name else OUTLINE_CLOTH))
     parts.append((G.build_glasses('grandma_glasses', col, lm, F, M['glasses'], rig_obj), 0.0))
     return parts
 
@@ -488,7 +489,7 @@ def _outfit_aunt(col, lm, p, F, M, rig_obj):
         'aunt_hijab', col, lm, p, F, M['hijab'], rig_obj,
         trim_mat=None, drop_front=0.21, drop_back=0.28, asymmetric_tail=True, bun_puff=0.24,
     ):
-        parts.append((o, OUTLINE_CLOTH))
+        parts.append((o, 0.0 if 'folds' in o.name else OUTLINE_CLOTH))
     return parts
 
 
@@ -569,6 +570,8 @@ def build(key):
     ol_obj = L.build_combined_outline(parts, key + '_outline', col, rig_obj)
     mesh_objs = [o for o, _ in parts]
     mesh_obj = L.join_objects(mesh_objs, key, col)
+    # Apply lifted soft cheek/mouth/jaw custom normals after join so EEVEE + Three.js toon cel wraps softly!
+    HD.apply_soft_face_normals(mesh_obj, lm['head_center'], lm['head_r'], F)
     for m in list(mesh_obj.modifiers):
         if m.type == 'ARMATURE':
             m.object = rig_obj

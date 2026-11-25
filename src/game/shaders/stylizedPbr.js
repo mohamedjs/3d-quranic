@@ -53,7 +53,8 @@ export function injectAerialFog(sh) {
         vec3 aCol = mix(uAerialCool, uAerialWarm, smoothstep(0.18, 0.92, aSun));
         aCol += uAerialSunGlow * pow(max(dot(aDir, uAerialSunDir), 0.0), 5.0) * 0.12;
         float aLow = exp(-max(vAerialPos.y + 1.5, 0.0) * 0.025);
-        float aDist = smoothstep(fogNear, fogFar, vFogDepth);
+        float aNear = max(fogNear, 25.0);
+        float aDist = smoothstep(aNear, max(fogFar, aNear + 40.0), vFogDepth);
         float aFog = clamp(aDist * (0.82 + 0.12 * aLow), 0.0, 0.92);
         gl_FragColor.rgb = mix(gl_FragColor.rgb, aCol, aFog);
       }

@@ -119,11 +119,11 @@ export function Environment({ env }) {
     scene.fog = new THREE.Fog('#dcd6ca', fogNear, fogFar);
   }, [scene, gl, env, pbr, fogNear, fogFar]);
 
-  // Haze pushes back smoothly with camera height so lookout hill & bird's-eye views stay clear on Lite too
+  // Haze pushes back smoothly with camera height and NEVER begins inside 25 m (keeps close-ups crystal clear)
   useFrame(() => {
     sky.material.uniforms.uTime.value = refs.clock.wind;
     const f = scene.fog;
-    if (f) { const d = Math.max(refs.view.dist, refs.view.height * 2.2); f.near = fogNear + d * 1.4; f.far = fogFar + d * 4.5; }
+    if (f) { const d = Math.max(0, refs.view.dist, refs.view.height * 2.2); f.near = Math.max(25, fogNear + d * 1.4); f.far = Math.max(f.near + 60, fogFar + d * 4.5); }
   });
   return (
     <>

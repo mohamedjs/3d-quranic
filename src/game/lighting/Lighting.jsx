@@ -78,11 +78,11 @@ export function Lighting({ env }) {
   // (avoiding dark cast shadow bands on flat streets), while physical PBR uses a stronger key.
   return (
     <>
-      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={pbr ? 2.35 : 1.65} castShadow
+      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={pbr ? 1.95 : 1.65} castShadow
         shadow-mapSize={[preset.shadowMap, preset.shadowMap]} shadow-bias={-0.0004} shadow-normalBias={0.04} shadow-radius={2}
         shadow-camera-left={-r} shadow-camera-right={r} shadow-camera-top={r} shadow-camera-bottom={-r}
         shadow-camera-near={1} shadow-camera-far={340} />
-      <hemisphereLight args={[SKY_FILL, GROUND_BOUNCE, pbr ? 1.95 : 2.65]} />
+      <hemisphereLight args={[SKY_FILL, GROUND_BOUNCE, pbr ? 2.15 : 2.65]} />
     </>
   );
 }

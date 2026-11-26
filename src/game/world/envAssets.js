@@ -8,13 +8,15 @@ import { gltfLoader } from './loaders.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { toonFor, toonMaterial, windFor, WIND } from '../shaders/toon.js';
 import { envMaterial } from '../shaders/stylizedPbr.js';
+import { BUILDING_LAYER_INDEX, getBuildingMaterial, ensureBuildingTextures } from '../shaders/buildingMaterial.js';
 import { TOON } from '../shaders/toonPalette.js';
 import { toonStreamWaterMaterial } from '../shaders/waterMaterial.js';
 import { PRESETS } from '../systems/quality.js';
 import { useGame } from '../systems/store.js';
 
 export const ENV_MODELS = [
-  'house_a', 'house_b', 'house_c', 'mastaba',
+  'house_a', 'house_b', 'house_c', 'house_d', 'house_e', 'house_f', 'mastaba',
+  'oasis_arish', 'ruins_wall_a', 'ruins_wall_b', 'ruins_wall_c', 'ruins_column', 'ruins_arch',
   'palm_a', 'palm_b', 'palm_c', 'palm_d',
   'sycamore', 'sycamore_a', 'sycamore_b', 'acacia',
   'bougainvillea', 'bougainvillea_bush', 'bougainvillea_vine',
@@ -106,14 +108,16 @@ export function loadEnvModels() {
     // Ensure the core 512px foliage atlas is ready before first render; upgrade lazily on Med–Ultra
     const detailPreset = PRESETS[useGame.getState().detail] ?? PRESETS.lite;
     const initRes = detailPreset.texRes ?? 512;
+    const initShading = detailPreset.shading ?? 'toon';
     getFoliageAlbedo();
     if (initRes >= 1024) upgradeFoliageAtlas(initRes, detailPreset.waterMode === 'ultra' ? 8 : 4);
+    ensureBuildingTextures(initShading);
 
     const loader = gltfLoader();
     const out = {};
     await Promise.all(ENV_MODELS.map(async name => {
       const gltf = await loader.loadAsync(`./models/env/${name}.glb`).catch(e => { throw new Error(`models/env/${name}.glb: ${e.message || e}`); });
-      out[name] = extract(gltf.scene, name, detailPreset.shading ?? 'toon');
+      out[name] = extract(gltf.scene, name, initShading);
     }));
     return out;
   })();
@@ -169,6 +173,11 @@ function extract(root, model, shading = 'toon') {
       if (matName === 'toon_water' && geometry.attributes.uv) {
         geometry.computeBoundingSphere();
         out.push({ geometry, material: materialFor(matName, geometry), outline: false });
+        continue;
+      }
+      const bLayer = BUILDING_LAYER_INDEX[matName];
+      if (bLayer !== undefined) {
+        add('ph_building', stripBuilding(geometry, bLayer), getBuildingMaterial(shading));
         continue;
       }
       const fspec = foliageSpec(matName, model);
@@ -244,6 +253,17 @@ function strip(g, color, keepUv = false) {
     const a = new Float32Array(n * 3).fill(1);
     out.setAttribute('color', new THREE.BufferAttribute(a, 3));
   }
+  return out;
+}
+
+// v4 building path: keep position, normal, metric UV, linear vertex colour, and write per-vertex aLayer
+// so all ph_* material parts of a LOD merge into one geometry and one draw call.
+function stripBuilding(g, layerIdx) {
+  const out = strip(g, undefined, true);
+  const n = out.attributes.position.count;
+  const aLayer = new Float32Array(n);
+  aLayer.fill(layerIdx);
+  out.setAttribute('aLayer', new THREE.BufferAttribute(aLayer, 1));
   return out;
 }
 

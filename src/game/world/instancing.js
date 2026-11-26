@@ -93,9 +93,15 @@ function mergeModels(assets, placements, { shadow, blocker, chunk = 32, near = 2
         if (part.outline) continue;
         const g = part.geometry, water = !g.attributes.color;             // UV'd stream ribbon keeps its own shader
         const isFolAtlas = part.material.userData?.atlas === 'foliage';
+        const isBuilding = !!part.material.userData?.building;
         let key, mat, isBlocker = false;
         if (water) {
           key = 'w:' + part.material.uuid;
+          mat = part.material;
+        } else if (isBuilding) {
+          // v4 Poly Haven buildings share one building material & vertex layout (position/normal/uv/color/aLayer)
+          isBlocker = tier === 'near' && block;
+          key = isBlocker ? 'bb' : 'b';
           mat = part.material;
         } else if (isFolAtlas) {
           // Bark pixels in foliage_albedo.webp have alpha=1.0, so merging bark + leaf cards into ONE

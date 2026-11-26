@@ -281,7 +281,7 @@ Decisions for M1 (binding):
 - Checks: build passes, precache core 8.66 MB; Lite 52 calls / 152k tris, balance green (22 stories, min 22);
   High 299 calls / 1.69M tris, balance as before v4 (`best-dates` 1 unreachable). No page errors.
 
-### CURRENT RUN: milestone M2 only (Ground & water banks)
+### M2 run decisions (done)
 Do M2 (§3) and nothing from M3 onward, then stop and report. M0 and M1 are committed; build on them.
 
 Files you may change: `src/game/shaders/terrainMaterial.js`, `src/game/terrain/Terrain.jsx`,
@@ -336,3 +336,82 @@ Decisions for M2 (binding):
   204 calls / 1.04M tris; High 299 calls / 1.69M tris; no page or shader errors on lite, medium, high.
 - Also pre-existing before v4 (same on d66042c's build): Medium reports `qays-the-fasting-farmer`
   `notWalkable: 1`; Medium is over the 350k triangle budget. For M4.
+
+### CURRENT RUN: milestone M3 only (Buildings)
+Do M3 (§3) and nothing from M4 onward, then stop and report. M0–M2 are committed; build on them.
+This is the milestone the owner will notice most: make the houses beautiful.
+
+Files you may create or change (nothing else):
+- `blender/v4/env/lib.py` (shared helpers: UV, AO, export), `blender/v4/env/houses.py` (houses, mastaba,
+  garden wall, preview sheet), `blender/v4/env/landmarks.py` (Nile bridge, arish, ruins). Each script runs
+  headless from the repo root with `blender -b --factory-startup --python <script>`. Do not save `.blend`.
+- `public/models/env/{house_a,house_b,house_c,house_d,house_e,house_f,mastaba,garden_wall,river_bridge,
+  oasis_arish,ruins_wall_a,ruins_wall_b,ruins_wall_c,ruins_column,ruins_arch}.glb` (overwrite existing,
+  add the new ones).
+- `src/game/shaders/buildingMaterial.js` (new: the only building material factory),
+  `src/game/world/envAssets.js`, `src/game/world/instancing.js` (only if needed),
+  `src/game/world/loaders.js`, `src/game/buildings/village.js`, `src/game/world/World.jsx` (only if needed).
+- `blender/v4/previews/M3_*.png`.
+
+Decisions for M3 (binding):
+1. **Material contract.** The GLBs carry geometry only (no textures, no images). Material names are the
+   texture layers, in this array order: `ph_plaster` (clay_plaster, 2.5 m tile), `ph_mudbrick`
+   (clay_block_wall, 2 m), `ph_blue` (blue_plaster_weathered, 2.5 m), `ph_wood` (weathered_brown_planks,
+   1.6 m), `ph_floor` (clay_floor_001, 2 m), `ph_stone` (sandstone_blocks_05, 2.4 m), `ph_cloth`
+   (hessian_230, 1.2 m; also reed/palm roofs, tinted), plus `ph_dark` (openings: no texture, vertex colour).
+2. **UVs** are in real metres (box projection per face, V up on walls, grain along planks/beams); the
+   game divides by each layer's tile size in the shader. **Vertex colour** (`COLOR_0`, linear) = painted
+   tint × baked AO/wear: darker splashed base, grime under parapets and sills, softly lighter edges,
+   corner occlusion. This is the second wear mask; no second UV set is needed.
+3. **One material, one draw per model.** `envAssets.js` gets a `ph_` path that keeps position, normal,
+   uv, colour, writes a per-vertex `aLayer` from the material name and merges all `ph_*` parts of a LOD
+   into one geometry using the single building material. Everything else keeps today's paths.
+4. **`buildingMaterial.js`.** Lite/Low: `MeshToonMaterial` (today's gradient) sampling the 512 diffuse
+   `DataArrayTexture` (`loadTextureArray`, repeat wrap). Medium+: `MeshStandardMaterial` sampling diffuse,
+   normal and ARM arrays at 1024 (High and Ultra stay at 1024 for memory), tangent frame from screen
+   derivatives, AO + roughness from ARM, low `envMapIntensity` like the terrain. Keep the palette as in M2:
+   `albedo = vColor * mix(1, tex/layerAverage, strength)`, mixing toward the real texture colour more for
+   mudbrick, wood, stone and cloth. Aerial fog and the warm rim as on other env materials. Until arrays
+   arrive show plain vertex colours (no black or grey flash); never suspend or rebuild for textures. This
+   replaces the vertex-colour-only look on every tier (Lite stays textured; no separate fallback unless a
+   Lite budget fails).
+5. **Six house variants**, three footprints, so walkability does not change. `house_a`/`house_d` share
+   house_a's current footprint, `house_b`/`house_e` share house_b's, `house_c`/`house_f` share
+   house_c's (nothing solid outside today's bounding box below 2.2 m). In `village.js` the size group is
+   chosen exactly as today, then the variant inside the group is picked from a hash of the position —
+   **without consuming `r()`**, so every placement, collider and garden stays where it is. Grandma's
+   house stays `house_a` with the same door position (x −0.59), front wall (z +2.4) and mastaba
+   (x 0.05..2.55, seat 0.45 m).
+6. **Look.** Egyptian Nile mudbrick, pre-1900: rounded hand-plastered walls with slight taper, real
+   recessed doors and windows (geometry), plank doors and shutters (`ph_wood`, painted blue/green by
+   vertex tint), wooden roof beams, parapets, patches where plaster has fallen showing `ph_mudbrick`,
+   domes, outside stair, pigeon tower, reed shade — each of the six clearly different in silhouette and
+   colour (whitewash, warm ochre, blue-wash base, bare mud). Geometric/floral painted folk bands only:
+   no people, animals or faces. Quality bar is today's houses or better in shape detail.
+7. **Budgets.** House LOD0 ≤ 4 500 tris, LOD1 (`<name>_LOD1` node, as today) ≤ 1 500; mastaba ≤ 1 000;
+   garden wall ≤ 1 200 / 500; bridge ≤ 4 000 / 1 600; arish ≤ 2 000 / 800; each ruins piece ≤ 700 / 300.
+   Lite ≤ 140 calls, ≤ 180k tris. High draw calls ≤ 320.
+8. **Landmarks.** `river_bridge`: same size, axis, deck height (0.55) and origin as today, stone piers
+   and arches (`ph_stone`) with timber deck and rails (`ph_wood`). `oasis_arish`: replaces the box
+   shelter in `village.js` (posts `ph_wood`, frond/reed roof and rug bench), same spot and footprint.
+   Ruins: weathered sandstone walls (3 heights: about 1.2, 2.2, 3.4 m, each 4 m long, 0.9 m thick),
+   column, gate arch; place them from `village.js` with the same positions, heights (nearest variant +
+   small y scale) and **identical colliders**; keep every existing `r()` call in the same order. The
+   arish and ruins must still block the camera as today.
+9. **No walkability change**: colliders byte-identical, `SET_VERSION` unchanged. Verify by comparing
+   `buildVillage().colliders` before and after (they must be equal) and run `balance({verify:true})`.
+10. **Proof.** `blender/v4/previews/M3_houses_sheet.png` (all new models, textured, with tri counts) and
+    `M3_{lite,high}_{home,street,river,oasis}.png`. Look at them yourself and iterate until the village
+    clearly looks better than `M2_*.png` (no stretched or seamed textures, no z-fighting, no black
+    faces). Also check the ruins (around x 160, z −140) and the arish (x −92, z −9) in game. Do not
+    commit, do not push, do not edit this doc.
+
+#### M3 log (2026-11-26) — passed
+- Executor: Gemini 4 Neon XHigh (1 run). Reviewer: Claude, no hand edits.
+- Six house variants, mastaba, garden wall, bridge, arish and ruins rebuilt (geometry-only GLBs, one
+  texture-array material). `buildVillage().colliders` compared with M2: 65/65 identical; `SET_VERSION`
+  unchanged.
+- Accepted deviations: no square capital on `ruins_column` (it is also used squashed and fallen); the
+  pigeon tower's three bird spheres were dropped (§0, no animals).
+- Checks: build passes, precache core 9.26 MB (+0.58 MB); Lite 55 calls / 147k tris, balance green;
+  Medium 209 calls / 1.04M tris; High 306 calls / 1.68M tris (limit 320 calls), balance as before v4.

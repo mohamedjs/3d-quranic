@@ -1,13 +1,8 @@
-// Village layout. Houses, the mastaba, well, stalls and hay bales are placed as Blender
-// models; the river bridge, oasis shelter and ancient ruins are still generated here and
-// merged per material (toon cel material, coloured per vertex).
+// Village layout. Houses (6 variants across 3 footprints), the mastaba, garden walls,
+// river bridge, oasis arish shelter and ancient sandstone ruins are placed as Blender GLB models.
 import * as THREE from 'three';
-import { height, pathDist, riverZ, rng, OASIS, RUINS, BRIDGE, STREET } from '../terrain/heightfield.js';
-import { paint, merge } from '../vegetation/plants.js';
+import { height, pathDist, riverZ, rng, hash, OASIS, RUINS, BRIDGE, STREET } from '../terrain/heightfield.js';
 
-const WOOD = new Set([0x5b3a21, 0x6a4a2e, 0x5e4028, 0x7a5634, 0x6b4a2c, 0x3b2a1a, 0x8a6440, 0x7a5a36, 0x8a7a45]);
-const STONE = new Set([0xcdb183, 0xc2a676, 0xd6bd92, 0xb9a384]);
-const CLOTH = new Set([0xb5563a, 0x3f6f8f, 0xd9a441, 0x7a8f4a, 0x9b4a32, 0xcbb48a]);
 // Grandma's house: on the northern edge of the village, between the north road and the
 // canal (x = -15), facing east toward the road. Front (door side, model +Z) faces world +X.
 // The mastaba (مصطبة) — a plastered mud-brick bench — runs along the front wall beside
@@ -21,23 +16,22 @@ export function mastabaSeat(inset = 0.25) {
   return { x: HOME.x + mx * c + mz * s, z: HOME.z - mx * s + mz * c, y: height(HOME.x, HOME.z) + MASTABA.h };
 }
 
-const groupOf = hex => WOOD.has(hex) ? 'wood' : STONE.has(hex) ? 'stone' : CLOTH.has(hex) ? 'cloth' : [0xa65a32, 0x9c6b42, 0x1d3438, 0xe08a2a, 0x7f9a3a, 0x6b3a22, 0xc8412c, 0xd8b25a].includes(hex) ? 'clay' : 'plaster';
-
-
 export function buildVillage() {
-  const r = rng(21), parts = { plaster: [], wood: [], stone: [], cloth: [], clay: [] }, colliders = [];
-  const pick = a => a[(r() * a.length) | 0];
-  const put = (geo, color, M, x = 0, y = 0, z = 0) => { geo.translate(x, y, z); const g = paint(geo, color); if (M) g.applyMatrix4(M); parts[groupOf(color)].push(g); };
-  const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
-  const cyl = (r0, r1, h, s = 8) => new THREE.CylinderGeometry(r0, r1, h, s);
+  const r = rng(21), colliders = [];
   const collide = (x, z, hw, hd) => colliders.push({ x0: x - hw, x1: x + hw, z0: z - hd, z1: z + hd });
 
   // Houses, the well, stalls and hay are Blender models (public/models/env); here we only
-  // decide where they go. Each house picks the closest of three modelled sizes.
+  // decide where they go. Each house picks the closest of three footprint groups, then picks
+  // between the two variants in that group from a position hash (without consuming `r()`).
   const placements = [];
-  const HOUSES = [['house_a', 5.6, 4.8], ['house_b', 7.3, 5.4], ['house_c', 4.6, 4.4]];   // b includes its outside stair
+  const HOUSES = [
+    [['house_a', 'house_d'], 5.6, 4.8],
+    [['house_b', 'house_e'], 7.3, 5.4],
+    [['house_c', 'house_f'], 4.6, 4.4],
+  ];
   function house(x, z, w, d, h, rot) {
-    const [model, mw, md] = HOUSES.reduce((best, v) => (Math.abs(v[1] * v[2] - w * d) < Math.abs(best[1] * best[2] - w * d) ? v : best));
+    const [variants, mw, md] = HOUSES.reduce((best, v) => (Math.abs(v[1] * v[2] - w * d) < Math.abs(best[1] * best[2] - w * d) ? v : best));
+    const model = variants[hash(Math.round(x * 10) + 1, Math.round(z * 10) + 3) < 0.5 ? 0 : 1];
     const sx = THREE.MathUtils.clamp(w / mw, 0.88, 1.12), sz = THREE.MathUtils.clamp(d / md, 0.88, 1.12);
     placements.push({ model, x, y: height(x, z) - 0.05, z, rot, sx, sy: THREE.MathUtils.clamp(h / 3.1, 0.92, 1.1), sz });
     const c = Math.abs(Math.cos(rot)), s = Math.abs(Math.sin(rot)), W = mw * sx, D = md * sz;
@@ -127,20 +121,20 @@ export function buildVillage() {
   placements.push({ model: 'river_bridge', x: BRIDGE.x, y: 0, z: riverZ(BRIDGE.x), rot: 0, sx: 1, sy: 1, sz: 1 });
 
   // palm-frond shade shelter at the oasis (arish)
-  const sh = { x: -92, z: -9 }, SM = new THREE.Matrix4().setPosition(sh.x, height(sh.x, sh.z), sh.z);
-  for (const [px, pz] of [[-2, -1.6], [2, -1.6], [-2, 1.6], [2, 1.6]]) put(cyl(0.09, 0.11, 2.6, 6), 0x6a4a2e, SM, px, 1.3, pz);
-  put(box(4.8, 0.18, 4), 0x8a7a45, SM, 0, 2.65, 0);
-  put(box(2.4, 0.3, 1.2), 0x9b4a32, SM, 0, 0.15, 0.6); // a rug-covered bench
+  const sh = { x: -92, z: -9 };
+  placements.push({ model: 'oasis_arish', x: sh.x, y: height(sh.x, sh.z), z: sh.z, rot: 0, sx: 1, sy: 1, sz: 1 });
 
-  // ancient settlement: broken walls, a colonnade and a gate arch
-  const stone = [0xcdb183, 0xc2a676, 0xd6bd92];
-  const RM = h => new THREE.Matrix4().setPosition(0, h, 0);
+  // ancient settlement: broken sandstone walls, a colonnade and a gate arch
+  // Preserve every `r()` draw and `collide(...)` call in exact order so walkability stays identical.
+  const RUIN_WALLS = [['ruins_wall_a', 1.2], ['ruins_wall_b', 2.2], ['ruins_wall_c', 3.4]];
   const wallRun = (x0, z0, x1, z1) => {
     const len = Math.hypot(x1 - x0, z1 - z0), n = Math.ceil(len / 4);
     for (let i = 0; i < n; i++) {
       if (r() < 0.25) continue;
       const t = (i + 0.5) / n, x = x0 + (x1 - x0) * t, z = z0 + (z1 - z0) * t, hh = 0.6 + r() * 3, along = Math.abs(x1 - x0) > Math.abs(z1 - z0);
-      put(along ? box(4, hh, 0.9) : box(0.9, hh, 4), pick(stone), RM(height(x, z) - 0.2), x, hh / 2, z);
+      const flip = r() < 0.5 ? Math.PI : 0;
+      const [model, refH] = RUIN_WALLS.reduce((best, v) => (Math.abs(v[1] - hh) < Math.abs(best[1] - hh) ? v : best));
+      placements.push({ model, x, y: height(x, z) - 0.2, z, rot: (along ? 0 : Math.PI / 2) + flip, sx: 1, sy: hh / refH, sz: 1 });
       collide(x, z, along ? 2 : 0.45, along ? 0.45 : 2);
     }
   };
@@ -150,15 +144,28 @@ export function buildVillage() {
   wallRun(rx - 6, rz - 12, rx - 6, rz - 2);
   for (let i = 0; i < 7; i++) {
     const x = rx - 9 + i * 3, z = rz + 14, hh = r() < 0.3 ? 1 + r() : 4.2;
-    put(cyl(0.38, 0.42, hh, 10), pick(stone), RM(height(x, z)), x, hh / 2, z);
-    if (hh > 4) put(box(1, 0.35, 1), pick(stone), RM(height(x, z)), x, hh + 0.17, z);
+    const rot = r() * Math.PI * 2;
+    if (hh > 4) r();
+    placements.push({ model: 'ruins_column', x, y: height(x, z), z, rot, sx: 1, sy: hh / 4.2, sz: 1 });
     collide(x, z, 0.45, 0.45);
   }
-  put(cyl(0.4, 0.4, 3.6, 10).rotateZ(Math.PI / 2).rotateY(0.4), stone[0], RM(height(rx, rz + 18) + 0.3), rx + 2, 0, rz + 18);
+  {
+    const rot = 0.4 + Math.PI / 2, half = 1.8;
+    placements.push({
+      model: 'ruins_column',
+      x: rx + 2 - Math.sin(rot) * half,
+      y: height(rx, rz + 18) + 0.38,
+      z: rz + 18 - Math.cos(rot) * half,
+      rot,
+      tilt: Math.PI / 2,
+      sx: 1,
+      sy: 3.6 / 4.2,
+      sz: 1,
+    });
+  }
   const gy = height(rx, rz + 8);
-  for (const s of [-2, 2]) { put(box(0.9, 3.4, 0.9), stone[1], RM(gy), rx + s, 1.7, rz + 8); collide(rx + s, rz + 8, 0.5, 0.5); }
-  put(new THREE.TorusGeometry(2, 0.4, 6, 14, Math.PI), stone[2], RM(gy), rx, 3.4, rz + 8);
+  for (const s of [-2, 2]) collide(rx + s, rz + 8, 0.5, 0.5);
+  placements.push({ model: 'ruins_arch', x: rx, y: gy, z: rz + 8, rot: 0, sx: 1, sy: 1, sz: 1 });
 
-  const geometries = Object.fromEntries(Object.entries(parts).filter(([, l]) => l.length).map(([k, l]) => [k, merge(l)]));
-  return { geometries, colliders, placements, gardens, well, shelter: sh, home: HOME };
+  return { geometries: {}, colliders, placements, gardens, well, shelter: sh, home: HOME };
 }

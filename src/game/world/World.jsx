@@ -15,6 +15,7 @@ import { Built } from '../buildings/Buildings.jsx';
 import { buildVillage } from '../buildings/village.js';
 import { buildCanalScene } from './details.js';
 import { loadEnvModels } from './envAssets.js';
+import { syncBuildingShading } from '../shaders/buildingMaterial.js';
 import { Props } from './Props.jsx';
 import { Environment } from '../environment/Environment.jsx';
 import { Player } from '../characters/Player.jsx';
@@ -49,6 +50,10 @@ export function World() {
   const data = use(loadData());
   const assets = use(loadEnvModels());
   refs.sunDir = env.sunDir;
+  const scene = useThree(s => s.scene);
+  const bldShading = usePreset().shading ?? 'toon';
+  const lite = !!useDetail().lite;
+  useEffect(() => { syncBuildingShading(assets, scene, bldShading); }, [assets, scene, bldShading, lite]);
 
   const world = useMemo(() => {
     (window.__builds ??= []).push('world:' + useGame.getState().detail);   // test probe: the world must be built exactly once
@@ -85,7 +90,6 @@ export function World() {
 
   // LITE: every placed model (village, canal, story props and the trees from <Vegetation/>) goes
   // into ONE merged-chunk set, so a 32 m cell costs ~2 draw calls whatever it holds
-  const lite = !!useDetail().lite;
   const [treePl, setTreePl] = useState(null);
   const litePl = useMemo(() => (lite ? [...world.village.placements.map(p => ({ ...p, blocker: true })), ...world.canal.placements, ...world.props, ...(treePl ?? [])] : null), [lite, world, treePl]);
 

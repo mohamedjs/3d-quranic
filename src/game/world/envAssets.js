@@ -9,6 +9,7 @@ import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { toonFor, toonMaterial, windFor, WIND } from '../shaders/toon.js';
 import { envMaterial } from '../shaders/stylizedPbr.js';
 import { BUILDING_LAYER_INDEX, getBuildingMaterial, ensureBuildingTextures } from '../shaders/buildingMaterial.js';
+import { createPropMaterial } from '../shaders/propMaterial.js';
 import { TOON } from '../shaders/toonPalette.js';
 import { toonStreamWaterMaterial } from '../shaders/waterMaterial.js';
 import { PRESETS } from '../systems/quality.js';
@@ -18,15 +19,32 @@ export const ENV_MODELS = [
   'house_a', 'house_b', 'house_c', 'house_d', 'house_e', 'house_f', 'mastaba',
   'oasis_arish', 'ruins_wall_a', 'ruins_wall_b', 'ruins_wall_c', 'ruins_column', 'ruins_arch',
   'palm_a', 'palm_b', 'palm_c', 'palm_d',
-  'sycamore', 'sycamore_a', 'sycamore_b', 'acacia',
+  'sycamore_a', 'sycamore_b', 'acacia',
   'bougainvillea', 'bougainvillea_bush', 'bougainvillea_vine',
   'bush_a', 'bush_b', 'lotus_pad',
+  'boulder', 'rock_small',
+  'ph_grass_medium_01', 'ph_flower_gazania',
+  'ph_brass_pot_01', 'ph_brass_diya_lantern', 'ph_ceramic_pot',
+  'ph_painted_wooden_bench', 'ph_wooden_stool_02', 'ph_wicker_basket_01', 'ph_stone_fire_pit',
   'well', 'shaduf', 'sluice', 'jar', 'jar_b', 'basket', 'hoe', 'fence',
   'river_bridge', 'footbridge', 'stall', 'hay', 'stream_channel', 'garden_wall',
   'pot_plant', 'canal_bank', 'canal_stones', 'field_bund',
   'crop_berseem', 'crop_maize', 'crop_wheat', 'crop_cotton', 'crop_cabbage',
   'grass_a', 'grass_b', 'grass_c', 'reeds', 'papyrus', 'wildflowers',
 ];
+
+// High/Ultra load `_hi.glb` for story-spot props ONLY (never trees, bushes, grass or rocks in bulk).
+const HI_PROP_MODELS = new Set([
+  'ph_brass_pot_01', 'ph_brass_diya_lantern', 'ph_ceramic_pot',
+  'ph_painted_wooden_bench', 'ph_wooden_stool_02', 'ph_wicker_basket_01', 'ph_stone_fire_pit',
+]);
+
+const TEXTURED_ONE_ATLAS = new Set([
+  'sycamore_a', 'sycamore_b', 'acacia', 'bush_a', 'bush_b', 'boulder', 'rock_small',
+]);
+
+// Gentle tree wind keeps grounded trunks (< 1.4 m) still while canopy cards sway softly
+const TREE_ATLAS_WIND = { strength: 0.036, factor: 'max(0.0, (position.y - 1.4) / 3.8)' };
 
 // ---- Shared Tiered WebP Foliage Atlas (512 core -> lazy 1024/2048 PBR) ---------------------
 const texLoader = new THREE.TextureLoader();
@@ -106,9 +124,11 @@ let promise;
 export function loadEnvModels() {
   promise ??= (async () => {
     // Ensure the core 512px foliage atlas is ready before first render; upgrade lazily on Med–Ultra
-    const detailPreset = PRESETS[useGame.getState().detail] ?? PRESETS.lite;
+    const initTier = useGame.getState().detail;
+    const detailPreset = PRESETS[initTier] ?? PRESETS.lite;
     const initRes = detailPreset.texRes ?? 512;
     const initShading = detailPreset.shading ?? 'toon';
+    const useHiProps = initTier === 'high' || initTier === 'ultra';
     getFoliageAlbedo();
     if (initRes >= 1024) upgradeFoliageAtlas(initRes, detailPreset.waterMode === 'ultra' ? 8 : 4);
     ensureBuildingTextures(initShading);
@@ -116,7 +136,8 @@ export function loadEnvModels() {
     const loader = gltfLoader();
     const out = {};
     await Promise.all(ENV_MODELS.map(async name => {
-      const gltf = await loader.loadAsync(`./models/env/${name}.glb`).catch(e => { throw new Error(`models/env/${name}.glb: ${e.message || e}`); });
+      const file = useHiProps && HI_PROP_MODELS.has(name) ? `${name}_hi` : name;
+      const gltf = await loader.loadAsync(`./models/env/${file}.glb`).catch(e => { throw new Error(`models/env/${file}.glb: ${e.message || e}`); });
       out[name] = extract(gltf.scene, name, initShading);
     }));
     return out;
@@ -148,17 +169,39 @@ function foliageSpec(matName, model) {
   return null;
 }
 
+function propOptsFor(model, srcMat) {
+  const isTree = model === 'sycamore_a' || model === 'sycamore_b' || model === 'acacia';
+  const isBush = model === 'bush_a' || model === 'bush_b';
+  const isAccent = model === 'ph_grass_medium_01' || model === 'ph_flower_gazania';
+  const isRock = model === 'boulder' || model === 'rock_small';
+  const isFoliage = isTree || isBush || isAccent;
+  const smallNoSh = model === 'rock_small' || isAccent
+    || model === 'ph_brass_pot_01' || model === 'ph_brass_diya_lantern'
+    || model === 'ph_ceramic_pot' || model === 'ph_wooden_stool_02' || model === 'ph_wicker_basket_01';
+  return {
+    isFoliage,
+    alphaTest: isFoliage ? 0.5 : (srcMat?.alphaTest ?? 0),
+    wind: isTree ? TREE_ATLAS_WIND : isBush ? WIND.shrub : isAccent ? WIND.grass : null,
+    sss: isTree ? 0.46 : isBush ? 0.40 : isAccent ? 0.44 : 0,
+    rim: isRock ? 0.12 : 0.14,
+    noShadow: smallNoSh,
+    noReflect: smallNoSh || isBush,
+  };
+}
+
 // Flatten a GLB into { lod0: [{geometry, material, outline}], lod1: [...] } with node transforms
 // baked. Parts sharing a material bucket are merged so each tree/house costs minimal draw calls.
 function extract(root, model, shading = 'toon') {
   root.updateMatrixWorld(true);
   const raw = { lod0: [], lod1: [] };
   const isLow = o => { for (let p = o; p; p = p.parent) if (/_LOD1/.test(p.name)) return true; return false; };
+  const isTexturedModel = model.startsWith('ph_') || TEXTURED_ONE_ATLAS.has(model);
   root.traverse(o => {
     if (!o.isMesh) return;
     const geometry = o.geometry.clone().applyMatrix4(o.matrixWorld);
-    (isLow(o) ? raw.lod1 : raw.lod0).push({ geometry, matName: baseName(o.material.name) });
+    (isLow(o) ? raw.lod1 : raw.lod0).push({ geometry, srcMat: o.material, matName: baseName(o.material?.name ?? '') });
   });
+  const propMatCache = new Map();
   const lods = {};
   for (const [lod, parts] of Object.entries(raw)) {
     if (!parts.length) { lods[lod] = null; continue; }
@@ -167,7 +210,7 @@ function extract(root, model, shading = 'toon') {
       if (!groups.has(key)) groups.set(key, { list: [], material, outline });
       groups.get(key).list.push(geo);
     };
-    for (const { geometry, matName } of parts) {
+    for (const { geometry, srcMat, matName } of parts) {
       // Environment ink hulls are dropped in v3 (§R.1); cel-shaded characters keep their outlines.
       if (matName === 'outline') continue;
       if (matName === 'toon_water' && geometry.attributes.uv) {
@@ -178,6 +221,17 @@ function extract(root, model, shading = 'toon') {
       const bLayer = BUILDING_LAYER_INDEX[matName];
       if (bLayer !== undefined) {
         add('ph_building', stripBuilding(geometry, bLayer), getBuildingMaterial(shading));
+        continue;
+      }
+      if (isTexturedModel || srcMat?.map) {
+        const hasVCol = Boolean(geometry.attributes.color);
+        const mKey = `${srcMat?.uuid || matName}|${hasVCol ? 1 : 0}`;
+        let mat = propMatCache.get(mKey);
+        if (!mat) {
+          mat = createPropMaterial(srcMat, { shading, vertexColors: hasVCol, ...propOptsFor(model, srcMat) });
+          propMatCache.set(mKey, mat);
+        }
+        add('ph_prop|' + mKey, stripTextured(geometry, hasVCol), mat);
         continue;
       }
       const fspec = foliageSpec(matName, model);
@@ -195,12 +249,17 @@ function extract(root, model, shading = 'toon') {
           rim: fspec.rim,
           sss: fspec.sss,
           rootBlend: fspec.rootBlend,
-          roughness: fspec.atlas && !fspec.alphaTest ? 0.92 : 0.80,
+          roughness: fspec.atlas && !fspec.alphaTest ? 0.92 : (matName === 'foliage_solid' ? 0.56 : 0.80),
           envMapIntensity: fspec.sss > 0 ? 0.42 : 0.34,
         });
         if (fspec.atlas) {
           mat.userData.atlas = 'foliage';
           registerFoliageMaterial(mat);
+        }
+        if (matName === 'foliage_solid') {
+          // Small palm date bunches tucked beneath fronds skip shadow & planar reflection passes
+          mat.userData.noShadow = true;
+          mat.userData.noReflect = true;
         }
         add(key, strip(geometry, undefined, fspec.atlas), mat);
       } else {
@@ -267,18 +326,53 @@ function stripBuilding(g, layerIdx) {
   return out;
 }
 
+// v4 textured prop/tree/shrub/rock path: keep position, normal, UV (and optional uv1 & linear vertex color).
+function stripTextured(g, keepColor = false) {
+  const out = new THREE.BufferGeometry();
+  out.setAttribute('position', g.attributes.position);
+  if (g.attributes.normal) out.setAttribute('normal', g.attributes.normal);
+  else { out.setIndex(g.index); out.computeVertexNormals(); }
+  const n = g.attributes.position.count;
+  if (g.attributes.uv) out.setAttribute('uv', g.attributes.uv);
+  else out.setAttribute('uv', new THREE.BufferAttribute(new Float32Array(n * 2), 2));
+  if (g.attributes.uv1) out.setAttribute('uv1', g.attributes.uv1);
+  if (g.index) out.setIndex(g.index);
+  if (keepColor && g.attributes.color) {
+    const srcCol = g.attributes.color;
+    const a = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) { C.fromBufferAttribute(srcCol, i); a[i * 3] = C.r; a[i * 3 + 1] = C.g; a[i * 3 + 2] = C.b; }
+    out.setAttribute('color', new THREE.BufferAttribute(a, 3));
+  }
+  return out;
+}
+
 const merged = new Map();
+function mergeParts(parts) {
+  if (!parts?.length) return null;
+  const body = parts.filter(p => !p.outline && (p.geometry.attributes.color || p.material?.userData?.prop));
+  if (!body.length) return null;
+  const indexed = body.every(p => p.geometry.index);
+  const geometry = body.length > 1
+    ? mergeGeometries(body.map(p => (indexed ? p.geometry : (p.geometry.index ? p.geometry.toNonIndexed() : p.geometry))))
+    : body[0].geometry;
+  geometry.computeBoundingSphere();
+  return { geometry, material: body[0]?.material ?? null };
+}
+
 export function mergedPlant(assets, model) {
   if (!merged.has(model)) {
-    const parts = assets[model].lod0;
-    const body = parts.filter(p => !p.outline && p.geometry.attributes.color);
-    const hull = parts.find(p => p.outline);
-    const indexed = body.every(p => p.geometry.index);
-    const geometry = body.length > 1
-      ? mergeGeometries(body.map(p => (indexed ? p.geometry : (p.geometry.index ? p.geometry.toNonIndexed() : p.geometry))))
-      : body[0].geometry;
-    geometry.computeBoundingSphere();
-    merged.set(model, { body: geometry, outline: hull?.geometry ?? null, material: body[0]?.material ?? null });
+    const a = assets[model];
+    const p0 = mergeParts(a.lod0);
+    const p1 = a.lod1 ? mergeParts(a.lod1) : null;
+    const hull = a.lod0.find(p => p.outline);
+    merged.set(model, {
+      body: p0.geometry,
+      bodyLod1: p1?.geometry ?? null,
+      outline: hull?.geometry ?? null,
+      material: p0.material,
+      // Dynamic getter so live tier switches (syncPropShading) always return the active material
+      get activeMaterial() { return a.lod0[0]?.material ?? p0.material; },
+    });
   }
   return merged.get(model);
 }

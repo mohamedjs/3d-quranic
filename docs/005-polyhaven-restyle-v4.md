@@ -337,7 +337,7 @@ Decisions for M2 (binding):
 - Also pre-existing before v4 (same on d66042c's build): Medium reports `qays-the-fasting-farmer`
   `notWalkable: 1`; Medium is over the 350k triangle budget. For M4.
 
-### CURRENT RUN: milestone M3 only (Buildings)
+### M3 run decisions (done)
 Do M3 (§3) and nothing from M4 onward, then stop and report. M0–M2 are committed; build on them.
 This is the milestone the owner will notice most: make the houses beautiful.
 
@@ -415,3 +415,86 @@ Decisions for M3 (binding):
   pigeon tower's three bird spheres were dropped (§0, no animals).
 - Checks: build passes, precache core 9.26 MB (+0.58 MB); Lite 55 calls / 147k tris, balance green;
   Medium 209 calls / 1.04M tris; High 306 calls / 1.68M tris (limit 320 calls), balance as before v4.
+
+### CURRENT RUN: milestone M4 only (Props, rocks & vegetation)
+Do M4 (§3) and nothing from M5 onward, then stop and report. M0–M3 are committed; build on them.
+It is a large milestone: budgets first, then beauty. Commit nothing.
+
+Files you may create or change (nothing else):
+- `blender/v4/env/{palms.py,trees.py,rocks.py,horizon.py}` and `blender/v4/env/lib.py`.
+- `public/models/env/{palm_a,palm_b,palm_c,palm_d,sycamore_a,sycamore_b,acacia,bush_a,bush_b,boulder,
+  rock_small,backdrop_hills}.glb` (overwrite or add). `tools/polyhaven/*`, `public/textures/v4/**` and
+  `ph_*.glb` only if you must add or re-process a Poly Haven asset (same §0 filter and pipeline).
+- `src/game/vegetation/*`, `src/game/world/{envAssets.js,instancing.js,loaders.js,details.js,Props.jsx,
+  World.jsx}`, new `src/game/world/storySets.js`, `src/game/shaders/buildingMaterial.js`, new
+  `src/game/shaders/propMaterial.js`, `src/game/environment/Environment.jsx`,
+  `src/game/systems/quality.js`, and `src/game/world/coins.js` (only `SET_VERSION` and a walkability fix).
+- `blender/v4/previews/M4_*.png`.
+
+Budgets and how they are measured (binding):
+- **Triangles** = main camera pass: `renderer.info.render.triangles` of `renderer.render(scene, camera)`
+  for the game camera, minus what the shadow-map render inside it adds (planar reflection and shadow
+  passes are reported separately, not counted). Lite ≤ 180k, Medium ≤ 350k, High ≤ 700k, at all of
+  home, street, river and oasis (facing as in the M3 screenshots) and at the ruins (160, −112, facing −z).
+- **Draw calls** = whole frame (`renderer.info`, all passes): Lite ≤ 140, Medium ≤ 220, High ≤ 320.
+- Today, whole frame: Lite 55 calls / 147k; Medium 209 calls / 1.04M; High 306 calls / 1.68M. So Medium
+  and High triangles must drop by roughly half while the world gains Poly Haven detail. Biggest items on
+  High now: wheat ≈ 500k, terrain 148k (`terrainSeg` 272), rocks 36k, grass 80k. Use distance LODs,
+  chunk culling, thinner crops/grass presets, a smaller `terrainSeg`, and shadow casting only near.
+- New precached bytes for all of v4 stay ≤ 6 MB (`coreBytes` ≤ 11.4 MB; today 9.26 MB).
+- Per file: palm LOD0 ≤ 2 500 / LOD1 ≤ 500; broadleaf and acacia LOD0 ≤ 3 500 / LOD1 ≤ 600; bush LOD0
+  ≤ 600 / LOD1 ≤ 150; boulder ≤ 600 / 150; rock_small ≤ 100; backdrop ring ≤ 12 000.
+  Distant trees must use LOD1; LOD0 only close to the camera.
+
+Decisions for M4 (binding):
+1. **Date palms** (`palms.py`): four variants, curved trunk with the leaf-scar diamond pattern, trunk
+   material `ph_bark` = `palm_bark` added as layer 8 of the building texture array (`ph_dark` stays 7),
+   fronds on today's foliage atlas material (`foliage_frond`), date bunches vertex-coloured. Same
+   heights, origins and placement as today, so no collider change.
+2. **Broadleaf trees** (`trees.py`): `sycamore_a/b` from `island_tree_02` and `tree_small_02`, `acacia`
+   (flat umbrella crown) built from the same leaf cards; recoloured a warm healthy green, full crowns,
+   ONE material per file with a single baked leaf+bark atlas (≤ 512 px WebP embedded, alpha MASK 0.5).
+3. **Shrubs** `bush_a/b` come from `shrub_02`/`shrub_04` (same one-atlas rule). Grass and crops stay the
+   cheap v3 cards (tinted to match); `ph_grass_medium_01` and `ph_flower_gazania` are hero accents only
+   (≤ 60 instances each, near water, the oasis and house gardens; none on Lite if budget is tight).
+4. **Rocks**: `boulder` (from `namaqualand_boulder_02`) and `rock_small` (from `rock_07`) replace the
+   procedural `lump` rocks: big ones on river banks, hill feet and around the ruins, small ones scattered.
+5. **Horizon** (`horizon.py`): rebuild `backdrop_hills.glb` from `namaqualand_cliff_01` rock masses
+   arranged in 3 rings, same contract as today (one mesh, vertex colour baked from the cliff albedo and
+   graded to the golden palette, `uv.x` = layer 0/0.5/1, `uv.y` = normalised height, same Nile openings,
+   same radii). Keep the 3 haze layers; no hard silhouettes or gaps at the horizon.
+6. **Textured prop path**: `envAssets.js` keeps UVs and maps for textured models (`ph_*.glb`, the new
+   one-atlas trees/shrubs/rocks) and builds materials in `propMaterial.js` (Lite/Low: toon with map;
+   Medium+: standard with the GLB's maps), with aerial fog, wind on foliage and the warm rim. High/Ultra
+   load `ph_*_hi.glb` for props only (never trees or bushes in bulk). Merge dressing props per chunk ×
+   material on every tier to keep draw calls down.
+7. **Story-spot dressing** in new `storySets.js`: a table keyed by encounter id (positions read from
+   encounters.json at runtime) placing `ph_` props (brass pot, lantern, ceramic pot, bench, stool,
+   basket, fire pit) and a few rocks/shrubs so each of the 22 story spots looks inhabited and fitting
+   (e.g. fire pit for `ibrahim-and-the-fire`, pots by the well). Every prop ≥ 2.0 m from every
+   storyteller position, off the roads (`pathDist` > 1.6) and out of the approach from the road. Only
+   large props (bench, fire pit, boulder) get colliders. No figures of people or animals.
+8. **Walkability.** Colliders change here, so bump `SET_VERSION` to 4. `__game.balance({verify:true})`
+   must be fully green (every story `reached: true`, `coins >= 20`, `notWalkable: 0`, `unreachable: 0`)
+   on **lite, medium and high**. Two failures predate v4 and must now be fixed: High `best-dates`
+   `unreachable: 1`, Medium `qays-the-fasting-farmer` `notWalkable: 1` (tree colliders differ per tier).
+   Fix the cause (a clearing or placement rule), not the check.
+9. **Quality bar.** Compare with `M3_*.png`: lusher, more natural vegetation, rocks with real texture, a
+   cliff horizon, dressed story spots; nothing floating, no black or see-through leaf cards, no popping at
+   close range. Lite must look clearly better, not emptier.
+10. **Proof.** `M4_{lite,medium,high}_{home,street,river,oasis}.png`, plus `M4_models_sheet.png` (new
+    models with tri counts) and ruins and `ibrahim-and-the-fire` shots; report per tier calls, main-pass
+    triangles and the balance result. Do not commit, do not push, do not edit this doc.
+
+#### M4 log (2026-11-26) — passed after one fix round
+- Executor: Gemini 4 Neon XHigh (build + 1 fix round). Reviewer: Claude, no hand edits.
+- Palms with Poly Haven bark, broadleaf/acacia trees and bushes from PH foliage, PH rocks, new sandstone
+  horizon ring, `storySets.js` dressing for the 22 story spots, `SET_VERSION` 4.
+- Fix round 1: High 329 draw calls (now 276), broken shard-like horizon (now continuous ridge rings), palm
+  trunks had lost the leaf-scar pattern, Lite river bank emptier.
+- Accepted deviations: horizon is a displaced heightfield ridge coloured from `namaqualand_cliff_01`
+  (not the decimated cliff meshes); no hero grass/flowers on Lite; date bunches vertex-coloured.
+  Remaining nit: fewer reed clumps in the Lite river foreground than M3.
+- Checks (max over home, street, river, oasis, ruins, ibrahim; calls = whole frame, tris = main pass):
+  Lite 87 calls / 167k; Medium 170 / 340k; High 276 / 574k. `balance({verify:true})` green on Lite,
+  Medium and High (22 stories, min 22) — both pre-v4 failures are fixed. Precache core 10.01 MB.

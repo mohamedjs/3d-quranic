@@ -98,10 +98,10 @@ function createBackdropMaterial(sunDir, palette, lite) {
         // Subtle crest rim light to keep silhouette edges legible against the sky
         lit += uAerialSunGlow * smoothstep(0.72, 1.0, hNorm) * (0.04 + 0.12 * pow(max(dot(viewDir, uSunDir), 0.0), 3.0));
 
-        // Three clearly separated silhouette bands (identical readability on Lite and High)
-        float layerHaze = mix(mix(0.20, 0.44, layer * 2.0), mix(0.44, 0.66, (layer - 0.5) * 2.0), step(0.5, layer));
-        float valleyMist = (1.0 - smoothstep(0.04, 0.42, hNorm)) * mix(0.18, 0.24, layer);
-        vec3 col = mix(lit, horizonTint, clamp(layerHaze + valleyMist, 0.0, 0.78));
+        // Three clearly separated silhouette bands (soft golden-hour horizon blend, no hard cliff contrast)
+        float layerHaze = mix(mix(0.22, 0.48, layer * 2.0), mix(0.48, 0.72, (layer - 0.5) * 2.0), step(0.5, layer));
+        float valleyMist = (1.0 - smoothstep(0.04, 0.45, hNorm)) * mix(0.18, 0.24, layer);
+        vec3 col = mix(lit, horizonTint, clamp(layerHaze + valleyMist, 0.0, 0.82));
 
         gl_FragColor = vec4(col, 1.0);
         #include <tonemapping_fragment>

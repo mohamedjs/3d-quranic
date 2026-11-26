@@ -32,6 +32,7 @@ LAYERS = (
     'ph_stone',
     'ph_cloth',
     'ph_dark',
+    'ph_bark',
 )
 
 # (polyhaven_id_or_None, tile_m, diff_avg_lin, detail_strength, real_mix, normal_strength)
@@ -44,6 +45,7 @@ LAYER_META = {
     'ph_stone':    ('sandstone_blocks_05',    2.4, (0.428, 0.330, 0.230), 0.88, 0.52, 1.15),
     'ph_cloth':    ('hessian_230',            1.2, (0.263, 0.188, 0.100), 0.85, 0.30, 0.85),
     'ph_dark':     (None,                     1.0, (0.045, 0.036, 0.030), 0.00, 0.00, 0.00),
+    'ph_bark':     ('palm_bark',              0.85, (0.099, 0.076, 0.059), 0.96, 0.24, 1.45),
 }
 
 # Minimal 5x7 bitmap font for contact sheet labels
@@ -1157,3 +1159,376 @@ def render_contact_sheet(model_names, out_path):
     reset_scene()
     _save_topdown_u8_png(canvas, out_path)
     print(f'[v4] Rendered contact sheet -> {out_path}', flush=True)
+
+
+# ---------------------------------------------------------------------------
+# M4 Textured Asset Helpers (1-atlas WebP packing, alpha MASK, M4 sheet)
+# ---------------------------------------------------------------------------
+
+CACHE_PH = ROOT / '.cache' / 'polyhaven'
+TEX_ENV = ROOT / 'public' / 'textures' / 'env'
+
+
+def load_image_rgba(path, size=None):
+    """Load an image via Blender as float32 HxWx4 array (bottom-up Blender pixel order)."""
+    img = bpy.data.images.load(str(path))
+    w, h = img.size[0], img.size[1]
+    buf = np.empty(h * w * 4, dtype=np.float32)
+    img.pixels.foreach_get(buf)
+    bpy.data.images.remove(img)
+    arr = buf.reshape(h, w, 4)
+    if size is not None and (w, h) != (size[0], size[1]):
+        arr = resize_rgba_box(arr, size[0], size[1])
+    return arr
+
+
+def resize_rgba_box(arr, tw, th):
+    """Anti-aliased box/bilinear resize of HxWxC float32 image."""
+    sh, sw, ch = arr.shape
+    if sw == tw and sh == th:
+        return arr.copy()
+    # Area downsampling when shrinking by >= 2x so fine leaves/bark never alias
+    if sw >= tw * 2 and sh >= th * 2:
+        fx = sw // tw
+        fy = sh // th
+        cy = fy * th
+        cx = fx * tw
+        ys = np.linspace(0, sh - 1, cy).astype(np.int32)
+        xs = np.linspace(0, sw - 1, cx).astype(np.int32)
+        sub = arr[np.ix_(ys, xs)].reshape(th, fy, tw, fx, ch)
+        return sub.mean(axis=(1, 3)).astype(np.float32)
+    # Bilinear interpolation
+    y = np.linspace(0.0, sh - 1.0, th)
+    x = np.linspace(0.0, sw - 1.0, tw)
+    y0 = np.floor(y).astype(np.int32)
+    x0 = np.floor(x).astype(np.int32)
+    y1 = np.minimum(y0 + 1, sh - 1)
+    x1 = np.minimum(x0 + 1, sw - 1)
+    wy = (y - y0)[:, None, None]
+    wx = (x - x0)[None, :, None]
+    top = arr[y0][:, x0] * (1.0 - wx) + arr[y0][:, x1] * wx
+    bot = arr[y1][:, x0] * (1.0 - wx) + arr[y1][:, x1] * wx
+    return (top * (1.0 - wy) + bot * wy).astype(np.float32)
+
+
+def dilate_rgb_under_alpha(rgb, alpha, iters=8):
+    """Bleed opaque edge colors into transparent pixels so mipmaps never get dark halos."""
+    out = rgb.copy()
+    valid = alpha > 0.25
+    for _ in range(iters):
+        if np.all(valid):
+            break
+        acc = np.zeros_like(out)
+        cnt = np.zeros(alpha.shape, dtype=np.float32)
+        for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+            sv = np.roll(valid, shift=(dy, dx), axis=(0, 1))
+            sr = np.roll(out, shift=(dy, dx), axis=(0, 1))
+            m = (~valid) & sv
+            acc[m] += sr[m]
+            cnt[m] += 1.0
+        fill = cnt > 0
+        out[fill] = acc[fill] / cnt[fill, None]
+        valid = valid | fill
+    return out
+
+
+def make_packed_image(name, rgba, srgb=True):
+    """Create a packed Blender Image from HxWx4 float32 bottom-up pixels."""
+    h, w, _ = rgba.shape
+    img = bpy.data.images.new(name, width=w, height=h, alpha=(rgba.shape[2] == 4), float_buffer=False)
+    img.colorspace_settings.name = 'sRGB' if srgb else 'Non-Color'
+    img.pixels.foreach_set(np.clip(rgba, 0.0, 1.0).astype(np.float32).ravel())
+    img.pack()
+    return img
+
+
+def wire_alpha_mask(nt, tex_node, pbr, cutoff=0.5):
+    """Wire TexImage.Alpha -> GREATER_THAN(cutoff) -> Principled.Alpha (glTF alphaMode=MASK)."""
+    alpha_in = pbr.inputs['Alpha']
+    for lk in list(alpha_in.links):
+        nt.links.remove(lk)
+    gt = nt.nodes.new('ShaderNodeMath')
+    gt.operation = 'GREATER_THAN'
+    gt.inputs[1].default_value = float(cutoff)
+    nt.links.new(tex_node.outputs['Alpha'], gt.inputs[0])
+    nt.links.new(gt.outputs['Value'], alpha_in)
+
+
+def build_pbr_atlas_material(name, diff_img, nor_img=None, arm_img=None, alpha_mask=False,
+                             use_vcol=True, roughness=0.84, double_sided=False):
+    """Build ONE glTF-clean Principled material with optional vertex-color multiply, ORM, normal & MASK."""
+    mat = bpy.data.materials.new(name)
+    mat.use_nodes = True
+    mat.use_backface_culling = not double_sided
+    nt = mat.node_tree
+    nt.nodes.clear()
+    out = nt.nodes.new('ShaderNodeOutputMaterial')
+    pbr = nt.nodes.new('ShaderNodeBsdfPrincipled')
+    pbr.inputs['Roughness'].default_value = roughness
+    pbr.inputs['Metallic'].default_value = 0.0
+    if 'Specular IOR Level' in pbr.inputs:
+        pbr.inputs['Specular IOR Level'].default_value = 0.28
+
+    t_diff = nt.nodes.new('ShaderNodeTexImage')
+    t_diff.image = diff_img
+
+    if use_vcol:
+        vc = nt.nodes.new('ShaderNodeVertexColor')
+        vc.layer_name = 'Color'
+        mul = nt.nodes.new('ShaderNodeMix')
+        mul.data_type = 'RGBA'
+        mul.blend_type = 'MULTIPLY'
+        mul.inputs['Factor'].default_value = 1.0
+        nt.links.new(t_diff.outputs['Color'], mul.inputs[6])
+        nt.links.new(vc.outputs['Color'], mul.inputs[7])
+        nt.links.new(mul.outputs[2], pbr.inputs['Base Color'])
+    else:
+        nt.links.new(t_diff.outputs['Color'], pbr.inputs['Base Color'])
+
+    if alpha_mask:
+        wire_alpha_mask(nt, t_diff, pbr, cutoff=0.5)
+    else:
+        pbr.inputs['Alpha'].default_value = 1.0
+
+    if nor_img is not None:
+        t_nor = nt.nodes.new('ShaderNodeTexImage')
+        t_nor.image = nor_img
+        nmap = nt.nodes.new('ShaderNodeNormalMap')
+        nmap.inputs['Strength'].default_value = 0.85
+        nt.links.new(t_nor.outputs['Color'], nmap.inputs['Color'])
+        nt.links.new(nmap.outputs['Normal'], pbr.inputs['Normal'])
+
+    if arm_img is not None:
+        t_arm = nt.nodes.new('ShaderNodeTexImage')
+        t_arm.image = arm_img
+        sep = nt.nodes.new('ShaderNodeSeparateColor')
+        nt.links.new(t_arm.outputs['Color'], sep.inputs['Color'])
+        nt.links.new(sep.outputs['Green'], pbr.inputs['Roughness'])
+        nt.links.new(sep.outputs['Blue'], pbr.inputs['Metallic'])
+        # glTF occlusionTexture channel via standard glTF Material Output node group
+        ng = bpy.data.node_groups.get('glTF Material Output') or bpy.data.node_groups.new('glTF Material Output', 'ShaderNodeTree')
+        if not ng.interface.items_tree:
+            ng.interface.new_socket(name='Occlusion', in_out='INPUT', socket_type='NodeSocketFloat')
+        gnode = nt.nodes.new('ShaderNodeGroup')
+        gnode.node_tree = ng
+        nt.links.new(sep.outputs['Red'], gnode.inputs['Occlusion'])
+
+    nt.links.new(pbr.outputs['BSDF'], out.inputs['Surface'])
+    return mat
+
+
+def export_textured_glb(out_path, objs, webp_quality=76, embed_images=True):
+    """Export selected Blender objects as Draco-6 GLB with optional WebP embedded images."""
+    out_path = Path(out_path)
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    bpy.context.view_layer.update()
+    for o in bpy.context.view_layer.objects:
+        o.select_set(False)
+    for o in objs:
+        o.hide_set(False)
+        o.hide_viewport = False
+        if o.type == 'MESH' and o.data.color_attributes:
+            idx = o.data.color_attributes.find('Color')
+            idx = idx if idx >= 0 else 0
+            o.data.color_attributes.active_color_index = idx
+            o.data.color_attributes.render_color_index = idx
+        o.select_set(True)
+    bpy.context.view_layer.objects.active = objs[0]
+
+    kwargs = dict(
+        filepath=str(out_path),
+        export_format='GLB',
+        use_selection=True,
+        export_apply=True,
+        export_yup=True,
+        export_texcoords=True,
+        export_normals=True,
+        export_vertex_color='ACTIVE',
+        export_all_vertex_colors=False,
+        export_attributes=False,
+        export_draco_mesh_compression_enable=True,
+        export_draco_mesh_compression_level=6,
+        export_materials='EXPORT',
+        export_image_format='WEBP' if embed_images else 'NONE',
+        export_animations=False,
+    )
+    if embed_images:
+        kwargs['export_image_quality'] = int(webp_quality)
+    try:
+        bpy.ops.export_scene.gltf(**kwargs)
+    except TypeError:
+        kwargs.pop('export_image_quality', None)
+        bpy.ops.export_scene.gltf(**kwargs)
+    for o in objs:
+        o.select_set(False)
+    return out_path.stat().st_size
+
+
+def verify_textured_glb(path, expect_mask=False, max_mats=1):
+    """Verify exported GLB has zero BLEND materials, exact MASK 0.5 when required, and <= max_mats."""
+    raw = Path(path).read_bytes()
+    jlen = struct.unpack('<I', raw[12:16])[0]
+    j = json.loads(raw[20:20 + jlen].decode('utf-8'))
+    mats = j.get('materials', [])
+    if max_mats is not None and len(mats) > max_mats:
+        raise RuntimeError(f'{Path(path).name}: {len(mats)} materials > max {max_mats}: {[m.get("name") for m in mats]}')
+    for m in mats:
+        if m.get('alphaMode', 'OPAQUE') == 'BLEND':
+            raise RuntimeError(f'{Path(path).name}: forbidden alphaMode=BLEND on {m.get("name")!r}')
+    if expect_mask:
+        masks = [m for m in mats if m.get('alphaMode') == 'MASK']
+        if not masks:
+            raise RuntimeError(f'{Path(path).name}: expected alphaMode=MASK material')
+        for m in masks:
+            if abs(m.get('alphaCutoff', 0.5) - 0.5) > 1e-4:
+                raise RuntimeError(f'{Path(path).name}: alphaCutoff={m.get("alphaCutoff")} != 0.5')
+    return len(raw), len(mats), len(j.get('images', []))
+
+
+def render_m4_sheet(model_names, out_path):
+    """Render all M4 models (palms, trees, shrubs, rocks, horizon) into a labelled contact sheet."""
+    cols = 4
+    rows = math.ceil(len(model_names) / cols)
+    tw, th = 460, 340
+    pad = 12
+    hdr = 52
+    W = pad + cols * (tw + pad)
+    H = hdr + pad + rows * (th + pad)
+    canvas = np.full((H, W, 3), (32, 34, 38), dtype=np.uint8)
+    draw_text(canvas, 16, 16, 'M4 POLY HAVEN VEGETATION, ROCKS & HORIZON (12 MODELS)', (244, 199, 102), scale=2)
+
+    tmp_png = Path('/tmp/m4_tile_tmp.png')
+    for idx, name in enumerate(model_names):
+        p = OUT_MODELS / f'{name}.glb'
+        if not p.exists():
+            continue
+        reset_scene()
+        bpy.ops.import_scene.gltf(filepath=str(p))
+        meshes = [o for o in bpy.data.objects if o.type == 'MESH']
+        lod0 = [o for o in meshes if '_LOD1' not in o.name]
+        lod1 = [o for o in meshes if '_LOD1' in o.name]
+        t0 = sum(tri_count(o) for o in lod0)
+        t1 = sum(tri_count(o) for o in lod1)
+        for o in lod1:
+            o.hide_render = True
+            o.hide_viewport = True
+
+        # Wire live preview textures for geometry-only materials (ph_bark, foliage_frond, backdrop)
+        for o in lod0:
+            for i, m in enumerate(o.data.materials):
+                if m is None:
+                    continue
+                bname = m.name.split('.')[0]
+                if bname in LAYER_META:
+                    o.data.materials[i] = make_material(bname, textured=True, tex_size=512)
+                elif bname == 'foliage_frond':
+                    fmat = bpy.data.materials.get('__prev_foliage_frond')
+                    if fmat is None:
+                        img = bpy.data.images.load(str(TEX_ENV / '512' / 'foliage_albedo.webp'), check_existing=True)
+                        img.colorspace_settings.name = 'sRGB'
+                        fmat = build_pbr_atlas_material('__prev_foliage_frond', img, alpha_mask=True, use_vcol=True, double_sided=True)
+                    o.data.materials[i] = fmat
+                elif bname == 'foliage_solid' or bname == 'env_backdrop_hills':
+                    vmat = bpy.data.materials.new(f'__prev_{bname}_{i}')
+                    vmat.use_nodes = True
+                    nt = vmat.node_tree
+                    pbr = next(n for n in nt.nodes if n.type == 'BSDF_PRINCIPLED')
+                    vc = nt.nodes.new('ShaderNodeVertexColor')
+                    vc.layer_name = 'Color'
+                    nt.links.new(vc.outputs['Color'], pbr.inputs['Base Color'])
+                    pbr.inputs['Roughness'].default_value = 0.85
+                    o.data.materials[i] = vmat
+
+        pts = []
+        for o in lod0:
+            for c in o.bound_box:
+                pts.append(o.matrix_world @ Vector(c))
+        mn = Vector((min(q.x for q in pts), min(q.y for q in pts), min(q.z for q in pts)))
+        mx = Vector((max(q.x for q in pts), max(q.y for q in pts), max(q.z for q in pts)))
+        if name == 'backdrop_hills':
+            center = Vector((0.0, 0.0, 15.0))
+            radius = 520.0
+        else:
+            mn_vis = Vector((mn.x, mn.y, max(mn.z, -0.05)))
+            center = (mn_vis + mx) * 0.5
+            size = mx - mn_vis
+            radius = max(size.length * 0.5, 0.25)
+
+        if name != 'backdrop_hills':
+            bpy.ops.mesh.primitive_plane_add(size=max(30.0, radius * 14.0), location=(center.x, center.y, 0.0))
+            floor = bpy.context.active_object
+            fmat = bpy.data.materials.new('sand_floor')
+            fpbr = next(n for n in fmat.node_tree.nodes if n.type == 'BSDF_PRINCIPLED')
+            fpbr.inputs['Base Color'].default_value = (*srgb_to_linear('#C7A778'), 1.0)
+            fpbr.inputs['Roughness'].default_value = 0.94
+            floor.data.materials.append(fmat)
+
+        sc = bpy.context.scene
+        sc.render.engine = 'BLENDER_EEVEE'
+        sc.render.resolution_x = tw
+        sc.render.resolution_y = th
+        sc.render.image_settings.file_format = 'PNG'
+        sc.view_settings.view_transform = 'AgX'
+        if hasattr(sc.eevee, 'taa_render_samples'):
+            sc.eevee.taa_render_samples = 12
+
+        world = bpy.data.worlds.new('m4_world')
+        sc.world = world
+        bg = world.node_tree.nodes.get('Background')
+        if bg:
+            bg.inputs['Color'].default_value = (*srgb_to_linear('#9DB8CF'), 1.0)
+            bg.inputs['Strength'].default_value = 0.78
+
+        sun_d = bpy.data.lights.new('Sun', 'SUN')
+        sun_d.energy = 4.4
+        sun_d.color = (1.0, 0.90, 0.74)
+        sun = bpy.data.objects.new('Sun', sun_d)
+        sun.rotation_euler = (math.radians(56), math.radians(8), math.radians(-38))
+        sc.collection.objects.link(sun)
+
+        fill_d = bpy.data.lights.new('Fill', 'SUN')
+        fill_d.energy = 1.2
+        fill_d.color = (0.78, 0.87, 1.0)
+        fill = bpy.data.objects.new('Fill', fill_d)
+        fill.rotation_euler = (math.radians(65), 0.0, math.radians(145))
+        sc.collection.objects.link(fill)
+
+        cam_d = bpy.data.cameras.new('Cam')
+        cam_d.lens = 35.0 if name == 'backdrop_hills' else 45.0
+        cam_d.clip_start = 0.05
+        cam_d.clip_end = 2500.0 if name == 'backdrop_hills' else max(150.0, radius * 30.0)
+        cam = bpy.data.objects.new('Cam', cam_d)
+        if name == 'backdrop_hills':
+            # Interior Nile valley panorama view looking north across the 3 cliff rings
+            cam.location = Vector((0.0, -80.0, 32.0))
+            cam.rotation_euler = (Vector((0.0, 420.0, 26.0)) - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        else:
+            dist = radius * 2.45
+            elev = math.radians(18.0)
+            azim = math.radians(-30.0)
+            cam.location = center + Vector((
+                dist * math.cos(elev) * math.sin(azim),
+                -dist * math.cos(elev) * math.cos(azim),
+                dist * math.sin(elev),
+            ))
+            cam.rotation_euler = (center - cam.location).to_track_quat('-Z', 'Y').to_euler()
+        sc.collection.objects.link(cam)
+        sc.camera = cam
+
+        sc.render.filepath = str(tmp_png)
+        bpy.ops.render.render(write_still=True)
+        tile = _load_topdown_u8(tmp_png, tw, th)
+        kb = p.stat().st_size / 1024.0
+        r, c = divmod(idx, cols)
+        x0 = pad + c * (tw + pad)
+        y0 = hdr + pad + r * (th + pad)
+        canvas[y0:y0 + th, x0:x0 + tw] = tile
+        draw_text(canvas, x0 + 6, y0 + 6, f'{name}', (251, 241, 220), scale=2, bg=(15, 42, 51))
+        lbl = f'L0:{t0}T L1:{t1}T {kb:.0f}KB' if t1 else f'L0:{t0}T {kb:.0f}KB'
+        draw_text(canvas, x0 + 6, y0 + th - 22, lbl, (244, 199, 102), scale=2, bg=(15, 42, 51))
+
+    if tmp_png.exists():
+        tmp_png.unlink()
+    reset_scene()
+    _save_topdown_u8_png(canvas, out_path)
+    print(f'[v4] Rendered M4 contact sheet -> {out_path}', flush=True)

@@ -161,7 +161,7 @@ function layout(grid, avoid) {
 // Route coins have string ids "<story>:<k>"; cluster coins/stars keep their numeric ids and may
 // belong to several sets. Sets are computed a few ms per frame (title screen included) and
 // cached in localStorage (they only depend on the world and the endpoints).
-const SET_VERSION = 3, CACHE_KEY = 'quran-journey-coinsets', SLOTS = 64;
+const SET_VERSION = 4, CACHE_KEY = 'quran-journey-coinsets', SLOTS = 64;
 const MIN_SET = 20, ROUTE_COINS_MAX = 30, EXTRA_MAX = 14, NEAR_CLUSTER = 6, NEAR_STAR = 12;
 // the story order of the old breadcrumb ids (ROUTE_ID + index·1e6 + cell) in saves before sets
 const OLD_ORDER = ['people-of-the-elephant', 'quraysh-journeys', 'yusuf-dream', 'threads-of-dawn', 'qays-the-fasting-farmer', 'best-dates', 'houses-by-their-doors', 'the-new-qibla', 'the-guest-and-the-lamp'];
@@ -217,6 +217,7 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
 
   function placeSet(id, route, ep) {
     const pts = [], path = [];
+    const r2 = v => Math.round(v * 100) / 100;
     const dist = (x, z) => { let m = Infinity; for (const [px, pz] of path) m = Math.min(m, Math.hypot(px - x, pz - z)); return m; };
     const taken = (x, z, r = 1.2) => pts.some(p => Math.hypot(p[0] - x, p[1] - z) < r);
     if (route) {
@@ -230,9 +231,10 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
         const g = Math.floor(m / 6), j = m % 6, pat = g % 3, w = Math.sin(Math.PI * j / 5);
         let x = route.x[i], z = route.z[i];
         const lat = pat === 1 ? 0.7 * w * (g % 2 ? 1 : -1) : 0, h = pat === 2 ? 0.55 * w : 0;
-        if (lat && okAt(x - tz * lat, z + tx * lat)) { x -= tz * lat; z += tx * lat; }
+        if (lat && okAt(r2(x - tz * lat), r2(z + tx * lat))) { x -= tz * lat; z += tx * lat; }
+        x = r2(x); z = r2(z);
         if (!okAt(x, z) || taken(x, z, 1.6)) continue;
-        pts.push([x, z, h]);
+        pts.push([x, z, r2(h)]);
       }
     } else path.push(ep.to);
     // exploration clusters and big stars close to the route
@@ -256,13 +258,12 @@ export function createCoins({ scene, camera, grid, ui, npcs, getSave, persist, S
       } else { const a = f * Math.PI * 2; cx = ep.to[0] + Math.cos(a) * 7; cz = ep.to[1] + Math.sin(a) * 7; tx = -Math.sin(a); tz = Math.cos(a); }
       for (const off of [4, -4, 5.5, -5.5]) {
         const ox = cx - tz * off, oz = cz + tx * off, row = [];
-        for (let q = 0; q < 5; q++) { const t = (q - 2) * 1.3; row.push([ox + tx * t, oz + tz * t, 0.6 * Math.sin(Math.PI * q / 4)]); }
+        for (let q = 0; q < 5; q++) { const t = (q - 2) * 1.3; row.push([r2(ox + tx * t), r2(oz + tz * t), r2(0.6 * Math.sin(Math.PI * q / 4))]); }
         if (row.every(([x, z]) => okAt(x, z) && !taken(x, z))) { pts.push(...row); break; }
       }
     }
-    const r2 = v => Math.round(v * 100) / 100;
     return { from: ep.from, to: ep.to, len: route ? +route.len.toFixed(1) : 0, reached: route ? !!route.reached : false,
-      route: pts.map(([x, z, h]) => [r2(x), r2(z), r2(h)]), extra, path: path.map(([x, z]) => [r2(x), r2(z)]) };
+      route: pts, extra, path: path.map(([x, z]) => [r2(x), r2(z)]) };
   }
   // saves from before coin sets: breadcrumb coins collected on the way to a story count for its set
   function migrate(id, keys, def) {

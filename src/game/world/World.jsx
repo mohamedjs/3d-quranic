@@ -14,8 +14,10 @@ import { Vegetation } from '../vegetation/Vegetation.jsx';
 import { Built } from '../buildings/Buildings.jsx';
 import { buildVillage } from '../buildings/village.js';
 import { buildCanalScene } from './details.js';
+import { buildStorySets } from './storySets.js';
 import { loadEnvModels } from './envAssets.js';
 import { syncBuildingShading } from '../shaders/buildingMaterial.js';
+import { syncPropShading } from '../shaders/propMaterial.js';
 import { Props } from './Props.jsx';
 import { Environment } from '../environment/Environment.jsx';
 import { Player } from '../characters/Player.jsx';
@@ -29,6 +31,10 @@ import { normalizeEncounters } from '../systems/cast.js';
 import { height } from '../terrain/heightfield.js';
 import { makeLantern } from './lantern.js';
 import { PRESETS } from '../systems/quality.js';
+import { LAYER_NO_REFLECT } from '../systems/layers.js';
+
+// Small non-blocker village dressing props merged per chunk × material on every tier
+const VILLAGE_DRESSING = new Set(['pot_plant', 'jar', 'jar_b', 'hay']);
 
 // Post-processing is its own chunk, fetched only on levels that use it. Without it (LOW) the
 // renderer does the neutral tone mapping itself, so colours stay the same.
@@ -52,8 +58,12 @@ export function World() {
   refs.sunDir = env.sunDir;
   const scene = useThree(s => s.scene);
   const bldShading = usePreset().shading ?? 'toon';
+  const detail = useGame(s => s.detail);
   const lite = !!useDetail().lite;
-  useEffect(() => { syncBuildingShading(assets, scene, bldShading); }, [assets, scene, bldShading, lite]);
+  useEffect(() => {
+    syncBuildingShading(assets, scene, bldShading);
+    syncPropShading(assets, scene, bldShading);
+  }, [assets, scene, bldShading, lite, detail]);
 
   const world = useMemo(() => {
     (window.__builds ??= []).push('world:' + useGame.getState().detail);   // test probe: the world must be built exactly once
@@ -80,21 +90,39 @@ export function World() {
     }
     for (const e of data.encounters) for (const p of e.props ?? []) {
       const [x, z] = p.position, s = p.scale ?? 1;
-      if (p.model === 'lantern') { lanterns.push(makeLantern({ x, z, y: height(x, z) + (p.y ?? 1.9), rot: p.rot ?? 0 })); continue; }
+      if (p.model === 'lantern') {
+        const lan = makeLantern({ x, z, y: height(x, z) + (p.y ?? 1.9), rot: p.rot ?? 0 });
+        lan.traverse(o => o.layers.set(LAYER_NO_REFLECT));
+        lanterns.push(lan);
+        continue;
+      }
       props.push({ model: p.model, x, y: height(x, z) + (p.dy ?? -0.03), z, rot: p.rot ?? 0, tilt: p.tilt, sx: s, sy: s, sz: s });
       if (p.collide) colliders.push({ x0: x - p.collide, x1: x + p.collide, z0: z - p.collide, z1: z + p.collide });
       clearings.push([x, z, 0.8]);
     }
-    return { terrain, village, canal, colliders, clearings, props, lanterns };
+    canal.overlays.traverse(o => o.layers.set(LAYER_NO_REFLECT));
+    // v4 Poly Haven story-spot dressing for all 22 encounters (safe clearance + large-prop colliders)
+    const storySets = buildStorySets(data.encounters, colliders);
+    colliders.push(...storySets.colliders);
+    clearings.push(...storySets.clearings);
+    return { terrain, village, canal, storySets, colliders, clearings, props, lanterns };
   }, [data]);
 
   // LITE: every placed model (village, canal, story props and the trees from <Vegetation/>) goes
-  // into ONE merged-chunk set, so a 32 m cell costs ~2 draw calls whatever it holds
+  // into ONE merged-chunk set, so a 24 m cell costs minimal draw calls whatever it holds
   const [treePl, setTreePl] = useState(null);
-  const litePl = useMemo(() => (lite ? [...world.village.placements.map(p => ({ ...p, blocker: true })), ...world.canal.placements, ...world.props, ...(treePl ?? [])] : null), [lite, world, treePl]);
+  const litePl = useMemo(() => (lite ? [
+    ...world.village.placements.map(p => ({ ...p, blocker: !VILLAGE_DRESSING.has(p.model) })),
+    ...world.canal.placements, ...world.props, ...world.storySets.placements, ...(treePl ?? []),
+  ] : null), [lite, world, treePl]);
 
-  // Non-Lite: combine non-blocker canal & encounter props into one instanced set (saves duplicate model calls)
-  const extraPl = useMemo(() => (!lite ? [...world.canal.placements, ...world.props] : null), [lite, world]);
+  // Non-Lite: split major village architecture (camera blockers) from dressing props, which are
+  // merged per chunk × material on EVERY tier to keep draw calls down.
+  const villageMajor = useMemo(() => (!lite ? world.village.placements.filter(p => !VILLAGE_DRESSING.has(p.model)) : null), [lite, world]);
+  const dressingPl = useMemo(() => (!lite ? [
+    ...world.village.placements.filter(p => VILLAGE_DRESSING.has(p.model)),
+    ...world.canal.placements, ...world.props, ...world.storySets.placements,
+  ] : null), [lite, world]);
 
   // order matters: meshes the player needs (terrain, walls) mount first; <Player/> updates
   // the camera before <Water/> renders its passes; <GameSystem/> starts once all exist
@@ -104,10 +132,10 @@ export function World() {
       <Lighting env={env} />
       <Terrain data={world.terrain} />
       <Built geometries={world.village.geometries} blocker />
-      {!lite && <Props assets={assets} placements={world.village.placements} blocker lodDistance={55} />}
+      {!lite && <Props assets={assets} placements={villageMajor} blocker lodDistance={40} />}
       <Built geometries={world.canal.geometries} />
-      {!lite && extraPl.length > 0 && <Props assets={assets} placements={extraPl} lodDistance={40} />}
-      {!lite && <primitive object={world.canal.overlays} />}{/* puddles + footprints: 7 draw calls, not on LITE */}
+      {!lite && dressingPl.length > 0 && <Props assets={assets} placements={dressingPl} mergeDressing />}
+      {!lite && <primitive object={world.canal.overlays} />}{/* puddles + footprints: not on LITE */}
       {lite && <Props assets={assets} placements={litePl} />}
       {world.lanterns.map((l, i) => <primitive key={'lantern' + i} object={l} />)}
       <Vegetation colliders={world.colliders} clearings={world.clearings} assets={assets} gardens={world.village.gardens} onTrees={lite ? setTreePl : null} />

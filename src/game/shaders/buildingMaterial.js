@@ -4,11 +4,12 @@
 // - Medium / High / Ultra (`shading: 'pbr'`): MeshStandardMaterial sampling 1024 diffuse, normal
 //   and ARM DataArrayTextures (High/Ultra stay at 1024 for memory), screen-derivative tangent
 //   frame, normalized ARM micro-AO & roughness, low envMapIntensity + aerial fog + warm rim.
-// Layer order (per-vertex `aLayer` 0..7):
+// Layer order (per-vertex `aLayer` 0..8):
 //   0 ph_plaster (clay_plaster, 2.5 m), 1 ph_mudbrick (clay_block_wall, 2 m),
 //   2 ph_blue (blue_plaster_weathered, 2.5 m), 3 ph_wood (weathered_brown_planks, 1.6 m),
 //   4 ph_floor (clay_floor_001, 2 m), 5 ph_stone (sandstone_blocks_05, 2.4 m),
-//   6 ph_cloth (hessian_230, 1.2 m), 7 ph_dark (openings: no texture, vertex colour).
+//   6 ph_cloth (hessian_230, 1.2 m), 7 ph_dark (openings: no texture, vertex colour),
+//   8 ph_bark (palm_bark, 1.2 m — date palm trunks).
 import * as THREE from 'three';
 import { toonGradient, RIM } from './toon.js';
 import { AERIAL, injectAerialFog } from './stylizedPbr.js';
@@ -23,6 +24,7 @@ export const BUILDING_LAYERS = [
   'ph_stone',
   'ph_cloth',
   'ph_dark',
+  'ph_bark',
 ];
 
 export const BUILDING_LAYER_INDEX = Object.fromEntries(BUILDING_LAYERS.map((n, i) => [n, i]));
@@ -35,6 +37,7 @@ const TEX_IDS = [
   'clay_floor_001',
   'sandstone_blocks_05',
   'hessian_230',
+  'palm_bark',
 ];
 
 const DEFAULT_AVGS = [
@@ -45,9 +48,10 @@ const DEFAULT_AVGS = [
   new THREE.Vector3(0.195, 0.117, 0.047),
   new THREE.Vector3(0.428, 0.330, 0.230),
   new THREE.Vector3(0.263, 0.188, 0.100),
+  new THREE.Vector3(0.099, 0.076, 0.059),
 ];
 
-const DEFAULT_ARM_AO = [0.976, 0.815, 0.980, 0.950, 0.981, 0.861, 0.905];
+const DEFAULT_ARM_AO = [0.976, 0.815, 0.980, 0.950, 0.981, 0.861, 0.905, 0.882];
 
 let phDiff, phNor, phArm;
 function makePlaceholder(r, g, b, srgb) {
@@ -190,24 +194,26 @@ function createBuildingMaterial(pbr) {
     const pbrUniformDecls = pbr ? `
         uniform highp sampler2DArray uNorArr;
         uniform highp sampler2DArray uArmArr;
-        uniform float uArmAO[7];` : '';
+        uniform float uArmAO[8];` : '';
 
     const colorCode = /* glsl */`
-        int bLayer = clamp(int(floor(vLayer + 0.5)), 0, 7);
+        int bLayer = clamp(int(floor(vLayer + 0.5)), 0, 8);
+        int bTexIdx = bLayer == 8 ? 7 : bLayer;
         vec2 bUv = vBldUv;
         float bCamDist = length(vAerialPos - cameraPosition);
         ${pbr ? 'float bAo = 1.0; float bRough = 0.92; float bNormFade = 1.0 - smoothstep(26.0, 82.0, bCamDist);' : ''}
-        if (uTexOn > 0.5 && bLayer < 7) {
-          float tileM = bLayer == 0 ? 2.5 : bLayer == 1 ? 2.0 : bLayer == 2 ? 2.5 : bLayer == 3 ? 1.6 : bLayer == 4 ? 2.0 : bLayer == 5 ? 2.4 : 1.2;
+        if (uTexOn > 0.5 && bLayer != 7) {
+          float tileM = bLayer == 0 ? 2.5 : bLayer == 1 ? 2.0 : bLayer == 2 ? 2.5 : bLayer == 3 ? 1.6 : bLayer == 4 ? 2.0 : bLayer == 5 ? 2.4 : bLayer == 6 ? 1.2 : 0.85;
           bUv = vBldUv / tileM;
-          float lf = float(bLayer);
+          float lf = float(bTexIdx);
           vec3 tex = texture(uDiffArr, vec3(bUv, lf)).rgb;
-          vec3 avg = uDiffAvg[bLayer];
+          vec3 avg = uDiffAvg[bTexIdx];
           vec3 det = clamp(tex / avg, vec3(0.45), vec3(1.65));
+          if (bLayer == 8) det = clamp(pow(max(tex / avg, vec3(0.01)), vec3(1.75)), vec3(0.36), vec3(1.85));
 
           vec3 base = diffuseColor.rgb;
           float detDist = mix(1.0, 0.58, smoothstep(32.0, 95.0, bCamDist));
-          float detS = bLayer == 0 ? 0.84 : bLayer == 1 ? 0.86 : bLayer == 2 ? 0.78 : bLayer == 3 ? 0.85 : bLayer == 4 ? 0.78 : bLayer == 5 ? 0.88 : 0.86;
+          float detS = bLayer == 0 ? 0.84 : bLayer == 1 ? 0.86 : bLayer == 2 ? 0.78 : bLayer == 3 ? 0.85 : bLayer == 4 ? 0.78 : bLayer == 5 ? 0.88 : bLayer == 6 ? 0.86 : 0.98;
           float realM = 0.08;
           if (bLayer == 1) realM = 0.42;
           else if (bLayer == 2) realM = 0.26;
@@ -222,7 +228,7 @@ function createBuildingMaterial(pbr) {
             float mnC = min(min(base.r, base.g), base.b);
             float sat = (mxC - mnC) / max(mxC, 0.01);
             realM = mix(0.44, 0.18, smoothstep(0.32, 0.68, sat));
-          }
+          } else if (bLayer == 8) realM = 0.24;
 
           vec3 detCol = base * mix(vec3(1.0), det, detS * detDist);
           float baseL = dot(base, vec3(0.2126, 0.7152, 0.0722));
@@ -232,16 +238,16 @@ function createBuildingMaterial(pbr) {
 
           ${pbr ? `
           vec3 arm = texture(uArmArr, vec3(bUv, lf)).rgb;
-          bAo = mix(1.0, clamp(arm.r / uArmAO[bLayer], 0.50, 1.12), 0.60 * bNormFade);
-          float rMin = bLayer == 3 ? 0.68 : (bLayer == 4 || bLayer == 5) ? 0.76 : 0.84;
-          float rMax = bLayer == 3 ? 0.92 : (bLayer == 4 || bLayer == 5) ? 0.95 : 0.98;
+          bAo = mix(1.0, clamp(arm.r / uArmAO[bTexIdx], 0.50, 1.12), 0.60 * bNormFade);
+          float rMin = bLayer == 3 ? 0.68 : (bLayer == 4 || bLayer == 5) ? 0.76 : bLayer == 8 ? 0.80 : 0.84;
+          float rMax = bLayer == 3 ? 0.92 : (bLayer == 4 || bLayer == 5) ? 0.95 : bLayer == 8 ? 0.96 : 0.98;
           bRough = mix(rMin, rMax, arm.g);` : ''}
         } ${pbr ? 'else if (bLayer == 7) { bRough = 0.97; }' : ''}`;
 
     sh.fragmentShader = sh.fragmentShader
       .replace('#include <common>', `#include <common>
         uniform highp sampler2DArray uDiffArr;
-        uniform vec3 uDiffAvg[7];
+        uniform vec3 uDiffAvg[8];
         uniform float uTexOn;${pbrUniformDecls}
         uniform vec3 uRimColor, uShadowTint;
         varying float vLayer;
@@ -253,7 +259,7 @@ function createBuildingMaterial(pbr) {
         .replace('#include <roughnessmap_fragment>', `#include <roughnessmap_fragment>
           if (uTexOn > 0.5 || bLayer == 7) roughnessFactor = bRough;`)
         .replace('#include <normal_fragment_maps>', `#include <normal_fragment_maps>
-          if (uTexOn > 0.5 && bLayer < 7 && bNormFade > 0.01) {
+          if (uTexOn > 0.5 && bLayer != 7 && bNormFade > 0.01) {
             vec3 q0 = dFdx(-vViewPosition);
             vec3 q1 = dFdy(-vViewPosition);
             vec2 st0 = dFdx(bUv);
@@ -266,8 +272,8 @@ function createBuildingMaterial(pbr) {
             if (detN > 1e-10) {
               float scN = inversesqrt(detN);
               mat3 bTbn = mat3(bT * scN, bB * scN, normal);
-              vec3 mapN = texture(uNorArr, vec3(bUv, float(bLayer))).xyz * 2.0 - 1.0;
-              float ns = (bLayer == 0 ? 0.80 : bLayer == 1 ? 1.05 : bLayer == 2 ? 0.74 : bLayer == 3 ? 0.95 : bLayer == 4 ? 0.75 : bLayer == 5 ? 1.15 : 0.85) * bNormFade;
+              vec3 mapN = texture(uNorArr, vec3(bUv, float(bTexIdx))).xyz * 2.0 - 1.0;
+              float ns = (bLayer == 0 ? 0.80 : bLayer == 1 ? 1.05 : bLayer == 2 ? 0.74 : bLayer == 3 ? 0.95 : bLayer == 4 ? 0.75 : bLayer == 5 ? 1.15 : bLayer == 6 ? 0.85 : 1.50) * bNormFade;
               mapN.xy *= vec2(ns, -ns);   // flip Y for glTF flipY=false + OpenGL nor_gl
               normal = normalize(bTbn * mapN);
             }

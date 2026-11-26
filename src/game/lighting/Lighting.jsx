@@ -1,7 +1,7 @@
-// Golden-hour toon lighting: a warm sun (the cel materials step it into lit / half-tone /
-// shade) and a light lavender-warm hemisphere that *is* the shadow colour, so shaded sides
-// and cast shadows read as one soft tint instead of going dark. The shadow frustum follows
-// the player and is snapped to shadow-map texels (no shimmering edges while walking).
+// Golden-hour lighting: a warm sun derived from Poly Haven sun.json (mixed 35% toward white
+// so faces and white galabiyas stay clean) and a light lavender-warm hemisphere that *is* the
+// shadow colour, so shaded sides and cast shadows read as one soft tint instead of going dark.
+// The shadow frustum follows the player and is snapped to shadow-map texels (no shimmering edges).
 import { useRef, useMemo, useEffect } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
@@ -9,6 +9,7 @@ import { usePreset, useGame } from '../systems/store.js';
 import { refs } from '../systems/refs.js';
 
 export const SUN_COLOR = new THREE.Color('#ffd488');
+const WHITE = new THREE.Color('#ffffff');
 const SKY_FILL = '#b4b8d0';      // airy pastel lavender sky shadow fill (keeps Lite shadows luminous)
 const GROUND_BOUNCE = '#d8b082'; // warm sunlit ochre ground bounce
 
@@ -20,6 +21,8 @@ export function Lighting({ env }) {
   const gl = useThree(s => s.gl);
   const sun = useRef();
   const st = useRef({ frame: 0, r: 0, last: new THREE.Vector3(1e9, 0, 0) });
+  const toon = preset.shading !== 'pbr';                           // flat cel shades show a warm key much more: whiten it further
+  const sunColor = useMemo(() => new THREE.Color(env.sun?.sunColor || SUN_COLOR).lerp(WHITE, toon ? 0.55 : 0.35), [env.sun?.sunColor, toon]);
   const basis = useMemo(() => {
     const f = env.sunDir.clone().negate(), right = new THREE.Vector3().crossVectors(f, new THREE.Vector3(0, 1, 0)).normalize();
     return { right, up: new THREE.Vector3().crossVectors(right, f).normalize() };
@@ -75,14 +78,14 @@ export function Lighting({ env }) {
 
   const r = preset.shadowRange, pbr = preset.shading === 'pbr';
   // Toon steps low-angle sun (dot=0.28) to full 1.0, so toon tiers use a softer sun/hemi ratio
-  // (avoiding dark cast shadow bands on flat streets), while physical PBR uses a stronger key.
+  // (avoiding dark cast shadow bands on flat streets); PBR is calibrated for ACES Filmic + PMREM IBL.
   return (
     <>
-      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={SUN_COLOR} intensity={pbr ? 1.95 : 1.65} castShadow
+      <directionalLight key={preset.shadowMap + '-' + r} ref={sun} color={sunColor} intensity={pbr ? 1.82 : 1.70} castShadow
         shadow-mapSize={[preset.shadowMap, preset.shadowMap]} shadow-bias={-0.0004} shadow-normalBias={0.04} shadow-radius={2}
         shadow-camera-left={-r} shadow-camera-right={r} shadow-camera-top={r} shadow-camera-bottom={-r}
         shadow-camera-near={1} shadow-camera-far={340} />
-      <hemisphereLight args={[SKY_FILL, GROUND_BOUNCE, pbr ? 2.15 : 2.65]} />
+      <hemisphereLight args={[SKY_FILL, GROUND_BOUNCE, pbr ? 1.88 : 2.80]} />
     </>
   );
 }

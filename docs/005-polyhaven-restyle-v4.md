@@ -169,7 +169,7 @@ and the in-game About/privacy page gets one line: "Environment assets: Poly Have
 ## 9. Decisions / log
 (appended by Claude during the runs)
 
-### CURRENT RUN: milestone M0 only
+### M0 run decisions (done)
 Do M0 (§3) and nothing from M1 onward, then stop and report. No file under `src/` changes in M0.
 
 Decisions for M0 (binding):
@@ -218,3 +218,65 @@ Decisions for M0 (binding):
 - **Pre-existing before v4** (measured on d66042c's build): High is over the §1 triangle budget (1.69M vs
   700k) and `balance({verify:true})` on High reports `best-dates` `unreachable: 1`. M4 must bring both within
   limits. Lite is green: 22 stories, min 22 coins.
+
+### CURRENT RUN: milestone M1 only (Sky & light)
+Do M1 (§3) and nothing from M2 onward, then stop and report. M0 is committed; build on it.
+
+Files you may change: `src/game/environment/Sky.js`, `src/game/environment/Environment.jsx`,
+`src/game/lighting/Lighting.jsx`, `src/game/lighting/environmentMap.js`, `src/game/effects/Effects.jsx`,
+and `src/game/world/World.jsx` **only** for the one `gl.toneMapping` effect in `PostFX`. If the aerial
+fog colours must change, set them from `Environment.jsx` through the exported `AERIAL` uniforms; do not
+edit `stylizedPbr.js`. Add screenshots under `blender/v4/previews/`. Nothing else.
+
+Decisions for M1 (binding):
+1. **Loading.** `loadEnvironment()` fetches `./textures/v4/sky/sun.json` with the backdrop GLB and returns
+   `{ sunDir, sun, backdropGeo }`. If the fetch fails, fall back to built-in constants (today's `SUN_DIR`
+   and colours) so the game still starts. Equirect textures load through three's `TextureLoader` from a
+   small cached helper in `environmentMap.js` (loaders stay in one place per file, no new npm packages):
+   `_1k` for Lite/Low/Medium, `_2k` for High/Ultra, `colorSpace = SRGBColorSpace`. A tier change swaps
+   textures and disposes the old PMREM target.
+2. **Sun direction.** Azimuth from `sun.json`; light elevation = `max(sun.json elevation, 16°)` so streets
+   and faces stay readable. One `sunDir` (the clamped one) drives lights, shadows, fog, backdrop, water
+   and the visible sun disc in the sky shader.
+3. **Warm grade of the sky.** The HDRI average horizon is grey-blue; art-direction.md asks for golden
+   dusk. Write one `warmGrade(color, elevationDeg)` (JS for gradient stops, same formula in GLSL for the
+   textured path): mix toward `#F2B86B` by 0.65 at ≤5°, 0.35 at 10°, 0.12 at 20°, 0 from 30° up
+   (smooth between), and mix toward `#4D7EA8` by 0.2 above 45°.
+4. **Sky shader** (one camera-following sphere, `createSky(sun, { dir, octaves, map })`):
+   - Lite/Low/Medium (`map` null): gradient built from the warm-graded `sun.json` stops, plus today's
+     sun halo/disc and the painterly cloud layers (keep them, tinted to the new palette).
+   - High/Ultra (`map` = 2k texture): sample the equirect (three's `equirectUv` convention) through
+     `warmGrade`, plus the sun halo/disc and the same cloud layers at lower opacity (the HDRI is nearly
+     cloudless).
+5. **IBL.** `getSkyPMREM` bakes a sphere whose upper hemisphere is the warm-graded equirect and whose
+   lower hemisphere is the warm ground bounce (`#C48952` → golden-tan, as today), never the HDRI's dark
+   blue ground. `scene.environment` is set on every tier (toon materials ignore it); tune
+   `environmentIntensity` so Medium/High are not brighter or flatter than today.
+6. **Light colour.** Directional colour = `sun.json.sunColor` mixed 35 % toward white. Keep the lavender
+   sky fill / ochre ground hemisphere; retune intensities by looking at the screenshots (characters'
+   faces and white galabiya must not turn orange or clip).
+7. **Fog and backdrop.** `scene.fog`, `scene.background`, `AERIAL.uAerialWarm/uAerialCool/uAerialSunGlow`
+   and the backdrop uniforms take their colours from the warm-graded gradient (horizon stops).
+8. **Tone mapping + grade.**
+   - Medium+ (`post`): `ToneMappingMode.ACES_FILMIC` replaces NEUTRAL, followed by a warm LUT built
+     procedurally in `Effects.jsx` (a 17³ `LookupTexture`/`Data3DTexture` used with the `LUT` effect from
+     `@react-three/postprocessing`): gently warm highlights toward `#F4C766`, slightly cool-teal deep
+     shadows, saturation about +5 %. Keep Bloom, DoF, Vignette, SMAA.
+   - Lite/Low (no post): a cheap warm grade applied by the renderer to every material at once:
+     `gl.toneMapping = THREE.CustomToneMapping` with `THREE.ShaderChunk.tonemapping_pars_fragment`'s
+     `CustomToneMapping` replaced once (module level, in `environmentMap.js`) by three's neutral curve
+     plus a small warm lift. No per-material patching, no extra passes. This must run before any material
+     compiles.
+9. **Quality bar.** Compare your screenshots with `blender/v4/previews/M0_*.png` (same spots, today's
+   look). Lite must look clearly warmer/golden and at least as bright and readable; no blown-out sky, no
+   muddy shadows, UI unchanged. Lite budgets: ≤ 140 draw calls, ≤ 180k triangles. No walkability change.
+10. Save your screenshots as `blender/v4/previews/M1_{lite,high}_{home,street,river,oasis}.png`. Do not
+    commit, do not push, do not edit this doc.
+
+#### M1 log (2026-11-26) — passed
+- Executor: Gemini 4 Neon XHigh (1 run). Reviewer: Claude, with a small hand tune on Lite/Low only: toon sun
+  colour mixed 55 % toward white (was 35 %), toon hemisphere 2.60 → 2.80, softer CustomToneMapping warm lift
+  (the white galabiya had turned peach and the oasis had darkened).
+- Accepted deviations: High/Ultra sky multiplies the LDR equirect by 1.32 before the grade; LUT stored as Uint8.
+- Checks: build passes, precache core 8.66 MB; Lite 52 calls / 152k tris, balance green (22 stories, min 22);
+  High 299 calls / 1.69M tris, balance as before v4 (`best-dates` 1 unreachable). No page errors.

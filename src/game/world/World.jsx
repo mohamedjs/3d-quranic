@@ -34,7 +34,7 @@ import { PRESETS } from '../systems/quality.js';
 const Effects = lazy(() => import('../effects/Effects.jsx').then(m => ({ default: m.Effects })));
 function PostFX() {
   const post = usePreset().post, gl = useThree(s => s.gl);
-  useEffect(() => { gl.toneMapping = post ? THREE.NoToneMapping : THREE.NeutralToneMapping; }, [gl, post]);
+  useEffect(() => { gl.toneMapping = post ? THREE.NoToneMapping : THREE.CustomToneMapping; }, [gl, post]);
   return post ? <Suspense fallback={null}><Effects /></Suspense> : null;
 }
 

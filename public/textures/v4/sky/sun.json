@@ -1,0 +1,50 @@
+{
+  "hdri": "qwantani_sunset_puresky",
+  "sunDirection": [
+    0.80436,
+    0.1059,
+    0.58463
+  ],
+  "sunColor": "#ffb261",
+  "sunElevationDeg": 6.08,
+  "exposure": 0.308,
+  "gradient": [
+    {
+      "elevationDeg": -10,
+      "color": "#b1b8ba"
+    },
+    {
+      "elevationDeg": 0,
+      "color": "#c6bdaf"
+    },
+    {
+      "elevationDeg": 5,
+      "color": "#cdc9c1"
+    },
+    {
+      "elevationDeg": 10,
+      "color": "#c7cccd"
+    },
+    {
+      "elevationDeg": 20,
+      "color": "#a5bbcf"
+    },
+    {
+      "elevationDeg": 35,
+      "color": "#7d9bbb"
+    },
+    {
+      "elevationDeg": 55,
+      "color": "#5e7ca1"
+    },
+    {
+      "elevationDeg": 75,
+      "color": "#4d6b92"
+    },
+    {
+      "elevationDeg": 90,
+      "color": "#49678e"
+    }
+  ],
+  "ground": "#728397"
+}

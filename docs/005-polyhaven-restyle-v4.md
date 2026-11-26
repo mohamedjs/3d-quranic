@@ -168,3 +168,53 @@ and the in-game About/privacy page gets one line: "Environment assets: Poly Have
 
 ## 9. Decisions / log
 (appended by Claude during the runs)
+
+### CURRENT RUN: milestone M0 only
+Do M0 (§3) and nothing from M1 onward, then stop and report. No file under `src/` changes in M0.
+
+Decisions for M0 (binding):
+1. **Python.** Run `fetch.py` and `process_textures.py` with `python3 -I`. System Python has `requests`
+   and PIL but no numpy, OpenEXR or imageio, so it cannot read `.hdr`/`.exr`: `process_hdri.py` and
+   `process_models.py` run as `blender -b --factory-startup --python tools/polyhaven/<script>.py`
+   (Blender's Python has numpy and image I/O). Every script is self-contained: no sibling imports.
+2. **Downloads.** Fetch 2k only, never 4k/8k (disk is nearly full). One directory per asset,
+   `.cache/polyhaven/<id>/`, verify every file's md5; a re-run skips files whose md5 already matches.
+   Send a generic `User-Agent` (`asset-fetcher/1.0`) with no names, e-mail or project name.
+3. **Content filter (hard rule, §0).** No statues, busts, human or animal figures, weapons, church /
+   religious-building textures, alcohol, signage or modern-industrial props. Check each id's API
+   categories/tags; `fetch.py` refuses ids matching a deny list. When unsure, leave it out.
+4. **Models.** Output `public/models/env/ph_<id>.glb` (Lite LOD) and `public/models/env/ph_<id>_hi.glb`
+   (High LOD), triangle budgets from §1, Draco 6, textures embedded as WebP (Lite ≤ 512 px, small props
+   ≤ 256 px; High ≤ 1024 px). Origin at the base centre, Y-up, real-world metres. Never overwrite or
+   delete an existing file in `public/models/env/`. Decimated foliage must keep its alpha cutout and
+   still read as the plant (do not collapse leaf cards into blobs; drop whole leaf cards instead).
+5. **Textures.** `public/textures/v4/{512,1024,2048}/<id>_{diff,nor,arm}.webp` (nor = OpenGL
+   convention, arm = AO/roughness/metal in R/G/B).
+6. **HDRI.** One sunset/golden-hour sky. `public/textures/v4/sky/<id>_1k.webp` (1024×512) and
+   `<id>_2k.webp` (2048×1024), tonemapped LDR, plus `sun.json`:
+   `{"hdri": id, "sunDirection": [x,y,z], "sunColor": "#rrggbb", "sunElevationDeg": n,
+   "exposure": n, "gradient": [{"elevationDeg": n, "color": "#rrggbb"}, … from -10 to 90],
+   "ground": "#rrggbb"}`. `sunDirection` is a unit vector in three.js world space (Y up) consistent with
+   three.js equirect lookup `u = atan2(z, x)/(2π) + 0.5`, `v = asin(y)/π + 0.5` (v = 1 is the top row).
+7. **Lite download budget.** The precached additions (all 512 textures, the 1k sky and the `ph_*.glb`
+   Lite models together) must be ≤ 6 MB. Choose the asset list to fit: prefer fewer, reusable assets
+   (about 12–16 models and 14–18 texture sets, covering the needs of M2–M5, including bark for palms,
+   wood, plaster, ground, and cotton/linen/wool/leather fabrics for M5). Only ship at 512 what Lite
+   will really use; if it still does not fit, lower WebP quality or resolution and say so in `notes`.
+8. **vite-pwa.** Add exactly the two SKIP regexes of §2.
+9. **Contact sheet.** `process_models.py` renders `blender/v4/previews/M0_contact_sheet.png` (flag
+   `-- --sheet`): every processed model (Lite and High) on a grey floor with its id and tri count
+   labelled, texture sets as labelled swatches, and the sky as a labelled strip. Open the PNG and check
+   it yourself before reporting.
+10. Do not commit, do not push, do not edit this doc.
+
+#### M0 log (2026-11-26) — passed
+- Executor: Gemini 4 Neon XHigh (2 runs: build + one fix round). Reviewer: Claude.
+- 33 CC0 assets (1 HDRI, 16 texture sets, 16 models). Precache core grew 5.48 → 8.64 MB (≈3.0 MB, limit 6).
+- Fix round 1: foliage exported as BLEND (now MASK 0.5), foliage too sparse, `shrub_04` was four tiny plants,
+  Lite wicker basket had holes, lantern had 5 primitives.
+- No `src/` change, so tiers measure the same as before v4 (max over 4 spots): Lite 52 calls / 152k tris;
+  High 299 calls / 1.69M tris.
+- **Pre-existing before v4** (measured on d66042c's build): High is over the §1 triangle budget (1.69M vs
+  700k) and `balance({verify:true})` on High reports `best-dates` `unreachable: 1`. M4 must bring both within
+  limits. Lite is green: 22 stories, min 22 coins.

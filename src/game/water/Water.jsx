@@ -103,8 +103,10 @@ export function Water({ clock }) {
     const mode = useGame.getState().mode;
     if (mode === 'quran' || mode === 'panel') return;
 
-    // Skip planar reflection pass when no Nile/canal/oasis water surface is within view range
-    if (!waterInView(camera, tier >= 4 ? 1.25 : 1.0)) {
+    // Skip planar reflection pass when no Nile/canal/oasis water surface is within view range,
+    // or on the single frame after a live tier switch before the new directional shadow map exists.
+    if (!waterInView(camera, tier >= 4 ? 1.25 : 1.0)
+      || scene.children.some(o => o.isDirectionalLight && o.castShadow && !o.shadow?.map)) {
       material.uniforms.uHasReflect.value = 0.0;
       return;
     }

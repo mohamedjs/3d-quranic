@@ -1,10 +1,20 @@
-import { useMemo, useEffect, useRef } from 'react';
+import { useMemo, useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import { createTerrainMaterial } from '../shaders/terrainMaterial.js';
-import { useDetail, usePreset } from '../systems/store.js';
+import { createTerrainMaterial, setTerrainTextures, TERRAIN_LAYERS } from '../shaders/terrainMaterial.js';
+import { loadTextureArray } from '../world/loaders.js';
+import { useDetail, useGame, usePreset } from '../systems/store.js';
 import { refs } from '../systems/refs.js';
 import { SIZE } from './heightfield.js';
+
+const layerUrls = (size, kind) => TERRAIN_LAYERS.map(id => `./textures/v4/${size}/${id}_${kind}.webp`);
+
+function disposeTexSet(set) {
+  if (!set) return;
+  set.diff?.texture?.dispose();
+  set.nor?.texture?.dispose();
+  set.arm?.texture?.dispose();
+}
 
 // LITE draws the terrain as 4×4 tiles that share one vertex buffer (each tile only has its own
 // index list), so frustum culling and the fog distance skip most of the 520 m ground; the full
@@ -32,10 +42,64 @@ function tiles(geo, seg) {
 }
 
 export function Terrain({ data, onReady }) {
+  const quality = useGame(s => s.quality);
   const preset = usePreset();
   const shading = preset.shading ?? 'toon';
-  const material = useMemo(() => createTerrainMaterial({ shading }), [shading]);
+  const pbr = shading === 'pbr';
+  const triplanar = quality === 'high' || quality === 'ultra';
+  const texSize = quality === 'ultra' ? 2048 : (pbr ? 1024 : 512);
+  const texKey = `${texSize}|${pbr ? 1 : 0}`;
+
+  const material = useMemo(() => createTerrainMaterial({ shading, triplanar }), [shading, triplanar]);
   useEffect(() => () => material.dispose(), [material]);
+
+  // Non-blocking texture array load: starts on the 1x1 placeholder (uTexOn = 0), switches on once
+  // decoded, and disposes the previous tier's arrays after swapping on a live tier change.
+  const [texSet, setTexSet] = useState(null);
+  const activeRef = useRef(null);
+  const wantKeyRef = useRef(texKey);
+  const warnedRef = useRef(new Set());
+  wantKeyRef.current = texKey;
+
+  useEffect(() => {
+    let alive = true;
+    const aniso = pbr ? 4 : 1;
+    const jobs = pbr
+      ? Promise.all([
+        loadTextureArray(layerUrls(texSize, 'diff'), { srgb: true, size: texSize, anisotropy: aniso }),
+        loadTextureArray(layerUrls(texSize, 'nor'),  { srgb: false, size: texSize, anisotropy: aniso }),
+        loadTextureArray(layerUrls(texSize, 'arm'),  { srgb: false, size: texSize, anisotropy: aniso }),
+      ]).then(([diff, nor, arm]) => ({ key: texKey, diff, nor, arm }))
+      : loadTextureArray(layerUrls(texSize, 'diff'), { srgb: true, size: texSize, anisotropy: aniso })
+        .then(diff => ({ key: texKey, diff, nor: null, arm: null }));
+
+    jobs.then(next => {
+      if (!alive) {
+        if (wantKeyRef.current !== texKey && activeRef.current?.key !== texKey) disposeTexSet(next);
+        return;
+      }
+      const prev = activeRef.current;
+      activeRef.current = next;
+      setTexSet(next);
+      if (prev && prev.key !== next.key) disposeTexSet(prev);
+    }).catch(err => {
+      if (!warnedRef.current.has(texKey)) {
+        warnedRef.current.add(texKey);
+        console.warn(`[terrain] v4 ground textures (${texSize}) unavailable, keeping painterly ground:`, err?.message || err);
+      }
+    });
+    return () => { alive = false; };
+  }, [texKey, texSize, pbr]);
+
+  useEffect(() => {
+    setTerrainTextures(material, texSet && (!pbr || (texSet.nor && texSet.arm)) ? texSet : null);
+  }, [material, texSet, pbr]);
+
+  useEffect(() => () => {
+    disposeTexSet(activeRef.current);
+    activeRef.current = null;
+  }, []);
+
   const lite = !!useDetail().lite && data.seg;
   const parts = useMemo(() => (lite ? tiles(data.geometry, data.seg) : null), [lite, data]);
   const fog = preset.fog, envDist = preset.envDist, camera = useThree(s => s.camera), group = useRef(), acc = useRef(0);

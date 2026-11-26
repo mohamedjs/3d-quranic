@@ -106,6 +106,12 @@ function clampSunDir(sun) {
   return new THREE.Vector3((d[0] / hLen) * c, Math.sin(elevRad), (d[2] / hLen) * c).normalize();
 }
 
+// Shared sky equirect reflection uniforms (published by Environment.jsx for water & street rill)
+export const SKY_REFL = {
+  uSkyMap: { value: null },
+  uHasSkyMap: { value: 0.0 },
+};
+
 // Cached TextureLoader helper for equirect sky textures (_1k for Lite–Med, _2k for High–Ultra).
 const texLoader = new THREE.TextureLoader();
 const skyTexCache = new Map();

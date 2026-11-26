@@ -6,7 +6,7 @@ import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Atmosphere } from './Atmosphere.jsx';
 import { createSky } from './Sky.js';
-import { getSkyPMREM, loadSkyTexture, sampleWarmGradient, warmGrade } from '../lighting/environmentMap.js';
+import { getSkyPMREM, loadSkyTexture, sampleWarmGradient, warmGrade, SKY_REFL } from '../lighting/environmentMap.js';
 import { AERIAL, updateAerialFog } from '../shaders/stylizedPbr.js';
 import { refs } from '../systems/refs.js';
 import { useGame, usePreset } from '../systems/store.js';
@@ -157,9 +157,16 @@ export function Environment({ env }) {
     AERIAL.uAerialSunGlow.value.copy(palette.aerialGlow);
     scene.environment = getSkyPMREM(gl, env.sunDir, skyTex.tex);
     scene.environmentIntensity = pbr ? 0.42 : 0.45;
+    SKY_REFL.uSkyMap.value = skyTex.tex ?? null;
+    SKY_REFL.uHasSkyMap.value = skyTex.tex ? 1.0 : 0.0;
     scene.background = palette.bgCol.clone();
     scene.fog = new THREE.Fog(palette.fogCol, fogNear, fogFar);
   }, [scene, gl, env, palette, skyTex.tex, pbr, fogNear, fogFar]);
+
+  useEffect(() => () => {
+    SKY_REFL.uSkyMap.value = null;
+    SKY_REFL.uHasSkyMap.value = 0.0;
+  }, []);
 
   // Haze pushes back smoothly with camera height and NEVER begins inside 25 m (keeps close-ups crystal clear)
   useFrame(() => {

@@ -12,16 +12,19 @@
 //  4 ultra  : + full-res planar reflection + 3-oct normals + refracted riverbed pebble detail
 import * as THREE from 'three';
 import { AERIAL } from './stylizedPbr.js';
+import { SKY_REFL, WARM_GRADE_GLSL } from '../lighting/environmentMap.js';
 
 export const waterTime = { value: 0 };
 export const streamWaterTier = { value: 0 };
 
 export const WATER_TIERS = { lite: 0, low: 1, medium: 2, high: 3, ultra: 4 };
 
-// Shared GLSL helpers: noise, dual/triple wave-normal perturbation, analytic golden-hour sky
-// reflection (matched to Sky.js), animated caustics, and linear pre-tonemap directional aerial fog.
+// Shared GLSL helpers: noise, warm-graded equirect sky reflection (falling back to analytic
+// golden-hour gradient while the HDRI texture loads), animated caustics, and linear aerial fog.
 const WATER_HELPERS = /* glsl */`
   uniform float uTime;
+  uniform sampler2D uSkyMap;
+  uniform float uHasSkyMap;
   uniform vec3 uAerialSunDir, uAerialWarm, uAerialCool, uAerialSunGlow;
 
   float wh(vec2 p) { return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
@@ -45,11 +48,21 @@ const WATER_HELPERS = /* glsl */`
     return pow(clamp(c1 * c2, 0.0, 1.0), 3.4);
   }
 
-  // Analytic golden-hour sky reflection matching Sky.js (apricot horizon -> cream -> cerulean zenith + sun)
+  ${WARM_GRADE_GLSL}
+
+  // Warm-graded equirect HDRI sky reflection matching M1 Sky.js (analytic fallback while loading)
   vec3 sampleSkyRefl(vec3 rd, vec3 sunDir) {
-    float y = max(rd.y, 0.0);
-    float sd = dot(rd, sunDir);
+    vec3 d = normalize(vec3(rd.x, max(rd.y, 0.01), rd.z));
+    float sd = dot(d, sunDir);
     float s = max(sd, 0.0);
+    if (uHasSkyMap > 0.5) {
+      vec2 uv = vec2(atan(d.z, d.x) * 0.15915494309 + 0.5, asin(clamp(d.y, -1.0, 1.0)) * 0.31830988618 + 0.5);
+      float elevDeg = degrees(asin(clamp(d.y, 0.0, 1.0)));
+      vec3 c = warmGrade(texture2D(uSkyMap, uv).rgb * 1.32, elevDeg);
+      c += pow(vec3(1.0, 0.80, 0.48), vec3(2.2)) * (pow(s, 7.0) * 0.18 + pow(s, 48.0) * 0.45);
+      return c;
+    }
+    float y = max(rd.y, 0.0);
     float anti = pow(max(-sd, 0.0), 1.5);
     vec3 hor  = pow(vec3(0.969, 0.725, 0.420), vec3(2.2));
     vec3 low  = pow(vec3(0.969, 0.851, 0.659), vec3(2.2));
@@ -88,21 +101,21 @@ export function createWaterMaterial({ size, mode = 'lite', lite = false } = {}) 
   return new THREE.ShaderMaterial({
     fog: true,
     defines: { WATER_TIER: tier },
-    uniforms: THREE.UniformsUtils.merge([
-      THREE.UniformsLib.fog,
-      {
-        tBank:          { value: null },
-        tReflect:       { value: null },
-        uHasReflect:    { value: 0.0 },
-        uTexMatrix:     { value: new THREE.Matrix4() },
-        uSize:          { value: size },
-        uTime:          waterTime,
-        uAerialSunDir:  AERIAL.uAerialSunDir,
-        uAerialWarm:    AERIAL.uAerialWarm,
-        uAerialCool:    AERIAL.uAerialCool,
-        uAerialSunGlow: AERIAL.uAerialSunGlow,
-      },
-    ]),
+    uniforms: {
+      ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog),
+      tBank:          { value: null },
+      tReflect:       { value: null },
+      uHasReflect:    { value: 0.0 },
+      uTexMatrix:     { value: new THREE.Matrix4() },
+      uSize:          { value: size },
+      uTime:          waterTime,
+      uSkyMap:        SKY_REFL.uSkyMap,
+      uHasSkyMap:     SKY_REFL.uHasSkyMap,
+      uAerialSunDir:  AERIAL.uAerialSunDir,
+      uAerialWarm:    AERIAL.uAerialWarm,
+      uAerialCool:    AERIAL.uAerialCool,
+      uAerialSunGlow: AERIAL.uAerialSunGlow,
+    },
     vertexShader: /* glsl */`
       uniform mat4 uTexMatrix;
       varying vec3 vW;
@@ -234,6 +247,12 @@ export function createWaterMaterial({ size, mode = 'lite', lite = false } = {}) 
         float shallowReveal = (1.0 - smoothstep(0.02, 0.28, depth)) * (1.0 - smoothstep(0.05, 0.45, e));
         bodyCol = mix(bodyCol, mix(bedCol, cShallow, 0.45), shallowReveal * 0.62);
 
+        // Wet-bank darkening along the waterline matching the damp pebble bank set on terrain
+        float wetEdge = (1.0 - smoothstep(0.0, 0.26, e)) * (1.0 - smoothstep(0.02, 0.22, depth));
+        float pebGrain = 0.82 + 0.36 * (wn(p * 6.2) * 0.65 + wn(p * 13.4 + 2.3) * 0.35);
+        vec3 wetBankCol = mix(vec3(0.070, 0.048, 0.028), vec3(0.145, 0.108, 0.064), oasisW) * pebGrain;
+        bodyCol = mix(bodyCol, wetBankCol, wetEdge * mix(0.72, 0.38, oasisW));
+
         // Subtle cozy bank-shadow occlusion along narrow shaded canals
         bodyCol *= 1.0 - canalW * (1.0 - smoothstep(0.0, 0.65, e)) * 0.24;
 
@@ -253,7 +272,7 @@ export function createWaterMaterial({ size, mode = 'lite', lite = false } = {}) 
         float f0 = mix(0.04, mix(0.03, 0.07, oasisW), 1.0 - nileW);
         float fresnel = f0 + (1.0 - f0) * pow(1.0 - ndv, 4.2);
         // Balanced reflection so jewel emerald/turquoise water color always glows beneath sky/palm reflections
-        float reflStrength = fresnel * mix(0.62, mix(0.46, 0.72, oasisW), 1.0 - nileW);
+        float reflStrength = fresnel * mix(0.62, mix(0.46, 0.72, oasisW), 1.0 - nileW) * (1.0 - wetEdge * 0.34);
         #if WATER_TIER == 0
           // Lite: clean painterly Fresnel sky sheen while keeping rich emerald/turquoise jewel depth
           vec3 skyRefl = sampleSkyRefl(reflect(-V, N), sunDir);
@@ -348,18 +367,18 @@ export function toonStreamWaterMaterial(width = 0.86) {
     polygonOffset: true,
     polygonOffsetFactor: -1,
     polygonOffsetUnits: -1,
-    uniforms: THREE.UniformsUtils.merge([
-      THREE.UniformsLib.fog,
-      {
-        uTime:          waterTime,
-        uTier:          streamWaterTier,
-        uWidth:         { value: width },
-        uAerialSunDir:  AERIAL.uAerialSunDir,
-        uAerialWarm:    AERIAL.uAerialWarm,
-        uAerialCool:    AERIAL.uAerialCool,
-        uAerialSunGlow: AERIAL.uAerialSunGlow,
-      },
-    ]),
+    uniforms: {
+      ...THREE.UniformsUtils.clone(THREE.UniformsLib.fog),
+      uTime:          waterTime,
+      uTier:          streamWaterTier,
+      uWidth:         { value: width },
+      uSkyMap:        SKY_REFL.uSkyMap,
+      uHasSkyMap:     SKY_REFL.uHasSkyMap,
+      uAerialSunDir:  AERIAL.uAerialSunDir,
+      uAerialWarm:    AERIAL.uAerialWarm,
+      uAerialCool:    AERIAL.uAerialCool,
+      uAerialSunGlow: AERIAL.uAerialSunGlow,
+    },
     vertexShader: /* glsl */`
       varying vec2 vUv;
       varying vec3 vW;

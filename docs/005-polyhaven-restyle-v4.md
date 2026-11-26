@@ -219,7 +219,7 @@ Decisions for M0 (binding):
   700k) and `balance({verify:true})` on High reports `best-dates` `unreachable: 1`. M4 must bring both within
   limits. Lite is green: 22 stories, min 22 coins.
 
-### CURRENT RUN: milestone M1 only (Sky & light)
+### M1 run decisions (done)
 Do M1 (§3) and nothing from M2 onward, then stop and report. M0 is committed; build on it.
 
 Files you may change: `src/game/environment/Sky.js`, `src/game/environment/Environment.jsx`,
@@ -280,3 +280,59 @@ Decisions for M1 (binding):
 - Accepted deviations: High/Ultra sky multiplies the LDR equirect by 1.32 before the grade; LUT stored as Uint8.
 - Checks: build passes, precache core 8.66 MB; Lite 52 calls / 152k tris, balance green (22 stories, min 22);
   High 299 calls / 1.69M tris, balance as before v4 (`best-dates` 1 unreachable). No page errors.
+
+### CURRENT RUN: milestone M2 only (Ground & water banks)
+Do M2 (§3) and nothing from M3 onward, then stop and report. M0 and M1 are committed; build on them.
+
+Files you may change: `src/game/shaders/terrainMaterial.js`, `src/game/terrain/Terrain.jsx`,
+`src/game/world/loaders.js`, `src/game/shaders/waterMaterial.js`, `src/game/water/Water.jsx`,
+`src/game/lighting/environmentMap.js` and `src/game/environment/Environment.jsx` (the last two only to
+publish the sky texture for water reflections). Add screenshots under `blender/v4/previews/`. Do not
+touch `heightfield.js`, geometry, colliders or `coins.js`: no walkability change.
+
+Decisions for M2 (binding):
+1. **Layers** (array index order): 0 field mud `brown_mud_02` (3.5 m tile), 1 path dirt `brown_mud_dry`
+   (2.5 m), 2 sand `coast_sand_01` (4 m), 3 pebble bank `clean_pebbles` (2 m).
+2. **Texture arrays, not 12 samplers.** `loaders.js` exports `loadTextureArray(urls, { srgb, size })`
+   returning a cached promise of a `THREE.DataArrayTexture` (images decoded, drawn to a canvas, packed;
+   repeat wrap, mipmaps, anisotropy 4 on Medium+) plus each layer's average linear colour. Lite/Low:
+   diffuse array only, from `textures/v4/512`. Medium and High: diffuse + normal + ARM from `1024`.
+   Ultra: the same from `2048`. A tier change swaps arrays and disposes the old ones.
+3. **Loading.** `Terrain.jsx` starts with a 1×1 placeholder and `uTexOn = 0` (today's painterly ground),
+   then switches on when the arrays arrive. Never suspend or rebuild the world for textures; if a file
+   fails to load, keep the painterly ground and `console.warn` once.
+4. **Keep the palette.** The textures add material, they do not replace the art direction. Per layer:
+   `detail = tex.rgb / layerAverage` and `albedo = painterlyColour * mix(1, detail, strength)`; on the
+   road core and the pebble bank additionally mix 35–50 % toward the real texture colour, warm-graded to
+   the existing `FIELD_COLORS`. Meadow greens and crop colours must stay clearly green/gold.
+5. **Weights** come from what the shader already computes: road/shoulder → path dirt (keep today's
+   per-pixel baked path-distance roads and their exact edges), damp/mud near water → pebble bank, desert
+   mask and the oasis shore → sand, everything else (fields, meadows) → field mud at lower strength.
+   Slopes (height/normal) take the sand layer. Use a little noise on the blend borders; no hard edges.
+6. **Normals/roughness (Medium+).** World-space planar normal mapping on XZ (the geometry has no
+   tangents) replaces today's procedural micro-normals; roughness and AO come from ARM; wet banks are
+   darker and glossy using the bank set. High/Ultra only: triplanar projection for the sand layer on
+   steep slopes. Fade normal strength with distance so there is no shimmer or visible tiling: break
+   repetition with the existing macro noise (and a second, larger-scale lookup if needed).
+7. **Water.** Keep the water shader and its tiers. Replace the body of `sampleSkyRefl` with a lookup of
+   the same warm-graded equirect used by M1 (1k Lite–Medium, 2k High/Ultra), published as shared
+   uniforms (`SKY_REFL = { uSkyMap, uHasSkyMap }`) from `environmentMap.js`; keep the analytic
+   version as the fallback while the texture is missing, and keep the sun glint. Add wet-bank darkening
+   along the waterline that matches the pebble bank. The street rill uses the same lookup.
+8. **Performance.** Lite adds at most 4 array fetches per ground pixel, no normal maps, no triplanar.
+   Lite budgets: ≤ 140 draw calls, ≤ 180k triangles. Check there are no shader errors on lite, medium,
+   high and ultra, and that a live tier switch works.
+9. **Quality bar.** Compare with `blender/v4/previews/M1_*.png`: the ground must clearly show real mud,
+   sand, dirt and pebbles near the camera on Lite and High, with no obvious tiling in the distance, no
+   dark or muddy overall shift, and roads as readable as before.
+10. Save screenshots as `blender/v4/previews/M2_{lite,high}_{home,street,river,oasis}.png`. Do not
+    commit, do not push, do not edit this doc.
+
+#### M2 log (2026-11-26) — passed
+- Executor: Gemini 4 Neon XHigh (1 run). Reviewer: Claude, no hand edits.
+- Accepted deviations: water skips the planar reflection for one frame after a live tier switch (stops
+  shadow-sampler GL warnings); water uniforms are merged shallowly so shared sky/fog uniforms stay live.
+- Checks: build passes, precache core 8.68 MB; Lite 51 calls / 152k tris, balance green (22, min 22); Medium
+  204 calls / 1.04M tris; High 299 calls / 1.69M tris; no page or shader errors on lite, medium, high.
+- Also pre-existing before v4 (same on d66042c's build): Medium reports `qays-the-fasting-farmer`
+  `notWalkable: 1`; Medium is over the 350k triangle budget. For M4.

@@ -1,13 +1,20 @@
 // GLB characters. If public/models/<name>.glb exists it replaces the procedural rig:
 // the model is scaled to the character's height, and idle / walk / run / talk (and, for a
-// seated character, sit / sit_talk) clips are blended by movement speed and speech (found by name, so Mixamo-style exports work as-is).
-// Draco- and Meshopt-compressed files are supported.
+// seated character, sit / sit_talk) clips are blended by movement speed and speech.
+// Merges each v4 character into at most 3 skinned draws (skin+face+eye, garments, hair+metal)
+// driven by characterMaterial.js (Poly Haven fabric DataArrayTexture + soft wrap PBR skin).
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
-import { toonMaterial, outlineMaterial } from '../shaders/toon.js';
+import {
+  FABRIC_LAYER_INDEX,
+  ensureCharacterTextures,
+  getGarmentMaterial,
+  getHairMetalMaterial,
+  getSkinFaceMaterial,
+  registerCharacterMesh,
+} from '../shaders/characterMaterial.js';
 import { useGame } from '../systems/store.js';
 import { PRESETS } from '../systems/quality.js';
-
 import { gltfLoader } from '../world/loaders.js';
 
 // Resolves to a rig, or null when the file is absent (so the caller falls back quietly).
@@ -21,7 +28,7 @@ export async function loadGlbRig(url, targetHeight) {
 }
 
 // clip names the character files use: player idle/walk/run/talk · farmer idle/walk/talk ·
-// grandma sit/sit_talk (+ idle). Mixamo-style names still match the looser patterns.
+// grandma_zainab sit/sit_talk (+ idle). Mixamo-style names still match the looser patterns.
 const CLIPS = {
   sit_talk: [/^sit_?talk$/i, /sit.*talk|talk.*sit/i],
   sit: [/^sit(ting)?$/i, /sit/i],
@@ -31,34 +38,181 @@ const CLIPS = {
   talk: [/^talk$/i, /talk|explain|conversation/i],
 };
 
+const _C = new THREE.Color();
+
+function baseMatName(m) {
+  return (m?.name || '').replace(/\.\d+$/, '');
+}
+
+function classifyMaterial(name, srcMat) {
+  if (name === 'outline') return { bucket: 'outline' };
+  const fIdx = FABRIC_LAYER_INDEX[name];
+  if (fIdx !== undefined) return { bucket: 'garment', attr: 'aLayer', val: fIdx };
+  if (name.startsWith('face_') || name.startsWith('toon_face_')) return { bucket: 'skinFace', attr: 'aPart', val: 0 };
+  if (name === 'skin' || name.startsWith('toon_skin')) return { bucket: 'skinFace', attr: 'aPart', val: 1 };
+  if (name === 'eye') return { bucket: 'skinFace', attr: 'aPart', val: 2 };
+  if (name === 'metal') return { bucket: 'hairMetal', attr: 'aPart', val: 1 };
+  if (name === 'hair') return { bucket: 'hairMetal', attr: 'aPart', val: 0 };
+  if (srcMat?.map) return { bucket: 'skinFace', attr: 'aPart', val: 0 };
+  return { bucket: 'hairMetal', attr: 'aPart', val: 0 };
+}
+
+function configureFaceMap(tex, pbr) {
+  if (!tex) return null;
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.minFilter = THREE.LinearMipmapLinearFilter;
+  tex.magFilter = THREE.LinearFilter;
+  tex.anisotropy = pbr ? 4 : 1;
+  tex.needsUpdate = true;
+  return tex;
+}
+
+// Copy skinned geometry with normalized attribute types (Float32 pos/normal/uv/skinWeight/color,
+// Uint16 skinIndex) and per-vertex scalar attribute (aLayer or aPart) so mergeGeometries never fails.
+function prepareSkinnedGeo(mesh, attrName, attrVal) {
+  const src = mesh.geometry;
+  const pos = src.attributes.position;
+  if (!pos || !src.attributes.skinIndex || !src.attributes.skinWeight) return null;
+  const n = pos.count;
+  const g = new THREE.BufferGeometry();
+
+  const pArr = new Float32Array(n * 3);
+  for (let i = 0; i < n; i++) { pArr[i * 3] = pos.getX(i); pArr[i * 3 + 1] = pos.getY(i); pArr[i * 3 + 2] = pos.getZ(i); }
+  g.setAttribute('position', new THREE.BufferAttribute(pArr, 3));
+
+  const nrm = src.attributes.normal;
+  const nArr = new Float32Array(n * 3);
+  if (nrm) {
+    for (let i = 0; i < n; i++) { nArr[i * 3] = nrm.getX(i); nArr[i * 3 + 1] = nrm.getY(i); nArr[i * 3 + 2] = nrm.getZ(i); }
+  }
+  g.setAttribute('normal', new THREE.BufferAttribute(nArr, 3));
+
+  const uv = src.attributes.uv;
+  const uvArr = new Float32Array(n * 2);
+  if (uv) {
+    for (let i = 0; i < n; i++) { uvArr[i * 2] = uv.getX(i); uvArr[i * 2 + 1] = uv.getY(i); }
+  }
+  g.setAttribute('uv', new THREE.BufferAttribute(uvArr, 2));
+
+  const si = src.attributes.skinIndex;
+  const siArr = new Uint16Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    siArr[i * 4] = si.getX(i); siArr[i * 4 + 1] = si.getY(i); siArr[i * 4 + 2] = si.getZ(i); siArr[i * 4 + 3] = si.getW(i);
+  }
+  g.setAttribute('skinIndex', new THREE.BufferAttribute(siArr, 4));
+
+  const sw = src.attributes.skinWeight;
+  const swArr = new Float32Array(n * 4);
+  for (let i = 0; i < n; i++) {
+    swArr[i * 4] = sw.getX(i); swArr[i * 4 + 1] = sw.getY(i); swArr[i * 4 + 2] = sw.getZ(i); swArr[i * 4 + 3] = sw.getW(i);
+  }
+  g.setAttribute('skinWeight', new THREE.BufferAttribute(swArr, 4));
+
+  const colArr = new Float32Array(n * 3);
+  const srcCol = src.attributes.color;
+  const mc = mesh.material?.color;
+  const mr = mc ? mc.r : 1, mg = mc ? mc.g : 1, mb = mc ? mc.b : 1;
+  if (srcCol) {
+    for (let i = 0; i < n; i++) {
+      _C.fromBufferAttribute(srcCol, i);
+      colArr[i * 3] = _C.r * mr; colArr[i * 3 + 1] = _C.g * mg; colArr[i * 3 + 2] = _C.b * mb;
+    }
+  } else {
+    for (let i = 0; i < n; i++) { colArr[i * 3] = mr; colArr[i * 3 + 1] = mg; colArr[i * 3 + 2] = mb; }
+  }
+  g.setAttribute('color', new THREE.BufferAttribute(colArr, 3));
+
+  const tagArr = new Float32Array(n);
+  tagArr.fill(attrVal);
+  g.setAttribute(attrName, new THREE.BufferAttribute(tagArr, 1));
+
+  if (src.index) {
+    const idx = src.index;
+    const iArr = new Uint32Array(idx.count);
+    for (let i = 0; i < idx.count; i++) iArr[i] = idx.getX(i);
+    g.setIndex(new THREE.BufferAttribute(iArr, 1));
+  }
+  if (!nrm) g.computeVertexNormals();
+  return g;
+}
+
+// Merge character skinned primitives into at most 3 skinned draws (skin+face+eye, garments, hair+metal).
+// Safely ignores and hides any legacy `outline` material if one ever appears.
+function assembleCharacterMeshes(model, shading) {
+  const pbr = shading === 'pbr';
+  const buckets = new Map();
+  const toRemove = [];
+  let faceMap = null;
+
+  model.traverse(o => {
+    if (!o.isMesh) return;
+    const m = o.material;
+    if (!m) return;
+    const name = baseMatName(m);
+    const info = classifyMaterial(name, m);
+    if (info.bucket === 'outline') {
+      o.visible = false; o.castShadow = false; o.receiveShadow = false;
+      toRemove.push(o);
+      return;
+    }
+    if (!o.isSkinnedMesh || o.morphTargetInfluences) {
+      o.frustumCulled = false; o.castShadow = true; o.receiveShadow = true;
+      return;
+    }
+    if (info.bucket === 'skinFace' && m.map && !faceMap) faceMap = configureFaceMap(m.map, pbr);
+    const skelKey = o.skeleton.bones.map(b => b.uuid).join(',');
+    const key = `${o.parent.uuid}|${skelKey}|${info.bucket}`;
+    if (!buckets.has(key)) buckets.set(key, { bucket: info.bucket, attr: info.attr, items: [] });
+    buckets.get(key).items.push({ mesh: o, val: info.val });
+  });
+
+  for (const o of toRemove) { o.parent?.remove(o); o.geometry?.dispose(); }
+
+  for (const { bucket, attr, items } of buckets.values()) {
+    const first = items[0].mesh;
+    const geos = [];
+    for (const { mesh, val } of items) {
+      const g = prepareSkinnedGeo(mesh, attr, val);
+      if (g) geos.push(g);
+    }
+    if (!geos.length) continue;
+    const indexed = geos.every(g => g.index);
+    const merged = geos.length > 1
+      ? mergeGeometries(indexed ? geos : geos.map(g => (g.index ? g.toNonIndexed() : g)))
+      : geos[0];
+    if (!merged) continue;
+    merged.computeBoundingBox();
+    merged.computeBoundingSphere();
+
+    let mat;
+    if (bucket === 'garment') mat = getGarmentMaterial(shading);
+    else if (bucket === 'skinFace') mat = getSkinFaceMaterial(faceMap, shading);
+    else mat = getHairMetalMaterial(shading);
+
+    const skinned = new THREE.SkinnedMesh(merged, mat);
+    skinned.name = `${first.name}_${bucket}`;
+    skinned.frustumCulled = false;
+    skinned.castShadow = true;
+    skinned.receiveShadow = true;
+    skinned.position.copy(first.position);
+    skinned.quaternion.copy(first.quaternion);
+    skinned.scale.copy(first.scale);
+    first.parent.add(skinned);
+    skinned.bind(first.skeleton, first.bindMatrix);
+    registerCharacterMesh(skinned);
+
+    for (const { mesh } of items) { mesh.parent?.remove(mesh); mesh.geometry?.dispose(); }
+  }
+}
+
 class GlbRig {
   constructor(gltf, targetHeight) {
     const model = gltf.scene;
-    // toon_* materials → the shared cel material (keeping face/eye textures); `outline` → ink hull.
-    // Character hulls are exported with flipped normals, so their front faces are the far side.
-    const outlines = PRESETS[useGame.getState().detail]?.outlines !== false;
-    const hulls = [];
-    model.traverse(o => {
-      if (!o.isMesh) return;
-      o.frustumCulled = false;                             // skinned: bounds move with the pose
-      const m = o.material; if (!m) return;
-      const name = m.name.replace(/\.\d+$/, '');
-      if (name === 'outline') {
-        o.material = outlineMaterial('char'); o.castShadow = false; o.receiveShadow = false; o.visible = outlines;
-        o.userData.outline = true; hulls.push(o); return;
-      }
-      o.castShadow = true; o.receiveShadow = true;
-      const cut = m.transparent || m.alphaTest > 0 || /lash|brow/.test(name);
-      o.material = toonMaterial(`char_${name}_${m.map ? m.map.uuid : m.color.getHexString()}`, {
-        color: m.color.getHex(), map: m.map ?? null, side: m.side, rim: /skin|face/.test(name) ? 0.3 : 0.22,
-        alphaTest: cut ? 0.35 : 0,
-      });
-      if (cut) o.castShadow = false;
-    });
-    this.hulls = hulls;
-    // Merge flat-color toon sub-meshes sharing a skeleton into 2–3 skinned draws on every tier
-    // (preserves textured faces/cloth, ink hulls, and identical cel shading while cutting ~150 calls on High).
-    mergeSkinned(model);
+    const shading = PRESETS[useGame.getState().quality]?.shading ?? 'toon';
+    ensureCharacterTextures(shading);
+    assembleCharacterMeshes(model, shading);
+    this.hulls = [];
+
     const box = new THREE.Box3().setFromObject(model), h = box.max.y - box.min.y || 1;
     model.scale.setScalar(targetHeight / h);
     model.position.y = -box.min.y * (targetHeight / h);
@@ -108,43 +262,4 @@ class GlbRig {
     this.mixer.update(dt);
   }
   wave() {}
-}
-
-// LITE: a character's primitives (skin, clothes, hair, lashes…) are one draw call each; merge
-// every untextured part sharing a skeleton into a single skinned mesh with its colour baked as
-// a vertex colour (textured parts — face, patterned cloth — merge per texture). ~10 → 2–3 calls.
-function mergeSkinned(model) {
-  const groups = new Map();
-  model.traverse(o => {
-    if (!o.isSkinnedMesh || o.userData.outline || o.morphTargetInfluences) return;
-    const m = o.material, key = `${o.parent.uuid}|${o.skeleton.uuid}|${m.map ? m.map.uuid : '-'}|${m.side}|${m.alphaTest > 0 && m.map ? 'cut' : ''}`;
-    if (!groups.has(key)) groups.set(key, []);
-    groups.get(key).push(o);
-  });
-  for (const list of groups.values()) {
-    if (list.length < 2) continue;
-    const first = list[0];
-    if (!list.every(o => o.bindMatrix.equals(first.bindMatrix) && o.matrix.equals(first.matrix))) continue;
-    const names = ['position', 'normal', 'uv', 'skinIndex', 'skinWeight'];
-    if (!list.every(o => names.every(n => o.geometry.attributes[n]))) continue;
-    const geos = list.map(o => {
-      const g = new THREE.BufferGeometry(), src = o.geometry, n = src.attributes.position.count;
-      for (const a of names) g.setAttribute(a, a === 'skinIndex' ? new THREE.BufferAttribute(Uint16Array.from(src.attributes.skinIndex.array), 4) : src.attributes[a]);
-      if (src.index) g.setIndex(src.index);
-      const c = o.material.color, col = new Float32Array(n * 3);
-      for (let i = 0; i < n; i++) { col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b; }
-      g.setAttribute('color', new THREE.BufferAttribute(col, 3));
-      return g;
-    });
-    const merged = mergeGeometries(geos.every(g => g.index) ? geos : geos.map(g => (g.index ? g.toNonIndexed() : g)));
-    if (!merged) continue;
-    const m0 = first.material;
-    const mat = toonMaterial(`charlite_${m0.map ? m0.map.uuid : 'vc'}_${m0.side}_${m0.alphaTest}`, { vertexColors: true, map: m0.map ?? null, side: m0.side, rim: 0.24, alphaTest: m0.map ? m0.alphaTest : 0 });
-    const mesh = new THREE.SkinnedMesh(merged, mat);
-    mesh.name = first.name + '_lite'; mesh.frustumCulled = false; mesh.castShadow = true; mesh.receiveShadow = true;
-    mesh.position.copy(first.position); mesh.quaternion.copy(first.quaternion); mesh.scale.copy(first.scale);
-    first.parent.add(mesh);
-    mesh.bind(first.skeleton, first.bindMatrix);
-    for (const o of list) { o.parent.remove(o); o.geometry.dispose(); }
-  }
 }

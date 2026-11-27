@@ -1,0 +1,284 @@
+{
+  "version": 1,
+  "assets": [
+    {
+      "id": "qwantani_sunset_puresky",
+      "type": "hdri",
+      "resolution": "2k",
+      "role": "sky_sunset",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "brown_mud_02",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "ground_field_mud",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "brown_mud_dry",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "ground_path_dirt",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "coast_sand_01",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "ground_oasis_sand",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "clean_pebbles",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "ground_river_pebbles",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "clay_plaster",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "building_clay_plaster",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "clay_block_wall",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "building_mudbrick",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "blue_plaster_weathered",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "building_blue_plaster",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "clay_floor_001",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "building_mastaba_floor",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "weathered_brown_planks",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "building_wood_planks",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "sandstone_blocks_05",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "landmark_sandstone",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "palm_bark",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "foliage_palm_bark",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "cotton_jersey",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "character_cotton_galabiya",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "rough_linen",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "character_linen_tarha",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "knitted_fleece",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "character_wool_vest",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "hessian_230",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "character_hessian_trim",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "brown_leather",
+      "type": "texture",
+      "resolution": "2k",
+      "role": "character_leather_sandals",
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "namaqualand_cliff_01",
+      "type": "model",
+      "resolution": "2k",
+      "role": "horizon_cliff",
+      "category": "rock",
+      "small_prop": false,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "namaqualand_boulder_02",
+      "type": "model",
+      "resolution": "2k",
+      "role": "desert_boulder",
+      "category": "rock",
+      "small_prop": false,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "rock_07",
+      "type": "model",
+      "resolution": "2k",
+      "role": "river_rock",
+      "category": "rock",
+      "small_prop": false,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "shrub_02",
+      "type": "model",
+      "resolution": "2k",
+      "role": "village_shrub_tall",
+      "category": "shrub",
+      "small_prop": false,
+      "foliage": true,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "shrub_04",
+      "type": "model",
+      "resolution": "2k",
+      "role": "village_shrub_low",
+      "category": "shrub",
+      "small_prop": false,
+      "foliage": true,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "grass_medium_01",
+      "type": "model",
+      "resolution": "2k",
+      "role": "meadow_grass",
+      "category": "shrub",
+      "small_prop": false,
+      "foliage": true,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "flower_gazania",
+      "type": "model",
+      "resolution": "2k",
+      "role": "oasis_wildflower",
+      "category": "shrub",
+      "small_prop": false,
+      "foliage": true,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "island_tree_02",
+      "type": "model",
+      "resolution": "2k",
+      "role": "broadleaf_sycamore",
+      "category": "tree",
+      "small_prop": false,
+      "foliage": true,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "tree_small_02",
+      "type": "model",
+      "resolution": "2k",
+      "role": "broadleaf_acacia",
+      "category": "tree",
+      "small_prop": false,
+      "foliage": true,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "brass_pot_01",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_brass_pot",
+      "category": "prop",
+      "small_prop": true,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "brass_diya_lantern",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_brass_lantern",
+      "category": "prop",
+      "small_prop": true,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "ceramic_pot",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_ceramic_pot",
+      "category": "prop",
+      "small_prop": true,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "painted_wooden_bench",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_wooden_bench",
+      "category": "prop",
+      "small_prop": false,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "wooden_stool_02",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_wooden_stool",
+      "category": "prop",
+      "small_prop": true,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "wicker_basket_01",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_wicker_basket",
+      "category": "prop",
+      "small_prop": true,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    },
+    {
+      "id": "stone_fire_pit",
+      "type": "model",
+      "resolution": "2k",
+      "role": "prop_fire_pit",
+      "category": "prop",
+      "small_prop": false,
+      "foliage": false,
+      "tiers": ["lite", "medium", "high"]
+    }
+  ]
+}

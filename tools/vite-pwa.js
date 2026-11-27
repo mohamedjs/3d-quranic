@@ -9,7 +9,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
-const SKIP = [/^assets\/(piper|ort|draco_)/, /^models\/README/, /^textures\/env\/(1024|2048)\//, /(^|\/)\.[^/]+$/, /\.map$/, /^_(headers|redirects)$/];   // Cloudflare Pages config & lazy High/Ultra env textures, never precached
+const SKIP = [/^assets\/(piper|ort|draco_)/, /^models\/README/, /^textures\/env\/(1024|2048)\//, /^textures\/v4\/(1024|2048)\//, /^models\/env\/.*_hi\.glb$/, /(^|\/)\.[^/]+$/, /\.map$/, /^_(headers|redirects)$/];   // Cloudflare Pages config & lazy High/Ultra env textures, never precached
 const OPTIONAL = [/^audio\/(?!manifest\.json)/, /^illustrations\//, /^icons\/(?!icon-192)/];   // fetched again at runtime if they fail
 const md5 = buf => crypto.createHash('md5').update(buf).digest('hex').slice(0, 10);
 

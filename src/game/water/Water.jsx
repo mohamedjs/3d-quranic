@@ -1,13 +1,17 @@
 // World water plane with 5-tier quality scaling:
-//  - Lite / Low / Medium: 1-pass water shader (depth bands, foam, wave normals, analytic sky refl)
-//  - High  : + half-res (0.5x) planar reflection RT (skips LAYER_NO_REFLECT & shadow re-render) + caustics
-//  - Ultra : + full-res (1.0x) planar reflection RT + 2048^2 bank map + refracted pebbles
-// Also syncs the shared street-rill shader tier (`streamWaterTier`).
+//  - Lite / Low : 1 normal fetch (512 water_nor) + 1 sky + 1 bank fetch, transparent Beer-Lambert water
+//  - Medium     : + 2 flow-advected normal layers (1024 water_nor) + slow large swell
+//  - High       : + half-res (0.5x) planar reflection RT (skips LAYER_NO_REFLECT & shadow re-render)
+//  - Ultra      : + full-res (1.0x) planar reflection RT + 2048^2 bank map
+// Also syncs the shared street-rill shader tier (`streamWaterTier`) and water normal map.
 import { useEffect, useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame, useThree } from '@react-three/fiber';
-import { createWaterMaterial, bindWater, waterTime, streamWaterTier, WATER_TIERS } from '../shaders/waterMaterial.js';
+import {
+  createWaterMaterial, bindWater, setWaterNormal, waterTime, streamWaterTier, WATER_TIERS,
+} from '../shaders/waterMaterial.js';
 import { buildWaterBank } from './waterBank.js';
+import { loadWaterNormal } from '../world/loaders.js';
 import { SIZE, WATER_Y, OASIS } from '../terrain/heightfield.js';
 import { useGame, usePreset } from '../systems/store.js';
 
@@ -56,6 +60,7 @@ export function Water({ clock }) {
   const usePlanar = tier >= 3;
   const reflScale = tier >= 4 ? 1.0 : 0.5;
   const bankRes = tier >= 4 ? 2048 : 1024;
+  const norSize = tier >= 2 ? 1024 : 512;
 
   const bank = useMemo(() => buildWaterBank(bankRes), [bankRes]);
   const material = useMemo(() => bindWater(createWaterMaterial({ size: SIZE, mode: waterMode }), bank), [bank, waterMode]);
@@ -83,6 +88,38 @@ export function Water({ clock }) {
     });
   }, [usePlanar, gl, vpSize.width, vpSize.height, reflScale]);
 
+  // Non-blocking water normal map load (512 Lite/Low, 1024 Medium+); disposes prior texture on tier swap.
+  const activeNorRef = useRef(null);
+  const wantNorRef = useRef(norSize);
+  const warnedNorRef = useRef(new Set());
+  wantNorRef.current = norSize;
+
+  useEffect(() => {
+    let alive = true;
+    loadWaterNormal(norSize, { anisotropy: norSize >= 1024 ? 4 : 1 }).then(tex => {
+      if (!alive) {
+        if (wantNorRef.current !== norSize && activeNorRef.current?.tex !== tex) tex.dispose();
+        return;
+      }
+      const prev = activeNorRef.current;
+      activeNorRef.current = { size: norSize, tex };
+      setWaterNormal(tex);
+      if (prev && prev.tex !== tex) prev.tex.dispose();
+    }).catch(err => {
+      if (!warnedNorRef.current.has(norSize)) {
+        warnedNorRef.current.add(norSize);
+        console.warn(`[water] water_nor.webp (${norSize}) unavailable:`, err?.message || err);
+      }
+    });
+    return () => { alive = false; };
+  }, [norSize]);
+
+  useEffect(() => () => {
+    setWaterNormal(null);
+    activeNorRef.current?.tex?.dispose();
+    activeNorRef.current = null;
+  }, []);
+
   useEffect(() => {
     streamWaterTier.value = tier;
   }, [tier]);
@@ -103,8 +140,10 @@ export function Water({ clock }) {
     const mode = useGame.getState().mode;
     if (mode === 'quran' || mode === 'panel') return;
 
-    // Skip planar reflection pass when no Nile/canal/oasis water surface is within view range
-    if (!waterInView(camera, tier >= 4 ? 1.25 : 1.0)) {
+    // Skip planar reflection pass when no Nile/canal/oasis water surface is within view range,
+    // or on the single frame after a live tier switch before the new directional shadow map exists.
+    if (!waterInView(camera, tier >= 4 ? 1.25 : 1.0)
+      || scene.children.some(o => o.isDirectionalLight && o.castShadow && !o.shadow?.map)) {
       material.uniforms.uHasReflect.value = 0.0;
       return;
     }
@@ -168,5 +207,7 @@ export function Water({ clock }) {
     renderer.xr.enabled = prevXr;
   });
 
-  return <mesh ref={meshRef} name="water" geometry={geometry} material={material} position-y={WATER_Y} renderOrder={2} />;
+  // renderOrder=-1 ensures transparent water draws first in the transparent pass (after all opaque
+  // riverbed/terrain/bridge/reed meshes, and before lantern halos, motes, blobs, guide trails & markers).
+  return <mesh ref={meshRef} name="water" geometry={geometry} material={material} position-y={WATER_Y} renderOrder={-1} />;
 }

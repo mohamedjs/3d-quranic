@@ -1,17 +1,40 @@
-// <Environment/>: painterly golden-hour sky, procedural sky-baked PMREM IBL (Med–Ultra),
-// 3-layer horizon escarpment ring (`backdrop_hills.glb`, custom aerial-perspective shader so
-// Lite's 140 m gameplay fog never erases it), directional haze uniforms, and living atmosphere.
-import { useEffect, useMemo } from 'react';
+// <Environment/>: golden-hour sky (warm-graded sun.json gradient on Lite–Med, 2k equirect HDRI
+// on High–Ultra), warm-graded PMREM IBL on every tier (disposing old targets on tier switch),
+// 3-layer horizon escarpment ring (`backdrop_hills.glb`), directional haze uniforms, and atmosphere.
+import { useEffect, useMemo, useState } from 'react';
 import * as THREE from 'three';
 import { useThree, useFrame } from '@react-three/fiber';
 import { Atmosphere } from './Atmosphere.jsx';
 import { createSky } from './Sky.js';
-import { getSkyPMREM } from '../lighting/environmentMap.js';
+import { getSkyPMREM, loadSkyTexture, sampleWarmGradient, warmGrade, SKY_REFL } from '../lighting/environmentMap.js';
 import { AERIAL, updateAerialFog } from '../shaders/stylizedPbr.js';
 import { refs } from '../systems/refs.js';
-import { usePreset } from '../systems/store.js';
+import { useGame, usePreset } from '../systems/store.js';
 
-function createBackdropMaterial(sunDir, lite) {
+const WHITE = new THREE.Color('#ffffff');
+const OCHRE = new THREE.Color('#c48952');
+
+function derivePalette(sun) {
+  const hor0 = sampleWarmGradient(sun, 0);
+  const hor5 = sampleWarmGradient(sun, 5);
+  const hor10 = sampleWarmGradient(sun, 10);
+  const hor20 = sampleWarmGradient(sun, 20);
+  const sky35 = sampleWarmGradient(sun, 35);
+  const sky55 = sampleWarmGradient(sun, 55);
+  const sunCol = new THREE.Color(sun?.sunColor || '#ffd488').lerp(WHITE, 0.35);
+  return {
+    aerialWarm: hor5.clone().lerp(hor10, 0.35),
+    aerialCool: hor20.clone().lerp(sky35, 0.32).lerp(WHITE, 0.18),
+    aerialGlow: hor0.clone().lerp(sunCol, 0.55),
+    fogCol:     hor5.clone().lerp(hor10, 0.55),
+    bgCol:      hor10.clone(),
+    sunCol,
+    shadowCol:  sky35.clone().lerp(sky55, 0.5),
+    bounceCol:  warmGrade(sun?.ground || '#c48952', -10).lerp(OCHRE, 0.65),
+  };
+}
+
+function createBackdropMaterial(sunDir, palette, lite) {
   return new THREE.ShaderMaterial({
     fog: false,
     vertexColors: true,
@@ -20,9 +43,9 @@ function createBackdropMaterial(sunDir, lite) {
       uAerialWarm:    AERIAL.uAerialWarm,
       uAerialCool:    AERIAL.uAerialCool,
       uAerialSunGlow: AERIAL.uAerialSunGlow,
-      uSunCol:        { value: new THREE.Color('#ffd08a') },
-      uShadowCol:     { value: new THREE.Color('#6e7fa3') },
-      uBounceCol:     { value: new THREE.Color('#c48952') },
+      uSunCol:        { value: palette.sunCol.clone() },
+      uShadowCol:     { value: palette.shadowCol.clone() },
+      uBounceCol:     { value: palette.bounceCol.clone() },
       uLite:          { value: lite ? 1.0 : 0.0 },
     },
     vertexShader: /* glsl */`
@@ -64,7 +87,7 @@ function createBackdropMaterial(sunDir, lite) {
         vec3 skyAmb = mix(uBounceCol * 0.96, mix(uShadowCol, uAerialCool, 0.28), clamp(n.y * 0.5 + 0.5, 0.0, 1.0));
         vec3 lit = albedo * (skyAmb * 0.72 + uSunCol * sunMask * 0.72);
 
-        // Gentle aerial perspective toward a pale warm-blue horizon so all 3 layers read as crisp
+        // Gentle aerial perspective toward the warm-graded horizon so all 3 layers read as crisp
         // separated silhouettes (warm near foothills -> dusty mid cliffs -> cool pale-blue far peaks).
         vec3 viewDir = normalize(vWPos - cameraPosition);
         float sunAlign = clamp(dot(viewDir, uSunDir) * 0.5 + 0.5, 0.0, 1.0);
@@ -75,10 +98,10 @@ function createBackdropMaterial(sunDir, lite) {
         // Subtle crest rim light to keep silhouette edges legible against the sky
         lit += uAerialSunGlow * smoothstep(0.72, 1.0, hNorm) * (0.04 + 0.12 * pow(max(dot(viewDir, uSunDir), 0.0), 3.0));
 
-        // Three clearly separated silhouette bands (identical readability on Lite and High)
-        float layerHaze = mix(mix(0.20, 0.44, layer * 2.0), mix(0.44, 0.66, (layer - 0.5) * 2.0), step(0.5, layer));
-        float valleyMist = (1.0 - smoothstep(0.04, 0.42, hNorm)) * mix(0.18, 0.24, layer);
-        vec3 col = mix(lit, horizonTint, clamp(layerHaze + valleyMist, 0.0, 0.78));
+        // Three clearly separated silhouette bands (soft golden-hour horizon blend, no hard cliff contrast)
+        float layerHaze = mix(mix(0.22, 0.48, layer * 2.0), mix(0.48, 0.72, (layer - 0.5) * 2.0), step(0.5, layer));
+        float valleyMist = (1.0 - smoothstep(0.04, 0.45, hNorm)) * mix(0.18, 0.24, layer);
+        vec3 col = mix(lit, horizonTint, clamp(layerHaze + valleyMist, 0.0, 0.82));
 
         gl_FragColor = vec4(col, 1.0);
         #include <tonemapping_fragment>
@@ -90,16 +113,32 @@ function createBackdropMaterial(sunDir, lite) {
 export function Environment({ env }) {
   const scene = useThree(s => s.scene);
   const gl = useThree(s => s.gl);
+  const quality = useGame(s => s.quality);
   const preset = usePreset(), lite = !!preset.lite;
   const skyOct = preset.skyOct ?? (lite ? 2 : 4);
   const pbr = preset.shading === 'pbr';
+  const hiSky = quality === 'high' || quality === 'ultra';
+  const skyRes = hiSky ? '2k' : '1k';
 
-  const sky = useMemo(() => createSky(env.sunDir, skyOct), [env, skyOct]);
+  const [skyTex, setSkyTex] = useState({ res: null, tex: null });
+  useEffect(() => {
+    let alive = true;
+    loadSkyTexture(env.sun?.hdri, skyRes).then(tex => { if (alive) setSkyTex({ res: skyRes, tex }); });
+    return () => { alive = false; };
+  }, [env.sun?.hdri, skyRes]);
+
+  const palette = useMemo(() => derivePalette(env.sun), [env.sun]);
+  const hiMap = hiSky && skyTex.res === '2k' ? skyTex.tex : null;
+
+  const sky = useMemo(
+    () => createSky(env.sun, { dir: env.sunDir, octaves: skyOct, map: hiMap }),
+    [env, skyOct, hiMap]
+  );
   useEffect(() => () => { sky.geometry.dispose(); sky.material.dispose(); }, [sky]);
 
   const backdrop = useMemo(() => {
     if (!env.backdropGeo) return null;
-    const mat = createBackdropMaterial(env.sunDir, lite);
+    const mat = createBackdropMaterial(env.sunDir, palette, lite);
     const mesh = new THREE.Mesh(env.backdropGeo, mat);
     mesh.name = 'backdrop-hills';
     mesh.frustumCulled = false;
@@ -107,17 +146,28 @@ export function Environment({ env }) {
     mesh.receiveShadow = false;
     mesh.renderOrder = 0;
     return mesh;
-  }, [env, lite]);
+  }, [env, palette, lite]);
   useEffect(() => () => { backdrop?.material.dispose(); }, [backdrop]);
 
   const [fogNear, fogFar] = preset.fog ?? [90, 600];
   useEffect(() => {
     updateAerialFog(env.sunDir);
-    scene.environment = pbr ? getSkyPMREM(gl, env.sunDir) : null;
-    scene.environmentIntensity = pbr ? 0.48 : 1.0;
-    scene.background = new THREE.Color('#dce0e4');
-    scene.fog = new THREE.Fog('#dcd6ca', fogNear, fogFar);
-  }, [scene, gl, env, pbr, fogNear, fogFar]);
+    AERIAL.uAerialWarm.value.copy(palette.aerialWarm);
+    AERIAL.uAerialCool.value.copy(palette.aerialCool);
+    AERIAL.uAerialSunGlow.value.copy(palette.aerialGlow);
+    scene.environment = getSkyPMREM(gl, env.sunDir, skyTex.tex);
+    scene.environmentIntensity = pbr ? 0.42 : 0.45;
+    SKY_REFL.uSkyMap.value = skyTex.tex ?? null;
+    SKY_REFL.uHasSkyMap.value = skyTex.tex ? 1.0 : 0.0;
+    SKY_REFL.uSunColor.value.set(env.sun?.sunColor || '#ffd488');
+    scene.background = palette.bgCol.clone();
+    scene.fog = new THREE.Fog(palette.fogCol, fogNear, fogFar);
+  }, [scene, gl, env, palette, skyTex.tex, pbr, fogNear, fogFar]);
+
+  useEffect(() => () => {
+    SKY_REFL.uSkyMap.value = null;
+    SKY_REFL.uHasSkyMap.value = 0.0;
+  }, []);
 
   // Haze pushes back smoothly with camera height and NEVER begins inside 25 m (keeps close-ups crystal clear)
   useFrame(() => {

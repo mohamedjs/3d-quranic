@@ -499,7 +499,7 @@ Decisions for M4 (binding):
   Lite 87 calls / 167k; Medium 170 / 340k; High 276 / 574k. `balance({verify:true})` green on Lite,
   Medium and High (22 stories, min 22) — both pre-v4 failures are fixed. Precache core 10.01 MB.
 
-### CURRENT RUN: milestone M4b only (Realistic water)
+### M4b run decisions (done)
 Added after M4 at the owner's request (2026-11-26, relayed from the owner's planning session; owner's words:
 «الميه عايزها حقيقيه اتصرف» — "I want the water real, handle it"). Today's water is stylised toon water:
 flat cyan with cartoon wave lines. Make it read as real water at a glance. Do M4b only, then stop and
@@ -552,3 +552,54 @@ lite/high: no page errors, no 404s, balance 22/22 stories (min coins 22, 0 bad).
 166k tris, High ≤ 140 calls / 574k tris. The original Nile proof was blocked by an NPC; replaced by shots from
 the bridge deck (0, 70, facing +x). Accepted: water reads as real (Fresnel sky + planar reflections on High,
 depth colour, soft shores, clear rill over pebbles).
+
+### CURRENT RUN: milestone M5 only (Characters)
+Do M5 (§3) and nothing from M6 onward, then stop and report. M0–M4b are committed; build on them.
+The owner judges this milestone most after the houses: the seven villagers must look clearly better and belong in
+the new naturalistic world, while staying warm, cute storybook children's-film characters (never realistic humans).
+
+Files you may create or change (nothing else):
+- `blender/v4/characters/` — start as a copy of `blender/v3/characters/*.py` (same module split: build_all, lib,
+  rig, head, body, garments, anim, cast, preview) and change it there. Do not edit `blender/v3/`. Do not save
+  `.blend` files. Run: `blender -b --factory-startup --python blender/v4/characters/build_all.py -- <keys…>`.
+- `blender/v4/DESIGN_NOTES_characters.md` (your design notes per character).
+- `public/models/{player,farmer,grandma_zainab,grandma,trader,sheikh,aunt}.glb` (overwrite).
+- `src/game/shaders/characterMaterial.js` (new: the only character material factory),
+  `src/game/characters/glbRig.js`, `src/game/world/loaders.js` (only to reuse `loadTextureArray`).
+- `blender/v4/previews/M5_*.png`.
+
+Decisions for M5 (binding):
+1. **Contract with the game stays.** Same 22-bone skeleton and bone names (incl. `head`, `lid_l/r`, `mouth`),
+   same clip names per character (player idle/walk/run/talk; grandma_zainab sit/sit_talk/idle; others
+   idle/walk/talk), same heights, same seated geometry for Zainab on the 0.45 m mastaba, same export axes and
+   origin. `glbRig.js` must still find clips and the head bone exactly as today.
+2. **No ink outlines.** Do not export `outline` hulls. Keep `glbRig.js` able to ignore an `outline` material if
+   one ever appears, but the new files have none.
+3. **Materials.** Name each material by layer: `ph_cotton` (cotton_jersey), `ph_linen` (rough_linen),
+   `ph_wool` (knitted_fleece), `ph_hessian` (hessian_230), `ph_leather` (brown_leather), `skin`, `hair`
+   (plain, vertex colour), `face_<key>` (the 512 face/eye atlas, kept as an embedded texture), `eye`,
+   `metal` (glasses, agal gold, buckles). Garment UVs in real metres (the shader divides by a tile size:
+   cotton 0.35 m, linen 0.45 m, wool 0.3 m, hessian 0.4 m, leather 0.5 m) so weave reads at the right
+   scale. Garment colour = vertex colour (linear `COLOR_0`) × texture detail, using the v3 palette per
+   character as the start; fabric textures never replace the character colours.
+4. **`characterMaterial.js`.** One `MeshStandardMaterial`-based factory (Lite/Low use `MeshLambertMaterial`
+   with the same maps if cheaper) shared by all characters: fabric layers from a `DataArrayTexture`
+   (512 on Lite/Low, 1024 on Medium+; diffuse + normal on Medium+, diffuse only on Lite), per-vertex
+   `aLayer` like `buildingMaterial.js`; detail = `tex / layerAverage` mixed at 0.55 so colours stay. Skin:
+   soft wrap diffuse (no hard cel band) with a warm subsurface tint in the shadow side and the existing
+   rim light; roughness 0.55. Hair 0.6, fabrics 0.8–0.9, leather 0.5, metal 0.3/metalness 1. Uses
+   `scene.environment` like the other v4 materials (low `envMapIntensity`). Until textures arrive show the
+   vertex colours (no grey/black flash).
+5. **Draw calls.** Merge each character's skinned parts into at most 3 skinned draws (skin+face, garments,
+   hair/eyes/metal). Budgets: each character ≤ 9 000 tris, GLB ≤ 280 KB (Draco 6). Lite main pass
+   ≤ 140 calls, High ≤ 320, as before.
+6. **Look.** Keep the cast, roles and outfits of `blender/v3/DESIGN_NOTES.md` (who wears what) and improve
+   them: softer real shading on round faces, bigger warm eyes with real catchlights, gentle blush, hair
+   with soft strand clumps, garments with real folds at elbows/waist/hem that read under a low sun, fabric
+   weave visible up close. Modesty rules from docs/001 stay: women in hijab/tarha with covered hair and
+   neck, loose full-length dresses; men in galabiya/thobe/kaftan. Never depict prophets or companions.
+7. **Proof.** `blender/v4/previews/M5_lineup.png` (all seven, 2600×1000), `M5_<key>_turn.png` (front, 3/4,
+   side, back) and `M5_<key>_face.png` for each key, and in-game `M5_{lite,high}_{home,street,river,oasis}.png`.
+   Look at the renders and in-game shots yourself and iterate until every character clearly looks better
+   than `blender/v3/previews/lineup.png` and sits naturally in the v4 world (no clipping, no black faces, no
+   stretched textures, Zainab seated on the mastaba). Do not commit, do not push, do not edit this doc.

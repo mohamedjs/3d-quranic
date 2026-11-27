@@ -609,3 +609,51 @@ Two Neon passes (draft + fix round 1: shemagh checks, colour space/saturation, s
 softer faces). Checks: build ok; lite/high no errors or 404s; balance 22/22 (min coins 22); main pass Lite ≤ 89
 calls / 170k tris, High ≤ 141 / 559k. Accepted: outlines gone, soft shading, real fabric weave, v3 palette kept.
 Known follow-up: hijab/tarha drape is still a stiff pointed cape (no worse than v3); give it real folds later.
+
+### CURRENT RUN: milestone M6 only (Graphic design / UI)
+Do M6 (§3), then stop and report. M0–M5 are committed. This is the last milestone: the 2D layer must match the new
+golden-hour world as well as the 3D now does. Today's UI is the cream "clay" look (`src/game/ui/clay.css`).
+
+Files you may create or change (nothing else): `src/game/ui/clay.css`, `src/game/ui/style.css`, `public/ui/icons.svg`,
+`public/ui/ornaments.svg`, new `public/ui/v4/*` (webp/svg art), `public/illustrations/title.webp` (replace),
+`index.html` (only adding classes, SVG symbols or wrapper elements; never rename or remove an existing id or class
+that `ui.js`/`scenes.js` use), `src/game/ui/ui.js` and `src/game/ui/scenes.js` (only for the medal/lesson visuals in
+decisions 4–5; no behaviour changes), new `tools/v4_ui_shots.mjs`, and `blender/v4/previews/M6_*.png`.
+
+Decisions for M6 (binding):
+1. **Look: "warm glass and gold".** Panels, dialogue, verse card, objective chip, dock and HUD buttons become dark
+   teal glass (`#0F2A33` at 72–80 %, `backdrop-filter: blur(10px) saturate(1.2)` where supported, solid fallback),
+   1 px gold line (`#C98A2E` → `#F4C766` gradient), soft outer glow, 16 px radii, pill buttons. Text cream
+   `#FBF1DC`; secondary `#CFE0DC`. Accent gold `#F4C766`, hover/press deep gold `#C98A2E`. Put every colour,
+   radius and shadow in CSS custom properties on `:root` in `clay.css` (rename nothing; replace values and
+   rules). Coins, stars and the minimap keep their gold; the minimap ring becomes a gold compass ring with
+   cardinal ticks.
+2. **Type.** Tajawal for UI (700/800 for titles), Amiri Quran only for verses (still from Quran.com at runtime),
+   Nunito for Latin digits. Arabic RTL first; English and Russian must still fit (no overflow at 360 px width).
+3. **Icons.** Redraw `icons.svg` as one matching set: filled gold glyphs with a 2 px darker outline, same
+   symbol ids as today so nothing else changes (`i-stories`, `i-quran`, `i-compass`, `i-settings`, `i-star`,
+   `i-chat`, `i-steps`, `i-zoom-in`, `i-zoom-out`, `i-alert`, `i-bulb`, `i-chevron`, `i-pause`, and every other id
+   in the current file). Dock icons: backpack (stories), open Quran book on a stand (journal), compass (map),
+   gear (settings).
+4. **Verse card.** Ornamental frame from `ornaments.svg` (corners, arabesque ends, rosettes) redrawn in gold line
+   art on the teal glass, a verse-number medallion (eight-point star with the number), progress dots in gold.
+   The Quran text itself is never baked into any image.
+5. **Lesson chip and reward medal.** Lesson prompt = a gold lightbulb chip above the dialogue box. Reward
+   "Knowledge Unlocked" = a gold open-book medal (SVG, `public/ui/v4/medal.svg`) with soft rays and a short
+   scale-in; no confetti of faces or figures.
+6. **Title screen.** Replace `public/illustrations/title.webp` with a capture of the v4 world at golden hour
+   (High quality, wide shot over the village toward the Nile and palms, UI hidden, no characters in frame),
+   1920×1080 webp ≤ 350 KB, with a gentle dark vignette at the bottom for the title text. Keep the Arabic title
+   text as HTML over it with a gold wordmark treatment (gradient + thin outline), no text baked into the image.
+7. **No people in UI art**, no prophets or companions, no faces. Respect `prefers-reduced-motion` for all new
+   animation. Touch targets ≥ 44 px. Contrast of body text ≥ 4.5:1 on the glass.
+8. **Performance.** No new fonts beyond those already loaded; no new npm packages; new UI art ≤ 400 KB total
+   precached. `backdrop-filter` only on Medium+ (`body` class or quality flag already present; else use the
+   solid fallback on Lite) so phones on Lite stay smooth.
+9. **Proof.** `tools/v4_ui_shots.mjs` (playwright-core from `/var/www/html/old/mic-clean/video/node_modules`,
+   Chromium at `~/.cache/ms-playwright/chromium-1248/chrome-linux64/chrome`, SwiftShader flags as in docs/002 §10,
+   served from `dist/`) captures at 1280×720 and 390×844: title, HUD in the street, dialogue with choices, verse
+   card, lesson chip, reward medal, stories panel, settings, map → `blender/v4/previews/M6_<screen>_{desktop,phone}.png`.
+   Drive screens with `window.__game` (`begin`, `chooseStory`, `startEncounter`, `panel`). Look at every shot
+   yourself and iterate until it is clearly more beautiful than today and matches the world. `npm run build`
+   passes; `balance({verify:true})` stays green. Do not commit, do not push, do not edit this doc.

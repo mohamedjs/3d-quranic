@@ -1,5 +1,5 @@
 # 005 — Restyle v4: the whole game with Poly Haven assets
-Status: Ready (milestone by milestone)     Builds on: docs/art-direction.md, docs/001, docs/002, docs/003, docs/004
+Status: Implemented (M0–M6, 2026-11-27)     Builds on: docs/art-direction.md, docs/001, docs/002, docs/003, docs/004
 
 Owner's request (2026-11-26): change every character, all the graphic design and the whole
 space/world of the game, using assets downloaded from https://polyhaven.com (CC0). Gemini 4 Neon
@@ -610,7 +610,7 @@ softer faces). Checks: build ok; lite/high no errors or 404s; balance 22/22 (min
 calls / 170k tris, High ≤ 141 / 559k. Accepted: outlines gone, soft shading, real fabric weave, v3 palette kept.
 Known follow-up: hijab/tarha drape is still a stiff pointed cape (no worse than v3); give it real folds later.
 
-### CURRENT RUN: milestone M6 only (Graphic design / UI)
+### M6 run decisions (done)
 Do M6 (§3), then stop and report. M0–M5 are committed. This is the last milestone: the 2D layer must match the new
 golden-hour world as well as the 3D now does. Today's UI is the cream "clay" look (`src/game/ui/clay.css`).
 
@@ -657,3 +657,9 @@ Decisions for M6 (binding):
    Drive screens with `window.__game` (`begin`, `chooseStory`, `startEncounter`, `panel`). Look at every shot
    yourself and iterate until it is clearly more beautiful than today and matches the world. `npm run build`
    passes; `balance({verify:true})` stays green. Do not commit, do not push, do not edit this doc.
+
+### M6 review (Claude, 2026-11-27)
+One Neon pass. Teal glass + gold UI, new gold icon set (same ids), verse frame and medallion, lesson chip, open-book
+medal, v4 title backdrop with gold wordmark and Poly Haven credit line. Checks: build ok; lite/high no errors or
+404s; balance 22/22 (min coins 22); Lite main 89 calls / 170k tris, High 141 / 559k. Accepted.
+Follow-ups: hijab/tarha drape (M5); title backdrop sky is a little hazy on the right.

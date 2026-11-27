@@ -553,7 +553,7 @@ lite/high: no page errors, no 404s, balance 22/22 stories (min coins 22, 0 bad).
 the bridge deck (0, 70, facing +x). Accepted: water reads as real (Fresnel sky + planar reflections on High,
 depth colour, soft shores, clear rill over pebbles).
 
-### CURRENT RUN: milestone M5 only (Characters)
+### M5 run decisions (done)
 Do M5 (§3) and nothing from M6 onward, then stop and report. M0–M4b are committed; build on them.
 The owner judges this milestone most after the houses: the seven villagers must look clearly better and belong in
 the new naturalistic world, while staying warm, cute storybook children's-film characters (never realistic humans).
@@ -603,3 +603,9 @@ Decisions for M5 (binding):
    Look at the renders and in-game shots yourself and iterate until every character clearly looks better
    than `blender/v3/previews/lineup.png` and sits naturally in the v4 world (no clipping, no black faces, no
    stretched textures, Zainab seated on the mastaba). Do not commit, do not push, do not edit this doc.
+
+### M5 review (Claude, 2026-11-27)
+Two Neon passes (draft + fix round 1: shemagh checks, colour space/saturation, slimmer hijabs, stronger weave,
+softer faces). Checks: build ok; lite/high no errors or 404s; balance 22/22 (min coins 22); main pass Lite ≤ 89
+calls / 170k tris, High ≤ 141 / 559k. Accepted: outlines gone, soft shading, real fabric weave, v3 palette kept.
+Known follow-up: hijab/tarha drape is still a stiff pointed cape (no worse than v3); give it real folds later.

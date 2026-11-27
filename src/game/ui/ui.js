@@ -4,15 +4,11 @@ import { QuranService } from '../systems/quran.js';
 import { PAINTED, illustrationURL } from './scenes.js';
 import { pwa, downloadAllStories, canInstall, installApp, isStandalone } from '../../pwa/pwa.js';
 import { categoryIcon, DIFF_KEYS } from '../systems/progress.js';
-import { useGame } from '../systems/store.js';
 
 // ---- UI kit assets (public/ui) -------------------------------------------------------------
 // The icon + ornament sprites are injected inline so <use href="#i-…"> works everywhere and
 // their gradients render. Paths are relative to the page, so the build runs from any sub-path.
-const asset = p => (typeof document === 'undefined' ? p : new URL(p, document.baseURI).href);
-// Gate backdrop-filter glass blur to Medium+ tiers so Lite/Low phones stay on the solid fallback.
-const syncGlass = q => document.body?.classList.toggle('q-glass', q === 'medium' || q === 'high' || q === 'ultra');
-if (typeof document !== 'undefined') { syncGlass(useGame.getState().quality); useGame.subscribe(s => syncGlass(s.quality)); }
+const asset = p => new URL(p, document.baseURI).href;
 export const spritesReady = typeof document === 'undefined' ? Promise.resolve() : Promise.all(['ui/icons.svg', 'ui/ornaments.svg'].map(p =>
   fetch(asset(p)).then(r => (r.ok ? r.text() : '')).catch(() => ''))).then(svgs => {
   const host = document.getElementById('sprites') ?? document.body.appendChild(Object.assign(document.createElement('div'), { id: 'sprites' }));
@@ -578,6 +574,21 @@ export class UI {
   }
 }
 
-// Gold "Knowledge Unlocked" open-book medal (public/ui/v4/medal.svg).
-export const medalSVG = () => `<img class="medal-art" src="${asset('ui/v4/medal.svg')}" alt="" decoding="async" draggable="false">`;
+// Gold "Knowledge Unlocked" medal: scalloped rim, open book, star. Unique gradient ids per use.
+let medalN = 0;
+export const medalSVG = () => { const k = `m${++medalN}`; return `<svg viewBox="0 0 160 160" aria-hidden="true"><defs>
+  <radialGradient id="${k}a" cx=".38" cy=".3" r=".8"><stop offset="0" stop-color="#fff4c8"/><stop offset=".45" stop-color="#f4c766"/><stop offset="1" stop-color="#b3741f"/></radialGradient>
+  <linearGradient id="${k}b" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe7a3"/><stop offset="1" stop-color="#a86a1c"/></linearGradient>
+  <radialGradient id="${k}c" cx=".5" cy=".4" r=".7"><stop offset="0" stop-color="#1f5664"/><stop offset="1" stop-color="#0c2530"/></radialGradient>
+  <linearGradient id="${k}d" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fffaf0"/><stop offset="1" stop-color="#f1dcae"/></linearGradient></defs>
+  <path fill="url(#${k}b)" d="${Array.from({ length: 24 }, (_, i) => { const a = i / 24 * Math.PI * 2, r = i % 2 ? 70 : 76; return `${i ? 'L' : 'M'}${(80 + Math.sin(a) * r).toFixed(1)} ${(80 - Math.cos(a) * r).toFixed(1)}`; }).join('')}Z"/>
+  <circle cx="80" cy="80" r="62" fill="url(#${k}a)" stroke="#fff0c0" stroke-opacity=".7" stroke-width="1.5"/>
+  <circle cx="80" cy="80" r="51" fill="url(#${k}c)" stroke="#8a5a1c" stroke-width="2"/>
+  <circle cx="80" cy="80" r="46" fill="none" stroke="#f4c766" stroke-opacity=".55" stroke-width="1" stroke-dasharray="2 4"/>
+  <g stroke="#f4c766" stroke-opacity=".5" stroke-width="1.6" stroke-linecap="round">${Array.from({ length: 9 }, (_, i) => { const a = (-70 + i * 17.5) * Math.PI / 180; return `<path d="M${(80 + Math.sin(a) * 24).toFixed(1)} ${(78 - Math.cos(a) * 24).toFixed(1)}L${(80 + Math.sin(a) * 38).toFixed(1)} ${(78 - Math.cos(a) * 38).toFixed(1)}"/>`; }).join('')}</g>
+  <path d="M46 70c11-5 23-4 34 3 11-7 23-8 34-3v36c-11-5-23-4-34 3-11-7-23-8-34-3z" fill="#7a4e17"/>
+  <path d="M49 71c10-4 20-3 29 3v32c-9-6-19-7-29-3z M82 74c9-6 19-7 29-3v32c-10-4-20-3-29 3z" fill="url(#${k}d)"/>
+  <path d="M54 79c7-2 13-1 19 2M54 86c7-2 13-1 19 2M54 93c7-2 13-1 19 2M87 81c6-3 12-4 19-2M87 88c6-3 12-4 19-2M87 95c6-3 12-4 19-2" stroke="#c9a46a" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M80 44l3.4 7.2 7.8.9-5.8 5.3 1.6 7.7L80 61.2l-7 3.9 1.6-7.7-5.8-5.3 7.8-.9z" fill="url(#${k}a)" stroke="#fff4c8" stroke-width="1"/>
+  <path d="M44 52a44 44 0 0 1 26-22" fill="none" stroke="#fff8e0" stroke-opacity=".75" stroke-width="3" stroke-linecap="round"/></svg>`; };
 export const MEDAL = medalSVG();

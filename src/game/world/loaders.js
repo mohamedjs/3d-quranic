@@ -109,3 +109,32 @@ export function loadTextureArray(urls, { srgb = false, size = 512, anisotropy } 
   texArrayCache.set(key, p);
   return p;
 }
+
+const texLoader = new THREE.TextureLoader();
+const waterNorCache = new Map();
+
+// Cached seamlessly tileable water normal map loader (512 Lite/Low, 1024 Medium+).
+// Evicts on dispose so a later tier switch can cleanly recreate GPU storage.
+export function loadWaterNormal(size = 512, { anisotropy } = {}) {
+  const aniso = anisotropy ?? (size >= 1024 ? 4 : 1);
+  const key = `${size}|${aniso}`;
+  if (waterNorCache.has(key)) return waterNorCache.get(key);
+  const p = texLoader.loadAsync(`./textures/v4/${size}/water_nor.webp`).then(tex => {
+    tex.colorSpace = THREE.NoColorSpace;
+    tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
+    tex.magFilter = THREE.LinearFilter;
+    tex.minFilter = THREE.LinearMipmapLinearFilter;
+    tex.generateMipmaps = true;
+    tex.anisotropy = aniso;
+    tex.needsUpdate = true;
+    tex.addEventListener('dispose', () => {
+      if (waterNorCache.get(key) === p) waterNorCache.delete(key);
+    });
+    return tex;
+  }).catch(err => {
+    if (waterNorCache.get(key) === p) waterNorCache.delete(key);
+    throw err;
+  });
+  waterNorCache.set(key, p);
+  return p;
+}

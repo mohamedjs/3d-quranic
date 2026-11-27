@@ -416,7 +416,7 @@ Decisions for M3 (binding):
 - Checks: build passes, precache core 9.26 MB (+0.58 MB); Lite 55 calls / 147k tris, balance green;
   Medium 209 calls / 1.04M tris; High 306 calls / 1.68M tris (limit 320 calls), balance as before v4.
 
-### CURRENT RUN: milestone M4 only (Props, rocks & vegetation)
+### M4 run decisions (done)
 Do M4 (§3) and nothing from M5 onward, then stop and report. M0–M3 are committed; build on them.
 It is a large milestone: budgets first, then beauty. Commit nothing.
 
@@ -498,3 +498,57 @@ Decisions for M4 (binding):
 - Checks (max over home, street, river, oasis, ruins, ibrahim; calls = whole frame, tris = main pass):
   Lite 87 calls / 167k; Medium 170 / 340k; High 276 / 574k. `balance({verify:true})` green on Lite,
   Medium and High (22 stories, min 22) — both pre-v4 failures are fixed. Precache core 10.01 MB.
+
+### CURRENT RUN: milestone M4b only (Realistic water)
+Added after M4 at the owner's request (2026-11-26, relayed from the owner's planning session; owner's words:
+«الميه عايزها حقيقيه اتصرف» — "I want the water real, handle it"). Today's water is stylised toon water:
+flat cyan with cartoon wave lines. Make it read as real water at a glance. Do M4b only, then stop and
+report. M0–M4 are committed.
+
+Files you may create or change (nothing else): `src/game/shaders/waterMaterial.js` (river/canal/oasis
+material and `toonStreamWaterMaterial`), `src/game/water/Water.jsx`, `src/game/water/waterBank.js` (only
+if needed), `src/game/world/loaders.js` (the water normal loader), `src/game/lighting/environmentMap.js`
+and `src/game/environment/Environment.jsx` (only to publish the sun colour next to `SKY_REFL`), new
+`tools/polyhaven/process_water.py`, new `public/textures/v4/{512,1024}/water_nor.webp`, and
+`blender/v4/previews/M4b_*.png`.
+
+Decisions for M4b (binding):
+1. **Normal map.** Poly Haven has no water set, so `process_water.py`
+   (`blender -b --factory-startup --python tools/polyhaven/process_water.py`, fixed seed) generates one
+   seamlessly tileable water normal map (OpenGL convention) from a band-limited FFT wave spectrum:
+   natural multi-scale ripples, no visible grid, directional streaks or repetition. 512 (Lite/Low,
+   precached, ≤ 200 KB) and 1024 (Medium+). The existing vite-pwa SKIP rule already excludes `1024/`.
+2. **Waves.** Remove the procedural toon ripples. Medium+: two scrolling layers of the normal map at
+   different scales and angles along the bank-texture flow direction, plus a slower large swell layer.
+   Lite/Low: ONE normal fetch (scrolling along the flow). Oasis nearly calm, Nile broad and slow, canals
+   in between. Fade normal strength with distance (no shimmer, no visible tiling).
+3. **Colour by depth** (`bank.g`, metres = value × 2.2): Beer–Lambert absorption; shallows are clear and
+   show the real riverbed (the M2 pebble/mud ground under the water), grading to a deep Nile green-teal.
+   Canals muddy olive-green, oasis clear deep green-teal. No flat cyan anywhere, no toon bands, no
+   cartoon wave lines, ribbons or lacy foam.
+4. **Transparency and edges.** The water material becomes transparent (keep depth test; choose depth
+   write so the world still sorts correctly): alpha from depth and Fresnel, fading to 0 at the shore, a
+   thin broken foam/wet line only where depth is under about 6 cm, and M2's wet-bank darkening kept.
+5. **Reflection.** Schlick Fresnel (F0 ≈ 0.02) against the M1 sky (`SKY_REFL` equirect, analytic
+   fallback), reflected vector from the perturbed normal. High: half-res planar reflection and Ultra:
+   full-res, both distorted by the normals (as today's passes; no new pass). A sharp golden sun specular
+   path (GGX or tight Blinn–Phong) using the world sun direction and `sun.json` sun colour, sparkling
+   along the path on the Nile without blowing out the screen.
+6. **Street rill and canals:** the same look scaled down — shallow, clear, pebbles visible under it, quick
+   small ripples, same reflection and sun glint.
+7. **Performance and safety.** No extra draw calls or render passes on any tier; Lite fragment cost stays
+   small (1 normal + 1 sky + 1 bank fetch). Budgets of §1 still hold with M4's measurement (Lite ≤ 140
+   calls / 180k main tris, Medium ≤ 220 / 350k, High ≤ 320 / 700k). No shader errors on lite, medium,
+   high, ultra and after a live tier switch. Water geometry, topology, colliders and walkability are
+   unchanged; do not bump `SET_VERSION`; `balance({verify:true})` stays green.
+8. **Proof.** `M4b_{lite,high}_{street,river,oasis}.png` (same spots as M4) plus `M4b_high_nile.png` and
+   `M4b_lite_nile.png`, a close-up of the Nile beside the bridge (player at x 6.5, z 66, facing −0.35).
+   Look at them yourself and iterate until the water reads as real water at a glance, compared with the
+   `M4_*` shots. Do not commit, do not push, do not edit this doc.
+
+### M4b review (Claude, 2026-11-27)
+The orchestrating run dropped at 23:29 (no internet) after Neon finished M4b; reviewed here. Build passes;
+lite/high: no page errors, no 404s, balance 22/22 stories (min coins 22, 0 bad). Main pass: Lite ≤ 87 calls /
+166k tris, High ≤ 140 calls / 574k tris. The original Nile proof was blocked by an NPC; replaced by shots from
+the bridge deck (0, 70, facing +x). Accepted: water reads as real (Fresnel sky + planar reflections on High,
+depth colour, soft shores, clear rill over pebbles).

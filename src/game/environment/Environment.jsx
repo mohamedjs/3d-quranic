@@ -159,6 +159,7 @@ export function Environment({ env }) {
     scene.environmentIntensity = pbr ? 0.42 : 0.45;
     SKY_REFL.uSkyMap.value = skyTex.tex ?? null;
     SKY_REFL.uHasSkyMap.value = skyTex.tex ? 1.0 : 0.0;
+    SKY_REFL.uSunColor.value.set(env.sun?.sunColor || '#ffd488');
     scene.background = palette.bgCol.clone();
     scene.fog = new THREE.Fog(palette.fogCol, fogNear, fogFar);
   }, [scene, gl, env, palette, skyTex.tex, pbr, fogNear, fogFar]);
